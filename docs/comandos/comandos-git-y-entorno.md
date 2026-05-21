@@ -14,15 +14,19 @@ Inicializar git
     git init
 
 Ver estado del proyecto 
+
     git status
 
 Ver ramas
+
     git branch
 
 Cambiar de rama
+
     git checkout nombre_rama
 
 Agregar archivos 
+
     git add .
 
     git commit -m "mensaje de cambios realizados"
