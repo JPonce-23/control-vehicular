@@ -1,10 +1,15 @@
 # Comandos
 
 - Entrar a una carpeta
+
     cd nombre_carpeta
+
 - Regresar a una carpeta
+
     cd ..
+
 - Ver archivos
+
     dir
 
 
