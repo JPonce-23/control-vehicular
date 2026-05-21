@@ -13,7 +13,7 @@
     dir
 
 
-## Git y GitHub
+# Git y GitHub
 
 Inicializar git 
     git init
