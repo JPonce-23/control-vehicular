@@ -1,0 +1,19 @@
+from pydantic import BaseModel
+from datetime import datetime
+from decimal import Decimal
+from typing import Optional
+
+class RegresoResponse(BaseModel):
+    id: int
+    salida_id: int
+    capturado_por: int
+    fecha_regreso: datetime
+    km_odometro_regreso: Decimal
+    nivel_gasolina_regreso: str
+    estado_llantas_regreso: str
+    estado_vehiculo_regreso: str
+    finalidad_devolucion: str
+    observaciones: Optional[str]
+
+    class Config:
+        from_attributes = True

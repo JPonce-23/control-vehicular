@@ -4,6 +4,10 @@ from sqlalchemy import text
 from app.routes.usuario_routes import router as usuario_router
 from app.routes.persona_routes import router as persona_router
 from app.routes.vehiculo_routes import router as vehiculo_router
+from app.routes.salida_routes import router as salida_router
+from app.routes.regreso_routes import router as regreso_router
+from app.routes.resguardo_routes import router as resguardo_router
+from app.routes.ajuste_routes import router as ajuste_router
 
 app = FastAPI(
     title="Control Vehicular PA",
@@ -13,6 +17,10 @@ app = FastAPI(
 app.include_router(usuario_router)
 app.include_router(persona_router)
 app.include_router(vehiculo_router)
+app.include_router(salida_router)
+app.include_router(regreso_router)
+app.include_router(resguardo_router)
+app.include_router(ajuste_router)
 
 @app.get("/")
 def home():
