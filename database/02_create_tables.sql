@@ -151,6 +151,141 @@ CREATE TABLE regreso (
 );
 
 -- ============================================
+-- Tabla: HISTORIAL_SALIDA
+-- Para llevar un historial registrado de todas las salidas 
+-- ============================================
+
+CREATE TYPE accion AS ENUM ('registro_salida', 'registro_regreso', 'modificacion', 'generacion_resguardo');
+
+CREATE TABLE historial_salida (
+    id SERIAL PRIMARY KEY,
+    salida_id INT NOT NULL REFERENCES salida(id),
+    usuario_id INT NOT NULL REFERENCES usuario_sistema(id),
+    accion accion NOT NULL,
+    descripcion TEXT,
+    fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+--============================================
+-- Tabla: ITEM_INVENTARIO
+-- Para llevar un registro de los items de checklist e inventario
+--=============================================
+
+CREATE TYPE categoria AS ENUM ('pieza', 'equipo_especial');
+CREATE TYPE estado_default AS ENUM ('correcto', 'na');
+
+CREATE TABLE item_inventario (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    categoria categoria NOT NULL,
+    estado_default estado_default NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+--============================================
+-- Tabla: REVISION_INVENTARIO
+-- Para registrar las revisiones de checklist e inventario
+--=============================================
+
+CREATE TYPE estado_revision_inventario AS ENUM ('correcto', 'na', 'vacio');
+
+CREATE TABLE revision_inventario (
+    id SERIAL PRIMARY KEY,
+    salida_id INT NOT NULL REFERENCES salida(id),
+    item_id INT NOT NULL REFERENCES item_inventario(id),
+    estado estado_revision_inventario NOT NULL,
+    observaciones TEXT
+);
+
+--============================================
+-- Tabla ITEM_CONDICION
+-- Catálogo predeterminado de condiciones
+--============================================
+
+CREATE TYPE estado_condicion AS ENUM ('bueno', 'regular', 'malo');
+
+CREATE TABLE item_condicion (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    estado_default estado_condicion NOT NULL DEFAULT 'bueno',
+    activo BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+
+--=============================================
+-- Tabla REVISION_CONDICION
+--Guarda el resultado de revisar cada condición de funcionalidad en una salida.
+--=============================================
+
+CREATE TABLE revision_condicion (
+    id SERIAL PRIMARY KEY,
+    salida_id INT NOT NULL REFERENCES salida(id),
+    item_condicion_id INT NOT NULL REFERENCES item_condicion(id),
+    estado estado_condicion NOT NULL,
+    observaciones TEXT
+);
+
+--=============================================
+--Tabla PRESUPUESTO_GASOLINA
+--Guarda el presupuesto autorizado de gasolina para cada vehículo por año.
+--=============================================
+
+CREATE TABLE presupuesto_gasolina (
+    id SERIAL PRIMARY KEY,
+    vehiculo_id INT NOT NULL REFERENCES vehiculo(id),
+    monto_autorizado_total DECIMAL (10,2) NOT NULL,
+    monto_por_mes DECIMAL (10,2) NOT NULL,
+    monto_utilizado DECIMAL (10,2) NOT NULL DEFAULT 0,
+    saldo_acumulado DECIMAL (10,2) NOT NULL DEFAULT 0, 
+    anio INT NOT NULL
+);
+
+--=============================================
+--Tabla  GASTO_GASOLINA
+--Registra los gastos de gasolina asociados a un vehículo, salida y presupuesto.
+--=============================================
+
+CREATE TABLE gasto_gasolina (
+    id SERIAL PRIMARY KEY,
+    vehiculo_id INT NOT NULL REFERENCES vehiculo(id),
+    salida_id INT REFERENCES salida(id),
+    presupuesto_id INT NOT NULL REFERENCES presupuesto_gasolina(id),
+    fecha_gasto DATE NOT NULL,
+    litros DECIMAL(10,2) NOT NULL,
+    monto DECIMAL (10,2) NOT NULL,
+    nota TEXT
+); 
+
+--=============================================
+--Tabla AJUSTE_ODOMETRO
+--Guarda correcciones o ajustes manuales del odómetro de un vehículo
+--=============================================
+
+CREATE TABLE ajuste_odometro (
+    id SERIAL PRIMARY KEY,
+    vehiculo_id INT NOT NULL REFERENCES vehiculo(id),
+    fecha_ajuste TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    km_anterior DECIMAL (10,2) NOT NULL,
+    km_nuevo DECIMAL (10,2) NOT NULL,
+    motivo TEXT,
+    realizado_por INT NOT NULL REFERENCES usuario_sistema(id)
+);
+
+--============================================
+--Tabla RESGUARDO
+--Guarda el archivo generado del resguardo listo para imprimir y firmar
+--============================================
+
+CREATE TABLE resguardo (
+    id SERIAL PRIMARY KEY,
+    salida_id INT NOT NULL REFERENCES salida(id),
+    fecha_generacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    nombre_archivo VARCHAR(150) NOT NULL,
+    ruta_archivo TEXT
+);
+
+
+-- ============================================
 -- ORDEN DE CREACIÓN DE TABLAS
 --USUARIO_SISTEMA
 --TOKEN_ACCESO
@@ -158,9 +293,14 @@ CREATE TABLE regreso (
 --VEHICULO
 --SALIDA
 --REGRESO
-HISTORIAL_SALIDA
-Tablas de checklist/inventario
-Presupuesto/gasto gasolina
-Ajuste odómetro
-Resguardo
+--HISTORIAL_SALIDA
+--Tablas de checklist/inventario
+    --ITEM_INVENTARIO
+    --REVISION_INVETARIO
+    --ITEM_CONDICON
+    --REVISION_CONDICION
+--PRESUPUESTO_GASOLINA
+--GASTO_GASOLINA
+--AJUSTE_ODOMETRO
+--RESGUARDO
 
