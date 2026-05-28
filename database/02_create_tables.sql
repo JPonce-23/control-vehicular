@@ -9,15 +9,9 @@
 -- TIPOS ENUM
 -- ============================================
 
-CREATE TYPE rol_usuario AS ENUM (
-    'administrador',
-    'capturista'
-);
+CREATE TYPE rol_usuario AS ENUM ('administrador','capturista');
 
-CREATE TYPE estado_usuario AS ENUM (
-    'activo',
-    'suspendido'
-);
+CREATE TYPE estado_usuario AS ENUM ('activo', 'suspendido');
 
 
 -- ============================================
@@ -105,13 +99,65 @@ CREATE TABLE vehiculo (
 );
 
 -- ============================================
+--Tabla: SALIDA
+-- Registro de salidas de vehículos
+-- ============================================
+
+CREATE TYPE tipo_movimiento AS ENUM ('asignacion', 'devolucion');
+CREATE TYPE forma_movimiento AS ENUM ('permanente', 'provisional');
+CREATE TYPE nivel_gasolina_salida AS ENUM ('vacio', 'cuarto', 'medio', 'tres_cuartos', 'lleno');
+CREATE TYPE estado_llantas_salida AS ENUM ('cuarto', 'medio', 'tres_cuartos', 'lleno');
+
+CREATE TABLE salida (
+    id SERIAL PRIMARY KEY,
+    vehiculo_id INT NOT NULL REFERENCES vehiculo(id),
+    persona_id INT NOT NULL REFERENCES persona_autorizada(id),
+    capturado_por INT NOT NULL REFERENCES usuario_sistema(id),
+    fecha_salida TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    num_oficio VARCHAR(100),
+    num_expediente VARCHAR(100),
+    cargo_en_viaje VARCHAR(100) NOT NULL,
+    area_en_viaje VARCHAR(100) NOT NULL,
+    tipo_movimiento tipo_movimiento NOT NULL,
+    forma_movimiento forma_movimiento NOT NULL,
+    fecha_fin_provisional DATE,
+    finalidad_uso TEXT NOT NULL,
+    km_odometro_salida DECIMAL(10, 2) NOT NULL,
+    nivel_gasolina_salida nivel_gasolina_salida NOT NULL,
+    estado_llantas_salida estado_llantas_salida NOT NULL,
+    observaciones TEXT,
+    observaciones_croquis TEXT
+);
+
+--=============================================
+--Tabla: REGRESO
+--Registro de regresos de vehículos
+--=============================================
+
+CREATE TYPE estado_vehiculo_regreso AS ENUM ('bueno', 'dañado', 'mantenimiento');
+CREATE TYPE finalidad_devolucion AS ENUM ('disponible', 'reparacion', 'sustitucion');
+
+CREATE TABLE regreso (
+    id SERIAL PRIMARY KEY,
+    salida_id INT NOT NULL REFERENCES salida(id),
+    capturado_por INT NOT NULL REFERENCES usuario_sistema(id),
+    fecha_regreso TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    km_odometro_regreso DECIMAL(10, 2) NOT NULL,
+    nivel_gasolina_regreso  nivel_gasolina_salida  NOT NULL,
+    estado_llantas_regreso  estado_llantas_salida  NOT NULL,
+    estado_vehiculo_regreso estado_vehiculo_regreso NOT NULL,
+    finalidad_devolucion finalidad_devolucion NOT NULL,
+    observaciones TEXT
+);
+
+-- ============================================
 -- ORDEN DE CREACIÓN DE TABLAS
 --USUARIO_SISTEMA
 --TOKEN_ACCESO
 --PERSONA_AUTORIZADA
 --VEHICULO
-SALIDA
-REGRESO
+--SALIDA
+--REGRESO
 HISTORIAL_SALIDA
 Tablas de checklist/inventario
 Presupuesto/gasto gasolina
