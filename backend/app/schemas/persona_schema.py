@@ -23,5 +23,8 @@ class PersonaResponse(BaseModel):
     tipo_licencia: str
     estado: str
 
+class PersonaEstadoUpdate(BaseModel):
+    estado: str
+
     class Config:
         from_attributes = True
