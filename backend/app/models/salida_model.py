@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Date, DateTime, Text, Numeric, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, DateTime, Text, Numeric, ForeignKey, func
+
 from app.database import Base
 
 class Salida(Base):
@@ -8,7 +9,7 @@ class Salida(Base):
     vehiculo_id = Column(Integer, ForeignKey("vehiculo.id"))
     persona_id = Column(Integer, ForeignKey("persona_autorizada.id"))
     capturado_por = Column(Integer, ForeignKey("usuario_sistema.id"))
-    fecha_salida = Column(DateTime)
+    fecha_salida = Column(DateTime, nullable=False, server_default=func.now())
     num_oficio = Column(String)
     num_expediente = Column(String)
     cargo_en_viaje = Column(String)

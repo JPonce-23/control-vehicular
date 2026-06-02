@@ -3,6 +3,25 @@ from datetime import datetime, date
 from decimal import Decimal
 from typing import Optional
 
+class SalidaCreate(BaseModel):
+    vehiculo_id: int
+    persona_id: int
+    capturado_por: int
+    fecha_salida: Optional[datetime] = None
+    num_oficio: Optional[str] = None
+    num_expediente: Optional[str] = None
+    cargo_en_viaje: str
+    area_en_viaje: str
+    tipo_movimiento: str
+    forma_movimiento: str
+    fecha_fin_provisional: Optional[date] = None
+    finalidad_uso: str
+    km_odometro_salida: Decimal
+    nivel_gasolina_salida: str
+    estado_llantas_salida: str
+    observaciones: Optional[str] = None
+    observaciones_croquis: Optional[str] = None
+
 class SalidaResponse(BaseModel):
     id: int
     vehiculo_id: int
