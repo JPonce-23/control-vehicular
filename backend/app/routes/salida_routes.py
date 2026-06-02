@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
+from datetime import date
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.salida_model import Salida
 from app.schemas.salida_schema import SalidaResponse, SalidaCreate
 from app.models.vehiculo_model import Vehiculo
+from app.models.historial_salida_model import HistorialSalida
+from app.models.persona_model import PersonaAutorizada
 
 router = APIRouter(
     prefix="/salidas",
@@ -43,8 +46,39 @@ def crear_salida(salida: SalidaCreate, db: Session = Depends(get_db)):
     nueva_salida = Salida(**datos_salida)
 
     vehiculo.estado = "en_uso"
+    
+    persona = db.query(PersonaAutorizada).filter(
+    PersonaAutorizada.id == salida.persona_id
+    ).first()
 
+    if persona is None:
+        raise HTTPException(status_code=404, detail="Persona autorizada no encontrada")
+    
+    if persona.estado != "activo":
+        raise HTTPException(
+        status_code=400,
+        detail="La persona autorizada no está activa"
+    )
+
+    if persona.vigencia_licencia < date.today():
+        raise HTTPException(
+        status_code=400,
+        detail="La licencia del conductor está vencida"
+    )
+    
     db.add(nueva_salida)
+    db.flush()
+
+    historial = HistorialSalida (
+        salida_id=nueva_salida.id,
+        usuario_id=salida.capturado_por,
+        accion="registro_salida",
+        descripcion="Se registró una nueva salida",
+        fecha=date.today()
+    )
+    
+
+    db.add(historial)
     db.commit()
     db.refresh(nueva_salida)
 

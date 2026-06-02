@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
+from datetime import date
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.regreso_model import Regreso
 from app.schemas.regreso_schema import RegresoResponse, RegresoCreate
 from app.models.salida_model import Salida
 from app.models.vehiculo_model import Vehiculo
+from app.models.historial_salida_model import HistorialSalida
 
 router = APIRouter(
     prefix="/regresos",
@@ -52,6 +54,17 @@ def crear_regreso(regreso: RegresoCreate, db: Session = Depends(get_db)):
     vehiculo.km_acumulado = regreso.km_odometro_regreso
 
     db.add(nuevo_regreso)
+    db.flush()
+
+    historial = HistorialSalida(
+        salida_id=regreso.salida_id,
+        usuario_id=regreso.capturado_por,
+        accion="registro_regreso",
+        descripcion="Se registró el regreso del vehículo",
+        fecha=date.today()
+    )
+
+    db.add(historial)
     db.commit()
     db.refresh(nuevo_regreso)
 
