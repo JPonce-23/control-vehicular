@@ -31,18 +31,25 @@ def crear_regreso(regreso: RegresoCreate, db: Session = Depends(get_db)):
         status_code=400,
         detail="Esta salida ya tiene un regreso registrado"
     )
+        
+    if regreso.km_odometro_regreso < salida.km_odometro_salida:
+        raise HTTPException(
+        status_code=400,
+        detail="El kilometraje de regreso no puede ser menor al de salida"
+    )
 
     vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
 
     if vehiculo is None:
         raise HTTPException(status_code=404, detail="Vehículo no encontrado")
+    
 
     datos_regreso = regreso.model_dump(exclude_none=True)
     nuevo_regreso = Regreso(**datos_regreso)
 
     vehiculo.estado = "disponible"
     
-
+    vehiculo.km_acumulado = regreso.km_odometro_regreso
 
     db.add(nuevo_regreso)
     db.commit()
