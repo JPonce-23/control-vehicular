@@ -26,6 +26,18 @@ def crear_salida(salida: SalidaCreate, db: Session = Depends(get_db)):
             status_code=400,
             detail="El vehículo no está disponible para salida"
         )
+        
+    if vehiculo.estado != "disponible":
+        raise HTTPException(
+        status_code=400,
+        detail="El vehículo no está disponible para salida"
+    )
+
+    if salida.km_odometro_salida < vehiculo.km_acumulado:
+        raise HTTPException(
+        status_code=400,
+        detail="El kilometraje de salida no puede ser menor al kilometraje actual del vehículo"
+    )
 
     datos_salida = salida.model_dump(exclude_none=True)
     nueva_salida = Salida(**datos_salida)
