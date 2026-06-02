@@ -2,6 +2,11 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
+class ResguardoCreate(BaseModel):
+    salida_id: int
+    nombre_archivo: str
+    ruta_archivo: Optional[str] = None
+
 class ResguardoResponse(BaseModel):
     id: int
     salida_id: int
