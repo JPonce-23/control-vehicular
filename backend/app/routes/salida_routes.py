@@ -30,11 +30,29 @@ def crear_salida(salida: SalidaCreate, db: Session = Depends(get_db)):
             detail="El vehículo no está disponible para salida"
         )
         
+    if vehiculo.estado == "en_uso":
+        raise HTTPException(
+            status_code=400,
+            detail="El vehículo ya se encuentra en uso"
+        )
+
+    if vehiculo.estado == "mantenimiento":
+        raise HTTPException(
+            status_code=400,
+            detail="El vehículo se encuentra en mantenimiento"
+        )
+
+    if vehiculo.estado == "fuera_de_servicio":
+        raise HTTPException(
+            status_code=400,
+            detail="El vehículo está fuera de servicio"
+        )
+
     if vehiculo.estado != "disponible":
         raise HTTPException(
-        status_code=400,
-        detail="El vehículo no está disponible para salida"
-    )
+            status_code=400,
+            detail="El vehículo no está disponible para salida"
+        )
 
     if salida.km_odometro_salida < vehiculo.km_acumulado:
         raise HTTPException(

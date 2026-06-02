@@ -1,9 +1,7 @@
 from pydantic import BaseModel
 from decimal import Decimal
 from typing import Optional
-
-from typing import Optional
-from decimal import Decimal
+from pydantic import BaseModel
 
 class VehiculoCreate(BaseModel):
     num_economico: Optional[str] = None
@@ -36,6 +34,9 @@ class VehiculoResponse(BaseModel):
     color: str
     num_tarjeta_gasolina: Optional[str]
     km_acumulado: Decimal
+    estado: str
+    
+class VehiculoEstadoUpdate(BaseModel):
     estado: str
 
     class Config:
