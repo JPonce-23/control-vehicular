@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.usuario_model import UsuarioSistema
-from app.schemas.usuario_schema import UsuarioResponse, UsuarioCreate, UsuarioRolUpdate
+from app.schemas.usuario_schema import UsuarioResponse, UsuarioCreate, UsuarioRolUpdate, UsuarioEstadoUpdate
 from app.services.auth_service import obtener_usuario_actual, requerir_rol, generar_hash_password
 
 router = APIRouter(
@@ -16,6 +16,24 @@ def listar_usuarios(
     usuario_actual = Depends(obtener_usuario_actual)
 ):
     return db.query(UsuarioSistema).all()
+
+@router.get("/{usuario_id}", response_model=UsuarioResponse)
+def obtener_usuario_por_id(
+    usuario_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    usuario = db.query(UsuarioSistema).filter(
+        UsuarioSistema.id == usuario_id
+    ).first()
+
+    if usuario is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+
+    return usuario
 
 @router.post("/", response_model=UsuarioResponse)
 def crear_usuario(
@@ -86,4 +104,31 @@ def actualizar_rol_usuario(
         "mensaje": "Rol actualizado correctamente",
         "usuario_id": usuario.id,
         "rol": usuario.rol
+    }
+    
+@router.patch("/{usuario_id}/estado")
+def actualizar_estado_usuario(
+    usuario_id: int,
+    datos: UsuarioEstadoUpdate,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador"]))
+):
+    estados_permitidos = ["activo", "suspendido"]
+
+    if datos.estado not in estados_permitidos:
+        raise HTTPException(status_code=400, detail="Estado de usuario no válido")
+
+    usuario = db.query(UsuarioSistema).filter(UsuarioSistema.id == usuario_id).first()
+
+    if usuario is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    usuario.estado = datos.estado
+    db.commit()
+    db.refresh(usuario)
+
+    return {
+        "mensaje": "Estado actualizado correctamente",
+        "usuario_id": usuario.id,
+        "estado": usuario.estado
     }

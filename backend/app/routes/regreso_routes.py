@@ -73,3 +73,16 @@ def crear_regreso(regreso: RegresoCreate,
     db.refresh(nuevo_regreso)
 
     return nuevo_regreso
+
+@router.get("/salida/{salida_id}", response_model=RegresoResponse)
+def obtener_regreso_por_salida(
+    salida_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    regreso = db.query(Regreso).filter(Regreso.salida_id == salida_id).first()
+
+    if regreso is None:
+        raise HTTPException(status_code=404, detail="Regreso no encontrado para esta salida")
+
+    return regreso

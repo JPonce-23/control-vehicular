@@ -63,3 +63,20 @@ def actualizar_estado_vehiculo(
         "vehiculo_id": vehiculo.id,
         "estado": vehiculo.estado
     }
+    
+@router.get("/{vehiculo_id}", response_model=VehiculoResponse)
+def obtener_vehiculo_por_id(
+    vehiculo_id: int,
+    db: Session = Depends(get_db)
+):
+    vehiculo = db.query(Vehiculo).filter(
+        Vehiculo.id == vehiculo_id
+    ).first()
+
+    if vehiculo is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Vehículo no encontrado"
+        )
+
+    return vehiculo

@@ -21,12 +21,19 @@ def login(datos: LoginRequest, db: Session = Depends(get_db)):
             status_code=401,
             detail="Correo o contraseña incorrectos"
         )
+        
+    if usuario.estado != "activo":
+        raise HTTPException(
+            status_code=403,
+            detail="Usuario suspendido"
+    )
 
     if not verificar_password(datos.password, usuario.contrasena_hash):
         raise HTTPException(
             status_code=401,
             detail="Correo o contraseña incorrectos"
         )
+    
 
     token = crear_token_acceso({
     "sub": str(usuario.id),

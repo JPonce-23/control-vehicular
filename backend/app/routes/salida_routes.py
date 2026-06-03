@@ -8,6 +8,7 @@ from app.models.vehiculo_model import Vehiculo
 from app.models.historial_salida_model import HistorialSalida
 from app.models.persona_model import PersonaAutorizada
 from app.services.auth_service import obtener_usuario_actual, requerir_rol
+from app.models.regreso_model import Regreso
 
 router = APIRouter(
     prefix="/salidas",
@@ -106,3 +107,33 @@ usuario_actual = Depends(requerir_rol(["administrador", "capturista"]))
     db.refresh(nueva_salida)
 
     return nueva_salida
+
+@router.get("/{salida_id}", response_model=SalidaResponse)
+def obtener_salida_por_id(
+    salida_id: int,
+    db: Session = Depends(get_db)
+):
+    salida = db.query(Salida).filter(
+        Salida.id == salida_id
+    ).first()
+
+    if salida is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Salida no encontrada"
+        )
+
+    return salida
+
+@router.get("/activas/", response_model=list[SalidaResponse])
+def listar_salidas_activas(
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    salidas = db.query(Salida).outerjoin(
+        Regreso, Salida.id == Regreso.salida_id
+    ).filter(
+        Regreso.id == None
+    ).all()
+
+    return salidas

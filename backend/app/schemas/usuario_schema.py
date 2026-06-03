@@ -33,3 +33,6 @@ class UsuarioCreate(BaseModel):
     
 class UsuarioRolUpdate(BaseModel):
     rol: str
+    
+class UsuarioEstadoUpdate(BaseModel):
+    estado: str

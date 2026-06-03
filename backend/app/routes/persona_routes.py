@@ -60,3 +60,20 @@ def actualizar_estado_persona(
         "persona_id": persona.id,
         "estado": persona.estado
     }
+    
+@router.get("/{persona_id}", response_model=PersonaResponse)
+def obtener_persona_por_id(
+    persona_id: int,
+    db: Session = Depends(get_db)
+):
+    persona = db.query(PersonaAutorizada).filter(
+        PersonaAutorizada.id == persona_id
+    ).first()
+
+    if persona is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Persona autorizada no encontrada"
+        )
+
+    return persona
