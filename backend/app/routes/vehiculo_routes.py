@@ -4,6 +4,7 @@ from app.database import get_db
 from app.models.vehiculo_model import Vehiculo
 from app.schemas.vehiculo_schema import VehiculoResponse, VehiculoCreate
 from app.schemas.vehiculo_schema import VehiculoEstadoUpdate
+from app.services.auth_service import obtener_usuario_actual
 
 router = APIRouter(
     prefix="/vehiculos",
@@ -26,7 +27,8 @@ def crear_vehiculo(vehiculo: VehiculoCreate, db: Session = Depends(get_db)):
 def actualizar_estado_vehiculo(
     vehiculo_id: int,
     datos: VehiculoEstadoUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
 ):
     vehiculo = db.query(Vehiculo).filter(
         Vehiculo.id == vehiculo_id

@@ -7,6 +7,7 @@ from app.schemas.salida_schema import SalidaResponse, SalidaCreate
 from app.models.vehiculo_model import Vehiculo
 from app.models.historial_salida_model import HistorialSalida
 from app.models.persona_model import PersonaAutorizada
+from app.services.auth_service import obtener_usuario_actual
 
 router = APIRouter(
     prefix="/salidas",
@@ -18,8 +19,10 @@ def listar_salidas(db: Session = Depends(get_db)):
     return db.query(Salida).all()
 
 @router.post("/", response_model=SalidaResponse)
-def crear_salida(salida: SalidaCreate, db: Session = Depends(get_db)):
+def crear_salida(salida: SalidaCreate, db: Session = Depends(get_db), usuario_actual = Depends(obtener_usuario_actual)
+):
     vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
+    
 
     if vehiculo is None:
         raise HTTPException(status_code=404, detail="Vehículo no encontrado")

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.persona_model import PersonaAutorizada
 from app.schemas.persona_schema import PersonaResponse, PersonaCreate, PersonaEstadoUpdate
+from app.services.auth_service import obtener_usuario_actual
 
 router = APIRouter(
     prefix="/personas",
@@ -25,7 +26,8 @@ def crear_persona(persona: PersonaCreate, db: Session = Depends(get_db)):
 def actualizar_estado_persona(
     persona_id: int,
     datos: PersonaEstadoUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
 ):
     estados_permitidos = [
         "activo",
