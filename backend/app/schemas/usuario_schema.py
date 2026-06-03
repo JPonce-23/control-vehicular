@@ -13,6 +13,10 @@ class UsuarioResponse(BaseModel):
     estado: str
     fecha_alta: datetime
     ultimo_acceso: Optional[datetime]
+    
+class LoginRequest(BaseModel):
+    correo: str
+    password: str
 
     class Config:
         from_attributes = True

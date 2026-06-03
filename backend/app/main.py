@@ -16,6 +16,7 @@ from app.routes.presupuesto_gasolina_routes import router as presupuesto_gasolin
 from app.routes.gasto_gasolina_routes import router as gasto_gasolina_router
 from app.routes.historial_salida_routes import router as historial_salida_router
 from app.routes.token_routes import router as token_router
+from app.routes.auth_routes import router as auth_router
 
 app = FastAPI(
     title="Control Vehicular PA",
@@ -37,6 +38,7 @@ app.include_router(presupuesto_gasolina_router)
 app.include_router(gasto_gasolina_router)
 app.include_router(historial_salida_router)
 app.include_router(token_router)
+app.include_router(auth_router)
 
 
 @app.get("/")
