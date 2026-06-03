@@ -28,8 +28,6 @@ class UsuarioCreate(BaseModel):
     num_empleado: str
     correo: str
     password: str
-    rol: str = "capturista"
-    estado: str = "activo"
     
 class UsuarioRolUpdate(BaseModel):
     rol: str

@@ -4,6 +4,9 @@ from app.database import get_db
 from app.models.usuario_model import UsuarioSistema
 from app.schemas.usuario_schema import UsuarioResponse, UsuarioCreate, UsuarioRolUpdate, UsuarioEstadoUpdate
 from app.services.auth_service import obtener_usuario_actual, requerir_rol, generar_hash_password
+import os
+
+SUPERADMIN_ID = int(os.getenv("SUPERADMIN_ID", 1))
 
 router = APIRouter(
     prefix="/usuarios",
@@ -59,8 +62,8 @@ def crear_usuario(
         num_empleado=usuario.num_empleado,
         correo=usuario.correo,
         contrasena_hash=generar_hash_password(usuario.password),
-        rol=usuario.rol,
-        estado=usuario.estado
+        rol="capturista",
+        estado="activo"
     )
 
     db.add(nuevo_usuario)
@@ -94,6 +97,12 @@ def actualizar_rol_usuario(
             status_code=404,
             detail="Usuario no encontrado"
         )
+        
+    if usuario.id == SUPERADMIN_ID:
+        raise HTTPException(
+            status_code=400,
+            detail="No se puede modificar el rol del superadministrador"
+        )
 
     usuario.rol = datos.rol
 
@@ -119,9 +128,15 @@ def actualizar_estado_usuario(
         raise HTTPException(status_code=400, detail="Estado de usuario no válido")
 
     usuario = db.query(UsuarioSistema).filter(UsuarioSistema.id == usuario_id).first()
-
+    
     if usuario is None:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        raise HTTPException(status_code=404, detail="Usuario no encontrado") 
+    
+    if usuario.id == SUPERADMIN_ID:
+        raise HTTPException(
+            status_code=400,
+            detail="No se puede modificar el rol del superadministrador"
+        )
 
     usuario.estado = datos.estado
     db.commit()
@@ -132,3 +147,4 @@ def actualizar_estado_usuario(
         "usuario_id": usuario.id,
         "estado": usuario.estado
     }
+    
