@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, func
 from app.database import Base
 
 class UsuarioSistema(Base):
@@ -13,5 +13,5 @@ class UsuarioSistema(Base):
     contrasena_hash = Column(String)
     rol = Column(String)
     estado = Column(String)
-    fecha_alta = Column(DateTime)
+    fecha_alta = Column(DateTime, nullable=False, server_default=func.now())
     ultimo_acceso = Column(DateTime)

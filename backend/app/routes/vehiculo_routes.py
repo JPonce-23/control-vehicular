@@ -4,7 +4,7 @@ from app.database import get_db
 from app.models.vehiculo_model import Vehiculo
 from app.schemas.vehiculo_schema import VehiculoResponse, VehiculoCreate
 from app.schemas.vehiculo_schema import VehiculoEstadoUpdate
-from app.services.auth_service import obtener_usuario_actual
+from app.services.auth_service import obtener_usuario_actual, requerir_rol
 
 router = APIRouter(
     prefix="/vehiculos",
@@ -28,7 +28,7 @@ def actualizar_estado_vehiculo(
     vehiculo_id: int,
     datos: VehiculoEstadoUpdate,
     db: Session = Depends(get_db),
-    usuario_actual = Depends(obtener_usuario_actual)
+    usuario_actual = Depends(requerir_rol(["administrador"]))
 ):
     vehiculo = db.query(Vehiculo).filter(
         Vehiculo.id == vehiculo_id

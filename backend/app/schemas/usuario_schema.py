@@ -20,3 +20,16 @@ class LoginRequest(BaseModel):
 
     class Config:
         from_attributes = True
+        
+class UsuarioCreate(BaseModel):
+    nombre: str
+    apellido_paterno: str
+    apellido_materno: Optional[str] = None
+    num_empleado: str
+    correo: str
+    password: str
+    rol: str = "capturista"
+    estado: str = "activo"
+    
+class UsuarioRolUpdate(BaseModel):
+    rol: str

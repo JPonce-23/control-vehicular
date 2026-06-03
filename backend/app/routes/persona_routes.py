@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.persona_model import PersonaAutorizada
 from app.schemas.persona_schema import PersonaResponse, PersonaCreate, PersonaEstadoUpdate
-from app.services.auth_service import obtener_usuario_actual
+from app.services.auth_service import obtener_usuario_actual, requerir_rol
 
 router = APIRouter(
     prefix="/personas",
@@ -27,7 +27,7 @@ def actualizar_estado_persona(
     persona_id: int,
     datos: PersonaEstadoUpdate,
     db: Session = Depends(get_db),
-    usuario_actual = Depends(obtener_usuario_actual)
+    usuario_actual = Depends(requerir_rol(["administrador"]))
 ):
     estados_permitidos = [
         "activo",

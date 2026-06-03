@@ -78,3 +78,14 @@ def obtener_usuario_actual(
         )
 
     return usuario
+
+def requerir_rol(roles_permitidos: list[str]):
+    def validar_rol(usuario_actual = Depends(obtener_usuario_actual)):
+        if usuario_actual.rol not in roles_permitidos:
+            raise HTTPException(
+                status_code=403,
+                detail="No tienes permisos para realizar esta acción"
+            )
+        return usuario_actual
+
+    return validar_rol

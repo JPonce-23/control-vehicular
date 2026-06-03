@@ -7,7 +7,7 @@ from app.schemas.regreso_schema import RegresoResponse, RegresoCreate
 from app.models.salida_model import Salida
 from app.models.vehiculo_model import Vehiculo
 from app.models.historial_salida_model import HistorialSalida
-from app.services.auth_service import obtener_usuario_actual
+from app.services.auth_service import obtener_usuario_actual, requerir_rol
 
 router = APIRouter(
     prefix="/regresos",
@@ -19,7 +19,9 @@ def listar_regresos(db: Session = Depends(get_db)):
     return db.query(Regreso).all()
 
 @router.post("/", response_model=RegresoResponse)
-def crear_regreso(regreso: RegresoCreate, db: Session = Depends(get_db), usuario_actual = Depends(obtener_usuario_actual)
+def crear_regreso(regreso: RegresoCreate, 
+                  db: Session = Depends(get_db), 
+                  usuario_actual = Depends(requerir_rol(["administrador", "capturista"]))
 ):
     salida = db.query(Salida).filter(Salida.id == regreso.salida_id).first()
 
