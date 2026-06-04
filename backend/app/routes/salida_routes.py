@@ -10,6 +10,13 @@ from app.models.persona_model import PersonaAutorizada
 from app.services.auth_service import obtener_usuario_actual, requerir_rol
 from app.models.regreso_model import Regreso
 from app.models.resguardo_model import Resguardo
+from app.models.revision_condicion_model import RevisionCondicion
+from app.models.item_condicion_model import ItemCondicion
+from app.models.revision_inventario_model import RevisionInventario
+from app.models.item_inventario_model import ItemInventario
+from app.services.resguardo_service import generar_resguardo_word
+from fastapi.responses import FileResponse
+import os
 
 router = APIRouter(
     prefix="/salidas",
@@ -268,3 +275,143 @@ def corregir_salida_administrativa(
         "salida_id": salida.id,
         "motivo": datos.motivo
     }
+    
+@router.get("/{salida_id}/resguardo-preview")
+def preview_resguardo(
+    salida_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    salida = db.query(Salida).filter(Salida.id == salida_id).first()
+
+    if salida is None:
+        raise HTTPException(status_code=404, detail="Salida no encontrada")
+
+    vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
+    persona = db.query(PersonaAutorizada).filter(PersonaAutorizada.id == salida.persona_id).first()
+    regreso = db.query(Regreso).filter(Regreso.salida_id == salida.id).first()
+
+    condiciones = db.query(RevisionCondicion, ItemCondicion).join(
+        ItemCondicion,
+        RevisionCondicion.item_condicion_id == ItemCondicion.id
+    ).filter(
+        RevisionCondicion.salida_id == salida.id
+    ).all()
+
+    inventario = db.query(RevisionInventario, ItemInventario).join(
+        ItemInventario,
+        RevisionInventario.item_id == ItemInventario.id
+    ).filter(
+        RevisionInventario.salida_id == salida.id
+    ).all()
+
+    return {
+        "salida": salida,
+        "regreso": regreso,
+        "vehiculo": vehiculo,
+        "persona": persona,
+        "condiciones": [
+            {
+                "item": item.nombre,
+                "estado": revision.estado,
+                "observaciones": revision.observaciones
+            }
+            for revision, item in condiciones
+        ],
+        "inventario": [
+            {
+                "item": item.nombre,
+                "categoria": item.categoria,
+                "estado": revision.estado,
+                "observaciones": revision.observaciones
+            }
+            for revision, item in inventario
+        ]
+    }
+    
+    
+    
+    
+@router.post("/{salida_id}/resguardo")
+def generar_resguardo(
+    salida_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    salida = db.query(Salida).filter(Salida.id == salida_id).first()
+
+    if salida is None:
+        raise HTTPException(status_code=404, detail="Salida no encontrada")
+
+    regreso = db.query(Regreso).filter(Regreso.salida_id == salida.id).first()
+
+    if regreso is None:
+        raise HTTPException(
+            status_code=400,
+            detail="No se puede generar el resguardo sin registrar el regreso"
+        )
+
+    resguardo_existente = db.query(Resguardo).filter(
+        Resguardo.salida_id == salida.id
+    ).first()
+
+    if resguardo_existente:
+        raise HTTPException(
+            status_code=400,
+            detail="Esta salida ya tiene un resguardo generado"
+        )
+
+    vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
+    persona = db.query(PersonaAutorizada).filter(PersonaAutorizada.id == salida.persona_id).first()
+
+    nombre_archivo, ruta_archivo = generar_resguardo_word(
+        salida,
+        regreso,
+        vehiculo,
+        persona
+    )
+
+    nuevo_resguardo = Resguardo(
+        salida_id=salida.id,
+        nombre_archivo=nombre_archivo,
+        ruta_archivo=ruta_archivo
+    )
+
+    db.add(nuevo_resguardo)
+    db.commit()
+    db.refresh(nuevo_resguardo)
+
+    return {
+        "mensaje": "Resguardo generado correctamente",
+        "resguardo_id": nuevo_resguardo.id,
+        "archivo": nuevo_resguardo.nombre_archivo,
+        "ruta": nuevo_resguardo.ruta_archivo
+    }
+    
+@router.get("/{salida_id}/resguardo")
+def descargar_resguardo(
+    salida_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    resguardo = db.query(Resguardo).filter(
+        Resguardo.salida_id == salida_id
+    ).first()
+
+    if resguardo is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No existe resguardo generado para esta salida"
+        )
+
+    if not os.path.exists(resguardo.ruta_archivo):
+        raise HTTPException(
+            status_code=404,
+            detail="El archivo del resguardo no existe en el servidor"
+        )
+
+    return FileResponse(
+        path=resguardo.ruta_archivo,
+        filename=resguardo.nombre_archivo,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )

@@ -1,3 +1,12 @@
+"""
+Servicio temporalmente deshabilitado.
+
+La empresa no cuenta actualmente con infraestructura de correo
+para recuperación de contraseñas.
+
+Se conserva para futura implementación de SMTP corporativo.
+"""
+
 import os
 import smtplib
 from email.message import EmailMessage
