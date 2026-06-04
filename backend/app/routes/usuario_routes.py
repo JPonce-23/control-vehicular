@@ -1,10 +1,12 @@
+import os, secrets, string
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.usuario_model import UsuarioSistema
-from app.schemas.usuario_schema import UsuarioResponse, UsuarioCreate, UsuarioRolUpdate, UsuarioEstadoUpdate, UsuarioUpdate
-from app.services.auth_service import obtener_usuario_actual, requerir_rol, generar_hash_password
-import os
+from app.schemas.usuario_schema import UsuarioResponse, UsuarioCreate, UsuarioRolUpdate, UsuarioEstadoUpdate, UsuarioUpdate, CambiarPasswordRequest
+from app.services.auth_service import obtener_usuario_actual, requerir_rol, generar_hash_password, verificar_password 
+
+
 
 SUPERADMIN_ID = int(os.getenv("SUPERADMIN_ID", 1))
 
@@ -189,3 +191,63 @@ def actualizar_usuario(
     db.refresh(usuario)
 
     return usuario
+
+@router.patch("/{usuario_id}/reset-password")
+def reset_password_admin(
+    usuario_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador"]))
+):
+    usuario = db.query(UsuarioSistema).filter(
+        UsuarioSistema.id == usuario_id
+    ).first()
+
+    if usuario is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+        
+    if usuario.id == SUPERADMIN_ID:
+        raise HTTPException(
+            status_code=400,
+            detail="No se puede generar contraseña temporal para el superadministrador"
+        )
+
+    caracteres = string.ascii_letters + string.digits
+    password_temporal = "Temp-" + "".join(
+        secrets.choice(caracteres) for _ in range(8)
+    )
+
+    usuario.contrasena_hash = generar_hash_password(password_temporal)
+
+    db.commit()
+
+    return {
+        "mensaje": "Contraseña temporal generada correctamente",
+        "usuario_id": usuario.id,
+        "password_temporal": password_temporal
+    }
+    
+@router.patch("/me/password")
+def cambiar_mi_password(
+    datos: CambiarPasswordRequest,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    if not verificar_password(
+        datos.password_actual,
+        usuario_actual.contrasena_hash
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="La contraseña actual no es correcta"
+        )
+
+    usuario_actual.contrasena_hash = generar_hash_password(datos.nueva_password)
+
+    db.commit()
+
+    return {
+        "mensaje": "Contraseña actualizada correctamente"
+    }

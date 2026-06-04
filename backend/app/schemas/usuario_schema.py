@@ -50,3 +50,9 @@ class ResetPasswordRequest(BaseModel):
     correo: str
     token: str
     nueva_password: str
+    
+class CambiarPasswordRequest(BaseModel):
+    password_actual: str
+    nueva_password: str
+    
+    
