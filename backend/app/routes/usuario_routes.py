@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.usuario_model import UsuarioSistema
-from app.schemas.usuario_schema import UsuarioResponse, UsuarioCreate, UsuarioRolUpdate, UsuarioEstadoUpdate
+from app.schemas.usuario_schema import UsuarioResponse, UsuarioCreate, UsuarioRolUpdate, UsuarioEstadoUpdate, UsuarioUpdate
 from app.services.auth_service import obtener_usuario_actual, requerir_rol, generar_hash_password
 import os
 
@@ -148,3 +148,44 @@ def actualizar_estado_usuario(
         "estado": usuario.estado
     }
     
+@router.put("/{usuario_id}", response_model=UsuarioResponse)
+def actualizar_usuario(
+    usuario_id: int,
+    datos: UsuarioUpdate,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador"]))
+):
+    usuario = db.query(UsuarioSistema).filter(
+        UsuarioSistema.id == usuario_id
+    ).first()
+
+    if usuario is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+
+    datos_actualizar = datos.model_dump(exclude_unset=True)
+
+    if "correo" in datos_actualizar or "num_empleado" in datos_actualizar:
+        usuario_existente = db.query(UsuarioSistema).filter(
+            UsuarioSistema.id != usuario_id,
+            (
+                (UsuarioSistema.correo == datos_actualizar.get("correo")) |
+                (UsuarioSistema.num_empleado == datos_actualizar.get("num_empleado"))
+            )
+        ).first()
+
+        if usuario_existente:
+            raise HTTPException(
+                status_code=400,
+                detail="El correo o número de empleado ya está registrado"
+            )
+
+    for campo, valor in datos_actualizar.items():
+        setattr(usuario, campo, valor)
+
+    db.commit()
+    db.refresh(usuario)
+
+    return usuario

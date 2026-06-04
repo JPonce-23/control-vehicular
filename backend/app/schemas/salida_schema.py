@@ -44,3 +44,39 @@ class SalidaResponse(BaseModel):
 
     class Config:
         from_attributes = True
+        
+class SalidaUpdate(BaseModel):
+    num_oficio: Optional[str] = None
+    num_expediente: Optional[str] = None
+    cargo_en_viaje: Optional[str] = None
+    area_en_viaje: Optional[str] = None
+    tipo_movimiento: Optional[str] = None
+    forma_movimiento: Optional[str] = None
+    fecha_fin_provisional: Optional[date] = None
+    finalidad_uso: Optional[str] = None
+    km_odometro_salida: Optional[Decimal] = None
+    nivel_gasolina_salida: Optional[str] = None
+    estado_llantas_salida: Optional[str] = None
+    observaciones: Optional[str] = None
+    observaciones_croquis: Optional[str] = None
+    
+    
+class SalidaCorreccionAdministrativa(BaseModel):
+    motivo: str
+
+    km_odometro_salida: Optional[Decimal] = None
+    km_odometro_regreso: Optional[Decimal] = None
+
+    nivel_gasolina_salida: Optional[str] = None
+    nivel_gasolina_regreso: Optional[str] = None
+
+    estado_llantas_salida: Optional[str] = None
+    estado_llantas_regreso: Optional[str] = None
+
+    estado_vehiculo_regreso: Optional[str] = None
+
+    finalidad_uso: Optional[str] = None
+    finalidad_devolucion: Optional[str] = None
+
+    observaciones_salida: Optional[str] = None
+    observaciones_regreso: Optional[str] = None

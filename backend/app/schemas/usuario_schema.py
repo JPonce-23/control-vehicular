@@ -34,3 +34,19 @@ class UsuarioRolUpdate(BaseModel):
     
 class UsuarioEstadoUpdate(BaseModel):
     estado: str
+    
+class UsuarioUpdate(BaseModel):
+    nombre: Optional[str] = None
+    apellido_paterno: Optional[str] = None
+    apellido_materno: Optional[str] = None
+    num_empleado: Optional[str] = None
+    correo: Optional[str] = None
+    
+    
+class RecuperarPasswordRequest(BaseModel):
+    correo: str
+
+class ResetPasswordRequest(BaseModel):
+    correo: str
+    token: str
+    nueva_password: str
