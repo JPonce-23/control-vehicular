@@ -16,11 +16,38 @@ def listar_vehiculos(db: Session = Depends(get_db)):
     return db.query(Vehiculo).all()
 
 @router.post("/", response_model=VehiculoResponse)
-def crear_vehiculo(vehiculo: VehiculoCreate, db: Session = Depends(get_db)):
+def crear_vehiculo(
+    vehiculo: VehiculoCreate,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador"]))
+):
+    campos_unicos = {
+        "placa": "Ya existe un vehículo registrado con esa placa",
+        "num_serie": "Ya existe un vehículo registrado con ese número de serie",
+        "num_motor": "Ya existe un vehículo registrado con ese número de motor",
+        "num_inventario": "Ya existe un vehículo registrado con ese número de inventario"
+    }
+
+    for campo, mensaje in campos_unicos.items():
+        valor = getattr(vehiculo, campo, None)
+
+        if valor is not None and str(valor).strip() != "":
+            existente = db.query(Vehiculo).filter(
+                getattr(Vehiculo, campo) == valor
+            ).first()
+
+            if existente:
+                raise HTTPException(
+                    status_code=400,
+                    detail=mensaje
+                )
+
     nuevo_vehiculo = Vehiculo(**vehiculo.model_dump())
+
     db.add(nuevo_vehiculo)
     db.commit()
     db.refresh(nuevo_vehiculo)
+
     return nuevo_vehiculo
 
 @router.put("/{vehiculo_id}/estado")
@@ -80,3 +107,5 @@ def obtener_vehiculo_por_id(
         )
 
     return vehiculo
+
+

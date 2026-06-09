@@ -1,62 +1,159 @@
-from docx import Document
+from docxtpl import DocxTemplate
 from datetime import datetime
 import os
 
+def check(valor_actual, valor_esperado):
+    if valor_actual is None:
+        return ""
+    return "✓" if str(valor_actual).lower().strip() == valor_esperado else ""
 
-def generar_resguardo_word(salida, regreso, vehiculo, persona):
-    carpeta_resguardos = "archivos/resguardos"
+
+def normalizar_gasolina(valor_actual):
+    if valor_actual is None:
+        return ""
+    
+    valor_actual = str(valor_actual).lower().strip()
+
+    equivalencias = {
+        "vacio": "0",
+        "vacío": "0",
+        "0": "0",
+        "cuarto": "1/4",
+        "1/4": "1/4",
+        "medio": "1/2",
+        "1/2": "1/2",
+        "tres cuartos": "3/4",
+        "tres_cuartos": "3/4",
+        "3/4": "3/4",
+        "lleno": "4/4",
+        "4/4": "4/4"
+    }
+
+    return equivalencias.get(valor_actual, valor_actual)
+
+
+def normalizar_llantas(valor_actual):
+    return normalizar_gasolina(valor_actual)
+
+
+
+def formatear_fecha(fecha):
+    if fecha is None:
+        return "N/A"
+    return fecha.strftime("%d/%m/%Y")
+
+
+def valor(campo, default=""):
+    if campo is None:
+        return default
+
+    texto = str(campo).strip()
+
+    if texto.lower() == "string":
+        return default
+
+    return texto
+
+
+def generar_resguardo_word(salida, regreso, vehiculo, persona, condiciones=None, inventario=None):
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
+    carpeta_resguardos = os.path.join(BASE_DIR, "archivos", "resguardos")
+    ruta_template = os.path.join(BASE_DIR, "templates", "resguardo_template.docx")
+
     os.makedirs(carpeta_resguardos, exist_ok=True)
 
     nombre_archivo = f"resguardo_salida_{salida.id}.docx"
     ruta_archivo = os.path.join(carpeta_resguardos, nombre_archivo)
 
-    documento = Document()
+    documento = DocxTemplate(ruta_template)
 
-    documento.add_heading("CONTROL DE ENTREGAS Y DEVOLUCIONES DE PARQUE VEHICULAR", level=1)
+    contexto = {
+        "dia": datetime.now().strftime("%d"),
+        "mes": datetime.now().strftime("%m"),
+        "anio": datetime.now().strftime("%Y"),
+        
+        "fecha_salida": salida.fecha_salida.strftime("%d") if salida.fecha_salida else "",
+        "fecha_regreso": regreso.fecha_regreso.strftime("%d") if regreso and regreso.fecha_regreso else "",
+        "regreso": mes_en_letra(regreso.fecha_regreso) if regreso and regreso.fecha_regreso else "",
+        "anio_regreso": regreso.fecha_regreso.strftime("%Y") if regreso and regreso.fecha_regreso else "",
 
-    documento.add_paragraph(f"Fecha de generación: {datetime.now().strftime('%d/%m/%Y')}")
+        "marca": valor(vehiculo.marca),
+        "tipo": valor(vehiculo.tipo),
+        "modelo": valor(vehiculo.modelo_anio),
+        "cilindros": valor(vehiculo.cilindros),
+        "num_motor": valor(vehiculo.num_motor),
+        "num_serie": valor(vehiculo.num_serie),
+        "num_poliza": valor(vehiculo.num_poliza),
+        "placa": valor(vehiculo.placa),
+        "num_inventario": valor(vehiculo.num_inventario),
+        "num_economico": valor(vehiculo.num_economico),
+        "color": valor(vehiculo.color),
 
-    documento.add_heading("I. Datos del vehículo", level=2)
-    documento.add_paragraph(f"Marca: {vehiculo.marca}")
-    documento.add_paragraph(f"Tipo: {vehiculo.tipo}")
-    documento.add_paragraph(f"Modelo: {vehiculo.modelo_anio}")
-    documento.add_paragraph(f"Placas: {vehiculo.placa}")
-    documento.add_paragraph(f"No. Serie: {vehiculo.num_serie}")
-    documento.add_paragraph(f"Color: {vehiculo.color}")
-    documento.add_paragraph(f"Kilometraje actual: {vehiculo.km_acumulado}")
+        "tipo_movimiento": valor(salida.tipo_movimiento),
+        "forma_movimiento": valor(salida.forma_movimiento),
+        "fecha_inicio": formatear_fecha(salida.fecha_salida),
+        "fecha_fin": formatear_fecha(salida.fecha_fin_provisional),
+        "finalidad_uso": valor(salida.finalidad_uso),
+        "finalidad_devolucion": valor(regreso.finalidad_devolucion if regreso else None),
 
-    documento.add_heading("II. Datos del asignatario", level=2)
-    documento.add_paragraph(f"Nombre: {persona.nombre} {persona.apellido_paterno}")
-    documento.add_paragraph(f"No. Licencia: {persona.num_licencia}")
-    documento.add_paragraph(f"Vigencia licencia: {persona.vigencia_licencia}")
-    documento.add_paragraph(f"Tipo licencia: {persona.tipo_licencia}")
+        "num_oficio": valor(salida.num_oficio),
+        "nombre_persona": f"{valor(persona.nombre, '')} {valor(persona.apellido_paterno, '')} {valor(persona.apellido_materno, '')}".strip(),
+        "num_expediente": valor(salida.num_expediente),
+        "num_licencia": valor(persona.num_licencia),
+        "rfc": valor(persona.rfc),
+        "area_adscripcion": valor(salida.area_en_viaje),
+        "cargo": valor(salida.cargo_en_viaje),
+        "vigencia_licencia": formatear_fecha(persona.vigencia_licencia),
+        "tipo_licencia": valor(persona.tipo_licencia),
 
-    documento.add_heading("III. Datos de salida", level=2)
-    documento.add_paragraph(f"Fecha salida: {salida.fecha_salida}")
-    documento.add_paragraph(f"Finalidad de uso: {salida.finalidad_uso}")
-    documento.add_paragraph(f"Kilometraje salida: {salida.km_odometro_salida}")
-    documento.add_paragraph(f"Nivel gasolina salida: {salida.nivel_gasolina_salida}")
-    documento.add_paragraph(f"Estado llantas salida: {salida.estado_llantas_salida}")
+        "estado_llantas": valor(salida.estado_llantas_salida),
+        "nivel_gasolina": valor(salida.nivel_gasolina_salida),
+        "km_odometro_salida": valor(salida.km_odometro_salida),
 
-    documento.add_heading("IV. Datos de regreso", level=2)
+        "nombre_persona": f"{valor(persona.nombre, '')} {valor(persona.apellido_paterno, '')} {valor(persona.apellido_materno, '')}".strip(),
+        "cargo": valor(salida.cargo_en_viaje),
+        "num_tarjeta_gasolina": valor(vehiculo.num_tarjeta_gasolina, ""),
+        
+        "gasolina_0": check(normalizar_gasolina(salida.nivel_gasolina_salida), "0"),
+        "gasolina_14": check(normalizar_gasolina(salida.nivel_gasolina_salida), "1/4"),
+        "gasolina_12": check(normalizar_gasolina(salida.nivel_gasolina_salida), "1/2"),
+        "gasolina_34": check(normalizar_gasolina(salida.nivel_gasolina_salida), "3/4"),
+        "gasolina_44": check(normalizar_gasolina(salida.nivel_gasolina_salida), "4/4"),
 
-    if regreso:
-        documento.add_paragraph(f"Fecha regreso: {regreso.fecha_regreso}")
-        documento.add_paragraph(f"Kilometraje regreso: {regreso.km_odometro_regreso}")
-        documento.add_paragraph(f"Nivel gasolina regreso: {regreso.nivel_gasolina_regreso}")
-        documento.add_paragraph(f"Estado llantas regreso: {regreso.estado_llantas_regreso}")
-        documento.add_paragraph(f"Estado vehículo regreso: {regreso.estado_vehiculo_regreso}")
-        documento.add_paragraph(f"Finalidad devolución: {regreso.finalidad_devolucion}")
-    else:
-        documento.add_paragraph("Sin regreso registrado.")
-
-    documento.add_heading("V. Firmas", level=2)
-    documento.add_paragraph("\n\n__________________________________")
-    documento.add_paragraph("Persona que recibe")
-
-    documento.add_paragraph("\n\n__________________________________")
-    documento.add_paragraph("Persona que entrega")
-
+        "llantas_14": check(normalizar_llantas(salida.estado_llantas_salida), "1/4"),
+        "llantas_12": check(normalizar_llantas(salida.estado_llantas_salida), "1/2"),
+        "llantas_34": check(normalizar_llantas(salida.estado_llantas_salida), "3/4"),
+        "llantas_44": check(normalizar_llantas(salida.estado_llantas_salida), "4/4"),
+    }
+    
+    #print("ODOMETRO", salida.km_odometro_salida)
+    
+    documento.render(contexto)
     documento.save(ruta_archivo)
 
     return nombre_archivo, ruta_archivo
+    
+    
+def mes_en_letra(fecha):
+    if fecha is None:
+        return ""
+
+    meses = {
+        1: "enero",
+        2: "febrero",
+        3: "marzo",
+        4: "abril",
+        5: "mayo",
+        6: "junio",
+        7: "julio",
+        8: "agosto",
+        9: "septiembre",
+        10: "octubre",
+        11: "noviembre",
+        12: "diciembre"
+    }
+        
+    return meses[fecha.month]
+
+    

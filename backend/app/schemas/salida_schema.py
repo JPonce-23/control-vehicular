@@ -80,3 +80,21 @@ class SalidaCorreccionAdministrativa(BaseModel):
 
     observaciones_salida: Optional[str] = None
     observaciones_regreso: Optional[str] = None
+    
+class CondicionUpdateItem(BaseModel):
+    item_condicion_id: int
+    estado: str
+    observaciones: Optional[str] = None
+
+
+class CondicionUpdateRequest(BaseModel):
+    condiciones: list[CondicionUpdateItem]
+    
+class InventarioUpdateItem(BaseModel):
+    item_id: int
+    estado: str
+    observaciones: Optional[str] = None
+
+
+class InventarioUpdateRequest(BaseModel):
+    inventario: list[InventarioUpdateItem]

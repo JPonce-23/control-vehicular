@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Text
 from app.database import Base
 
 class RevisionInventario(Base):
@@ -7,5 +7,8 @@ class RevisionInventario(Base):
     id = Column(Integer, primary_key=True, index=True)
     salida_id = Column(Integer, ForeignKey("salida.id"))
     item_id = Column(Integer, ForeignKey("item_inventario.id"))
-    estado = Column(String)
-    observaciones = Column(String)
+    estado = Column(
+        Enum("correcto", "na", "vacio", name="estado_revision_inventario"),
+        nullable=False
+    )
+    observaciones = Column(Text)

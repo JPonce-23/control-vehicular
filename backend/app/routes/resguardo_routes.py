@@ -4,11 +4,12 @@ from app.database import get_db
 from app.models.resguardo_model import Resguardo
 from app.schemas.resguardo_schema import ResguardoResponse, ResguardoCreate
 
+
 router = APIRouter(
     prefix="/resguardos",
     tags=["Resguardos"]
 )
-
+"""
 @router.get("/", response_model=list[ResguardoResponse])
 def listar_resguardos(db: Session = Depends(get_db)):
     return db.query(Resguardo).all()
@@ -23,3 +24,5 @@ def crear_resguardo(resguardo: ResguardoCreate, db: Session = Depends(get_db)):
     db.refresh(nuevo_resguardo)
 
     return nuevo_resguardo
+
+"""

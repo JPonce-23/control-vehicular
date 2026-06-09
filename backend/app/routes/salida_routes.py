@@ -3,7 +3,7 @@ from datetime import date
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.salida_model import Salida
-from app.schemas.salida_schema import SalidaResponse, SalidaCreate, SalidaUpdate, SalidaCorreccionAdministrativa
+from app.schemas.salida_schema import SalidaResponse, SalidaCreate, SalidaUpdate, SalidaCorreccionAdministrativa, CondicionUpdateRequest, InventarioUpdateRequest
 from app.models.vehiculo_model import Vehiculo
 from app.models.historial_salida_model import HistorialSalida
 from app.models.persona_model import PersonaAutorizada
@@ -172,11 +172,8 @@ def actualizar_salida(
         Resguardo.salida_id == salida_id
     ).first()
 
-    if resguardo_existente:
-        raise HTTPException(
-            status_code=400,
-            detail="No se puede editar una salida que ya tiene resguardo generado"
-        )
+    if resguardo_existente and os.path.exists(resguardo_existente.ruta_archivo):
+        os.remove(resguardo_existente.ruta_archivo)
 
     datos_actualizar = datos.model_dump(exclude_unset=True)
 
@@ -355,21 +352,58 @@ def generar_resguardo(
         Resguardo.salida_id == salida.id
     ).first()
 
-    if resguardo_existente:
-        raise HTTPException(
-            status_code=400,
-            detail="Esta salida ya tiene un resguardo generado"
-        )
+    resguardo_existente = db.query(Resguardo).filter(
+    Resguardo.salida_id == salida.id
+).first()
+
+    if resguardo_existente and os.path.exists(resguardo_existente.ruta_archivo):
+        os.remove(resguardo_existente.ruta_archivo)
 
     vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
     persona = db.query(PersonaAutorizada).filter(PersonaAutorizada.id == salida.persona_id).first()
+
+    condiciones = db.query(
+        RevisionCondicion,
+        ItemCondicion
+    ).join(
+        ItemCondicion,
+        RevisionCondicion.item_condicion_id == ItemCondicion.id
+    ).filter(
+        RevisionCondicion.salida_id == salida.id
+    ).all()
+
+    inventario = db.query(
+        RevisionInventario,
+        ItemInventario
+    ).join(
+        ItemInventario,
+        RevisionInventario.item_id == ItemInventario.id
+    ).filter(
+        RevisionInventario.salida_id == salida.id
+    ).all()
 
     nombre_archivo, ruta_archivo = generar_resguardo_word(
         salida,
         regreso,
         vehiculo,
-        persona
-    )
+        persona,
+        condiciones,
+        inventario
+    ) 
+    
+    
+    if resguardo_existente:
+        resguardo_existente.nombre_archivo = nombre_archivo
+        resguardo_existente.ruta_archivo = ruta_archivo
+        db.commit()
+        db.refresh(resguardo_existente)
+
+        return {
+            "mensaje": "Resguardo regenerado correctamente",
+            "resguardo_id": resguardo_existente.id,
+            "archivo": resguardo_existente.nombre_archivo,
+            "ruta": resguardo_existente.ruta_archivo
+    }
 
     nuevo_resguardo = Resguardo(
         salida_id=salida.id,
@@ -387,6 +421,8 @@ def generar_resguardo(
         "archivo": nuevo_resguardo.nombre_archivo,
         "ruta": nuevo_resguardo.ruta_archivo
     }
+    
+    
     
 @router.get("/{salida_id}/resguardo")
 def descargar_resguardo(
@@ -415,3 +451,154 @@ def descargar_resguardo(
         filename=resguardo.nombre_archivo,
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
+    
+@router.get("/{salida_id}/condicion")
+def obtener_condicion_salida(
+    salida_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    salida = db.query(Salida).filter(Salida.id == salida_id).first()
+
+    if salida is None:
+        raise HTTPException(status_code=404, detail="Salida no encontrada")
+
+    condiciones = db.query(RevisionCondicion, ItemCondicion).join(
+        ItemCondicion,
+        RevisionCondicion.item_condicion_id == ItemCondicion.id
+    ).filter(
+        RevisionCondicion.salida_id == salida_id
+    ).all()
+
+    return [
+        {
+            "revision_id": revision.id,
+            "item_condicion_id": item.id,
+            "nombre": item.nombre,
+            "estado": revision.estado,
+            "observaciones": revision.observaciones
+        }
+        for revision, item in condiciones
+    ]
+    
+@router.put("/{salida_id}/condicion")
+def actualizar_condicion_salida(
+    salida_id: int,
+    datos: CondicionUpdateRequest,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    salida = db.query(Salida).filter(Salida.id == salida_id).first()
+
+    if salida is None:
+        raise HTTPException(status_code=404, detail="Salida no encontrada")
+
+    estados_permitidos = ["bueno", "regular", "malo"]
+
+    for item in datos.condiciones:
+        if item.estado not in estados_permitidos:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Estado no válido para condición: {item.estado}"
+            )
+
+        revision = db.query(RevisionCondicion).filter(
+            RevisionCondicion.salida_id == salida_id,
+            RevisionCondicion.item_condicion_id == item.item_condicion_id
+        ).first()
+
+        if revision is None:
+            revision = RevisionCondicion(
+                salida_id=salida_id,
+                item_condicion_id=item.item_condicion_id,
+                estado=item.estado,
+                observaciones=item.observaciones
+            )
+            db.add(revision)
+        else:
+            revision.estado = item.estado
+            revision.observaciones = item.observaciones
+
+    db.commit()
+
+    return {
+        "mensaje": "Condiciones actualizadas correctamente",
+        "salida_id": salida_id
+    }
+    
+@router.get("/{salida_id}/inventario")
+def obtener_inventario_salida(
+    salida_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    salida = db.query(Salida).filter(Salida.id == salida_id).first()
+
+    if salida is None:
+        raise HTTPException(status_code=404, detail="Salida no encontrada")
+
+    inventario = db.query(RevisionInventario, ItemInventario).join(
+        ItemInventario,
+        RevisionInventario.item_id == ItemInventario.id
+    ).filter(
+        RevisionInventario.salida_id == salida_id
+    ).all()
+
+    return [
+        {
+            "revision_id": revision.id,
+            "item_id": item.id,
+            "nombre": item.nombre,
+            "categoria": item.categoria,
+            "estado": revision.estado,
+            "observaciones": revision.observaciones
+        }
+        for revision, item in inventario
+    ]
+    
+@router.put("/{salida_id}/inventario")
+def actualizar_inventario_salida(
+    salida_id: int,
+    datos: InventarioUpdateRequest,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    salida = db.query(Salida).filter(Salida.id == salida_id).first()
+
+    if salida is None:
+        raise HTTPException(status_code=404, detail="Salida no encontrada")
+
+    estados_permitidos = ["correcto", "na", "vacio"]  
+
+    for item in datos.inventario:
+        estado_normalizado = item.estado.lower().strip()
+
+        if estado_normalizado not in estados_permitidos:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Estado no válido para inventario: {item.estado}"
+            )
+
+        revision = db.query(RevisionInventario).filter(
+            RevisionInventario.salida_id == salida_id,
+            RevisionInventario.item_id == item.item_id
+        ).first()
+
+        if revision is None:
+            revision = RevisionInventario(
+                salida_id=salida_id,
+                item_id=item.item_id,
+                estado=estado_normalizado,
+                observaciones=item.observaciones
+            )
+            db.add(revision)
+        else:
+            revision.estado = estado_normalizado
+            revision.observaciones = item.observaciones
+
+    db.commit()
+
+    return {
+        "mensaje": "Inventario actualizado correctamente",
+        "salida_id": salida_id
+    }
