@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personas</title>
+</head>
+<body>
+
+    <h1>Personas registradas</h1>
+
+    <button onclick="window.location.href='../dashboard.html'">
+        Volver al dashboard
+    </button>
+
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>RFC</th>
+                <th>Numero de licencia</th>
+                <th>Tipo de licencia</th>
+                <th>Vigencia de licencia</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="tablaPersonas">
+        </tbody>
+    </table>
+
+    <p id="mensaje"></p>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/personas.js"></script>
+
+    
+</body>
+</html>

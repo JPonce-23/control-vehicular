@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Control Vehicular</title>
+</head>
+<body>
+
+    <h1>Sistema de Control Vehicular</h1>
+
+    <nav>
+        <ul>
+            <li><a href="pages/vehiculos.html">Vehículos</a></li>
+            <li><a href="pages/personas.html">Personas autorizadas</a></li>
+            <li><a href="pages/salidas.html">Registrar salida</a></li>
+            <li><a href="pages/regreso.html">Registrar regreso</a></li>
+            <li><a href="pages/resguardo.html">Resguardo</a></li>
+        </ul>
+    </nav>
+
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
+
+    <script>
+        function cerrarSesion() {
+            localStorage.removeItem("token");
+            window.location.href = "index.html";
+        }
+    </script>
+
+</body>
+</html>

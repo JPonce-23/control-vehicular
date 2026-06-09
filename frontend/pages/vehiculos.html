@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Vehículos</title>
+</head>
+<body>
+
+    <h1>Vehículos registrados</h1>
+
+    <button onclick="window.location.href='../dashboard.html'">
+        Volver al dashboard
+    </button>
+
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Placa</th>
+                <th>Marca</th>
+                <th>Tipo</th>
+                <th>Modelo</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="tablaVehiculos">
+        </tbody>
+    </table>
+
+    <p id="mensaje"></p>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/vehiculos.js"></script>
+</body>
+</html>
