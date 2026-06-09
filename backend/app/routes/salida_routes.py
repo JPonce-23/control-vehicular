@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from datetime import date
+from datetime import date, datetime
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.salida_model import Salida
@@ -116,6 +116,8 @@ usuario_actual = Depends(requerir_rol(["administrador", "capturista"]))
 
     return nueva_salida
 
+
+
 @router.get("/{salida_id}", response_model=SalidaResponse)
 def obtener_salida_por_id(
     salida_id: int,
@@ -133,6 +135,8 @@ def obtener_salida_por_id(
 
     return salida
 
+
+
 @router.get("/activas/", response_model=list[SalidaResponse])
 def listar_salidas_activas(
     db: Session = Depends(get_db),
@@ -145,6 +149,8 @@ def listar_salidas_activas(
     ).all()
 
     return salidas
+
+
 
 @router.put("/{salida_id}", response_model=SalidaResponse)
 def actualizar_salida(
@@ -184,6 +190,8 @@ def actualizar_salida(
     db.refresh(salida)
 
     return salida
+
+
 
 @router.patch("/{salida_id}/correccion-administrativa")
 def corregir_salida_administrativa(
@@ -273,6 +281,8 @@ def corregir_salida_administrativa(
         "motivo": datos.motivo
     }
     
+    
+    
 @router.get("/{salida_id}/resguardo-preview")
 def preview_resguardo(
     salida_id: int,
@@ -338,9 +348,14 @@ def generar_resguardo(
     salida = db.query(Salida).filter(Salida.id == salida_id).first()
 
     if salida is None:
-        raise HTTPException(status_code=404, detail="Salida no encontrada")
+        raise HTTPException(
+            status_code=404,
+            detail="Salida no encontrada"
+        )
 
-    regreso = db.query(Regreso).filter(Regreso.salida_id == salida.id).first()
+    regreso = db.query(Regreso).filter(
+        Regreso.salida_id == salida.id
+    ).first()
 
     if regreso is None:
         raise HTTPException(
@@ -352,15 +367,16 @@ def generar_resguardo(
         Resguardo.salida_id == salida.id
     ).first()
 
-    resguardo_existente = db.query(Resguardo).filter(
-    Resguardo.salida_id == salida.id
-).first()
-
     if resguardo_existente and os.path.exists(resguardo_existente.ruta_archivo):
         os.remove(resguardo_existente.ruta_archivo)
 
-    vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
-    persona = db.query(PersonaAutorizada).filter(PersonaAutorizada.id == salida.persona_id).first()
+    vehiculo = db.query(Vehiculo).filter(
+        Vehiculo.id == salida.vehiculo_id
+    ).first()
+
+    persona = db.query(PersonaAutorizada).filter(
+        PersonaAutorizada.id == salida.persona_id
+    ).first()
 
     condiciones = db.query(
         RevisionCondicion,
@@ -389,12 +405,21 @@ def generar_resguardo(
         persona,
         condiciones,
         inventario
-    ) 
-    
-    
+    )
+
     if resguardo_existente:
         resguardo_existente.nombre_archivo = nombre_archivo
         resguardo_existente.ruta_archivo = ruta_archivo
+
+        historial_resguardo = HistorialSalida(
+            salida_id=salida.id,
+            usuario_id=usuario_actual.id,
+            accion="generacion_resguardo",
+            descripcion=f"Se regeneró el resguardo: {nombre_archivo}",
+            fecha=datetime.now()
+        )
+
+        db.add(historial_resguardo)
         db.commit()
         db.refresh(resguardo_existente)
 
@@ -403,7 +428,7 @@ def generar_resguardo(
             "resguardo_id": resguardo_existente.id,
             "archivo": resguardo_existente.nombre_archivo,
             "ruta": resguardo_existente.ruta_archivo
-    }
+        }
 
     nuevo_resguardo = Resguardo(
         salida_id=salida.id,
@@ -411,7 +436,16 @@ def generar_resguardo(
         ruta_archivo=ruta_archivo
     )
 
+    historial_resguardo = HistorialSalida(
+        salida_id=salida.id,
+        usuario_id=usuario_actual.id,
+        accion="generacion_resguardo",
+        descripcion=f"Se generó el resguardo: {nombre_archivo}",
+        fecha=datetime.now()
+    )
+
     db.add(nuevo_resguardo)
+    db.add(historial_resguardo)
     db.commit()
     db.refresh(nuevo_resguardo)
 
@@ -421,6 +455,8 @@ def generar_resguardo(
         "archivo": nuevo_resguardo.nombre_archivo,
         "ruta": nuevo_resguardo.ruta_archivo
     }
+    
+
     
     
     
@@ -452,6 +488,8 @@ def descargar_resguardo(
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
     
+    
+    
 @router.get("/{salida_id}/condicion")
 def obtener_condicion_salida(
     salida_id: int,
@@ -463,23 +501,31 @@ def obtener_condicion_salida(
     if salida is None:
         raise HTTPException(status_code=404, detail="Salida no encontrada")
 
-    condiciones = db.query(RevisionCondicion, ItemCondicion).join(
-        ItemCondicion,
-        RevisionCondicion.item_condicion_id == ItemCondicion.id
-    ).filter(
+    items = db.query(ItemCondicion).filter(
+        ItemCondicion.activo == True
+    ).order_by(ItemCondicion.id).all()
+
+    revisiones = db.query(RevisionCondicion).filter(
         RevisionCondicion.salida_id == salida_id
     ).all()
 
+    revisiones_por_item = {
+        revision.item_condicion_id: revision
+        for revision in revisiones
+    }
+
     return [
         {
-            "revision_id": revision.id,
+            "revision_id": revisiones_por_item[item.id].id if item.id in revisiones_por_item else None,
             "item_condicion_id": item.id,
             "nombre": item.nombre,
-            "estado": revision.estado,
-            "observaciones": revision.observaciones
+            "estado": revisiones_por_item[item.id].estado if item.id in revisiones_por_item else item.estado_default,
+            "observaciones": revisiones_por_item[item.id].observaciones if item.id in revisiones_por_item else None
         }
-        for revision, item in condiciones
+        for item in items
     ]
+    
+    
     
 @router.put("/{salida_id}/condicion")
 def actualizar_condicion_salida(
@@ -526,6 +572,8 @@ def actualizar_condicion_salida(
         "salida_id": salida_id
     }
     
+    
+    
 @router.get("/{salida_id}/inventario")
 def obtener_inventario_salida(
     salida_id: int,
@@ -537,24 +585,32 @@ def obtener_inventario_salida(
     if salida is None:
         raise HTTPException(status_code=404, detail="Salida no encontrada")
 
-    inventario = db.query(RevisionInventario, ItemInventario).join(
-        ItemInventario,
-        RevisionInventario.item_id == ItemInventario.id
-    ).filter(
+    items = db.query(ItemInventario).filter(
+        ItemInventario.activo == True
+    ).order_by(ItemInventario.id).all()
+
+    revisiones = db.query(RevisionInventario).filter(
         RevisionInventario.salida_id == salida_id
     ).all()
 
+    revisiones_por_item = {
+        revision.item_id: revision
+        for revision in revisiones
+    }
+
     return [
         {
-            "revision_id": revision.id,
+            "revision_id": revisiones_por_item[item.id].id if item.id in revisiones_por_item else None,
             "item_id": item.id,
             "nombre": item.nombre,
             "categoria": item.categoria,
-            "estado": revision.estado,
-            "observaciones": revision.observaciones
+            "estado": revisiones_por_item[item.id].estado if item.id in revisiones_por_item else item.estado_default,
+            "observaciones": revisiones_por_item[item.id].observaciones if item.id in revisiones_por_item else None
         }
-        for revision, item in inventario
+        for item in items
     ]
+    
+    
     
 @router.put("/{salida_id}/inventario")
 def actualizar_inventario_salida(
