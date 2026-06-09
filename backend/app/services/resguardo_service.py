@@ -2,6 +2,7 @@ from docxtpl import DocxTemplate
 from datetime import datetime
 import os
 
+
 def check(valor_actual, valor_esperado):
     if valor_actual is None:
         return ""
@@ -36,11 +37,32 @@ def normalizar_llantas(valor_actual):
     return normalizar_gasolina(valor_actual)
 
 
-
 def formatear_fecha(fecha):
     if fecha is None:
         return "N/A"
     return fecha.strftime("%d/%m/%Y")
+
+
+def mes_en_letra(fecha):
+    if fecha is None:
+        return ""
+
+    meses = {
+        1: "enero",
+        2: "febrero",
+        3: "marzo",
+        4: "abril",
+        5: "mayo",
+        6: "junio",
+        7: "julio",
+        8: "agosto",
+        9: "septiembre",
+        10: "octubre",
+        11: "noviembre",
+        12: "diciembre"
+    }
+        
+    return meses[fecha.month]
 
 
 def valor(campo, default=""):
@@ -53,6 +75,55 @@ def valor(campo, default=""):
         return default
 
     return texto
+
+
+def normalizar_clave(texto):
+    texto = str(texto).lower().strip()
+    reemplazos = {
+        "á": "a",
+        "é": "e",
+        "í": "i",
+        "ó": "o",
+        "ú": "u",
+        "ñ": "n"
+    }
+
+    for original, reemplazo in reemplazos.items():
+        texto = texto.replace(original, reemplazo)
+
+    texto = texto.replace(" ", "_")
+    return texto
+
+
+def generar_checks_condiciones(condiciones):
+    checks = {}
+
+    for revision, item in condiciones:
+        clave = normalizar_clave(item.nombre)
+        estado = str(revision.estado).lower().strip()
+
+        checks[f"{clave}_b"] = "✓" if estado == "bueno" else ""
+        checks[f"{clave}_r"] = "✓" if estado == "regular" else ""
+        checks[f"{clave}_m"] = "✓" if estado == "malo" else ""
+
+    return checks
+
+
+def generar_checks_inventario(inventario):
+    checks = {}
+
+    for revision, item in inventario:
+        clave = normalizar_clave(item.nombre)
+        estado = str(revision.estado).lower().strip()
+
+        if estado == "correcto":
+            checks[clave] = "✓"
+        elif estado == "na":
+            checks[clave] = "N/A"
+        else:
+            checks[clave] = ""
+
+    return checks
 
 
 def generar_resguardo_word(salida, regreso, vehiculo, persona, condiciones=None, inventario=None):
@@ -68,14 +139,20 @@ def generar_resguardo_word(salida, regreso, vehiculo, persona, condiciones=None,
 
     documento = DocxTemplate(ruta_template)
 
+    nombre_persona = (
+        f"{valor(persona.nombre, '')} "
+        f"{valor(persona.apellido_paterno, '')} "
+        f"{valor(persona.apellido_materno, '')}"
+    ).strip()
+
     contexto = {
         "dia": datetime.now().strftime("%d"),
         "mes": datetime.now().strftime("%m"),
         "anio": datetime.now().strftime("%Y"),
-        
+
         "fecha_salida": salida.fecha_salida.strftime("%d") if salida.fecha_salida else "",
         "fecha_regreso": regreso.fecha_regreso.strftime("%d") if regreso and regreso.fecha_regreso else "",
-        "regreso": mes_en_letra(regreso.fecha_regreso) if regreso and regreso.fecha_regreso else "",
+        "mes_regreso": mes_en_letra(regreso.fecha_regreso) if regreso and regreso.fecha_regreso else "",
         "anio_regreso": regreso.fecha_regreso.strftime("%Y") if regreso and regreso.fecha_regreso else "",
 
         "marca": valor(vehiculo.marca),
@@ -98,7 +175,7 @@ def generar_resguardo_word(salida, regreso, vehiculo, persona, condiciones=None,
         "finalidad_devolucion": valor(regreso.finalidad_devolucion if regreso else None),
 
         "num_oficio": valor(salida.num_oficio),
-        "nombre_persona": f"{valor(persona.nombre, '')} {valor(persona.apellido_paterno, '')} {valor(persona.apellido_materno, '')}".strip(),
+        "nombre_persona": nombre_persona,
         "num_expediente": valor(salida.num_expediente),
         "num_licencia": valor(persona.num_licencia),
         "rfc": valor(persona.rfc),
@@ -111,10 +188,8 @@ def generar_resguardo_word(salida, regreso, vehiculo, persona, condiciones=None,
         "nivel_gasolina": valor(salida.nivel_gasolina_salida),
         "km_odometro_salida": valor(salida.km_odometro_salida),
 
-        "nombre_persona": f"{valor(persona.nombre, '')} {valor(persona.apellido_paterno, '')} {valor(persona.apellido_materno, '')}".strip(),
-        "cargo": valor(salida.cargo_en_viaje),
         "num_tarjeta_gasolina": valor(vehiculo.num_tarjeta_gasolina, ""),
-        
+
         "gasolina_0": check(normalizar_gasolina(salida.nivel_gasolina_salida), "0"),
         "gasolina_14": check(normalizar_gasolina(salida.nivel_gasolina_salida), "1/4"),
         "gasolina_12": check(normalizar_gasolina(salida.nivel_gasolina_salida), "1/2"),
@@ -126,34 +201,11 @@ def generar_resguardo_word(salida, regreso, vehiculo, persona, condiciones=None,
         "llantas_34": check(normalizar_llantas(salida.estado_llantas_salida), "3/4"),
         "llantas_44": check(normalizar_llantas(salida.estado_llantas_salida), "4/4"),
     }
-    
-    #print("ODOMETRO", salida.km_odometro_salida)
-    
+
+    contexto.update(generar_checks_condiciones(condiciones or []))
+    contexto.update(generar_checks_inventario(inventario or []))
+
     documento.render(contexto)
     documento.save(ruta_archivo)
 
     return nombre_archivo, ruta_archivo
-    
-    
-def mes_en_letra(fecha):
-    if fecha is None:
-        return ""
-
-    meses = {
-        1: "enero",
-        2: "febrero",
-        3: "marzo",
-        4: "abril",
-        5: "mayo",
-        6: "junio",
-        7: "julio",
-        8: "agosto",
-        9: "septiembre",
-        10: "octubre",
-        11: "noviembre",
-        12: "diciembre"
-    }
-        
-    return meses[fecha.month]
-
-    
