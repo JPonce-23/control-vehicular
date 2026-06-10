@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regreso</title>
+</head>
+<body>
+    
+    <h1>Registrar regreso</h1>
+
+    <button onclick="window.location.href='../dashboard.html'">
+        Volver al dashboard
+    </button>
+
+    <form id="regresoForm" method="POST" autocomplete="off">
+        <fieldset>
+            <legend>Registra un regreso</legend>
+
+            <label for="salida_id">*Selecciona una salida:</label> <br>
+            <select name="salida" id="salida_id" required>
+                <option value="">Selecciona una salida</option>
+            </select> <br><br>
+
+            <label for="fecha_regreso">*Selecciona la fecha del regreso:</label> <br>
+            <input type="date" id="fecha_regreso" name="fecha_regreso" required> <br><br>
+
+            <label for="km_odometro_regreso">*Kilometraje de regreso:</label> <br>
+            <input type="number" step="0.01" name="km_odometro_regreso" id="km_odometro_regreso" required> <br><br>
+            
+            <label for="nivel_gasolina_regreso">*Nivel de gasolina del regreso:</label><br>
+            <select name="nivel_gasolina_regreso" id="nivel_gasolina_regreso" required>
+                <option value="vacio">0</option>
+                <option value="cuarto">1/4</option>
+                <option value="medio">1/2</option>
+                <option value="tres_cuartos">3/4</option>
+                <option value="lleno">4/4</option>
+            </select> <br><br>
+
+            <label for="estado_llantas_regreso">*Nivel de llantas:</label> <br>
+            <select name="estado_llantas_regreso" id="estado_llantas_regreso" required>
+                <option value="cuarto">1/4</option>
+                <option value="medio">2/4</option>
+                <option value="tres_cuartos">3/4</option>
+                <option value="lleno">4/4</option>
+            </select> <br><br>
+
+            <label for="estado_vehiculo_regreso">*Estado en el que regresó el vehículo:</label><br>
+            <select name="estado_vehiculo_regreso" id="estado_vehiculo_regreso" required>
+                <option value="bueno">Bueno</option>
+                <option value="dañado">Dañado</option>
+                <option value="mantenimiento">Mantenimiento</option>
+            </select> <br><br>
+
+            <label for="finalidad_devolucion">*Finalidad del regreso del vehículo:</label> <br>
+            <select name="finalidad_devolucion" id="finalidad_devolucion" required>
+                <option value="disponible">Disponible</option>
+                <option value="reparacion">Reparacion</option>
+                <option value="sustitucion">Sustitucion</option>
+            </select> <br><br>
+
+            <label for="observaciones">Observaciones:</label> <br>
+            <input type="text" name="observaciones" id="observaciones"> <br><br> 
+
+            <input type="submit" value="Registrar regreso">
+
+        </fieldset>
+
+    </form>
+
+    
+    <p id="mensaje"></p>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/regreso.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resguardo</title>
+</head>
+<body>
+    
+    <h1>Resguardo Vehicular</h1>
+
+    <button onclick="window.location.href='../dashboard.html'">
+        Volver al dashboard
+    </button>
+
+    <br><br>
+
+    <label for="salida_id">*Selecciona una salida con regreso:</label>
+    <br>
+    <select name="salida_id" id="salida_id">
+        <option value="">Selecciona una salida</option>
+    </select>
+
+    <br><br>
+
+    <button id="btnPreview" type="button">
+        Vista previa del resguardo
+    </button>
+
+    <br><br>
+
+    <div id="previewContainer" style="border: 1px solid black; width: 600px; min-height: 250px; padding: 10px;">
+        Vista previa del resguardo.
+    </div>
+
+    <br>
+
+    <button id="btnGenerar" type="button">
+        Generar resguardo
+    </button>
+
+    <button id="btnDescargar" type="button">
+        Descargar resguardo
+    </button>
+
+    <p id="mensaje"></p>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/resguardo.js"></script>
+
+</body>
+</html>
