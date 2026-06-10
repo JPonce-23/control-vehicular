@@ -40,3 +40,7 @@ Agregar archivos
 
 ## Aplicar este comando antes de trabajar (Actualizar)
     git pull origin dev
+
+# Levantar backend
+    cd backend
+        .\.venv\Scripts\Activate.ps1
