@@ -30,8 +30,15 @@ async function apiFetch(endpoint, options = {}) {
     }
 
     if (!response.ok) {
-        throw new Error(data?.detail || "Error en la petición");
+    if (Array.isArray(data?.detail)) {
+        const errores = data.detail.map(error => {
+            return `${error.loc.join(".")}: ${error.msg}`;
+        }).join(" | ");
+
+        throw new Error(errores);
     }
 
+    throw new Error(data?.detail || "Error en la petición");
+}
     return data;
 }
