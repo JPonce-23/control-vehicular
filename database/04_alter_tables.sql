@@ -79,4 +79,10 @@ ALTER TABLE gasto_gasolina
 ALTER COLUMN salida_id SET NOT NULL;
 
 
+--====================================
+-- Se altera vehiculo para que numero economico no sea obligatorio
+-- pues no se usa al registrar el vehículo
+--====================================
 
+ALTER TABLE vehiculo
+ALTER COLUMN num_economico DROP NOT NULL;
