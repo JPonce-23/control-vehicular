@@ -19,6 +19,7 @@ from app.routes.historial_salida_routes import router as historial_salida_router
 from app.routes.token_routes import router as token_router
 from app.routes.auth_routes import router as auth_router
 from app.routes.historial_salida_routes import router as historial_salida_router
+from app.routes import combustible_routes
 
 app = FastAPI(
     title="Control Vehicular PA",
@@ -50,6 +51,7 @@ app.include_router(historial_salida_router)
 app.include_router(token_router)
 app.include_router(auth_router)
 app.include_router(historial_salida_router)
+app.include_router(combustible_routes.router)
 
 
 @app.get("/")

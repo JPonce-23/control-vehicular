@@ -1,15 +1,26 @@
-from sqlalchemy import Column, Integer, Numeric, ForeignKey, Text, Date
+import enum
+from sqlalchemy import Column, Integer, Numeric, Text, Date, DateTime, ForeignKey, Enum
+from sqlalchemy.sql import func
 from app.database import Base
+
+class NivelGasolinaEnum(enum.Enum):
+    vacio = "vacio"
+    cuarto = "cuarto"
+    medio = "medio"
+    tres_cuartos = "tres_cuartos"
+    lleno = "lleno"
 
 class GastoGasolina(Base):
     __tablename__ = "gasto_gasolina"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    vehiculo_id = Column(Integer, ForeignKey("vehiculo.id"))
-    salida_id = Column(Integer, ForeignKey("salida.id"))
-    presupuesto_id = Column(Integer, ForeignKey("presupuesto_gasolina.id"))
-    fecha_gasto = Column(Date)
-    litros = Column(Numeric(10, 2))
-    monto = Column(Numeric(10, 2))
-    nota = Column(Text)
 
+    id = Column(Integer, primary_key=True, index=True)
+    vehiculo_id = Column(Integer, ForeignKey("vehiculo.id"), nullable=False)
+    salida_id = Column(Integer, ForeignKey("salida.id"), nullable=True)
+    presupuesto_id = Column(Integer, ForeignKey("presupuesto_gasolina.id"), nullable=False)
+    fecha_gasto = Column(Date, nullable=False)
+    monto = Column(Numeric(10, 2), nullable=False)
+    nivel_tanque = Column(Enum(NivelGasolinaEnum, name="nivel_gasolina_salida", create_type=False), nullable=True)
+    km_odometro = Column(Numeric(10, 2), nullable=True)
+    nota = Column(Text, nullable=True)
+    capturado_por = Column(Integer, ForeignKey("usuario_sistema.id"), nullable=True)
+    fecha_registro = Column(DateTime, server_default=func.now(), nullable=False)
