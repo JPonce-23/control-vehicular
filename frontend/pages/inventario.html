@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Condiciones de funcionalidad</title>
+    <title>Inventario del vehículo</title>
 </head>
 <body>
     
-    <h1>Condiciones de funcionalidad</h1>
+    <h1>Inventario del vehículo</h1>
 
     <button onclick="window.location.href='../dashboard.html'">
         Volver al dashboard
-    </button> <br> <br>
+    </button> 
+    
+    <br><br>
 
     <label for="salida_id">*Selecciona una salida:</label>
     <br>
@@ -22,20 +24,23 @@
     <br><br>
 
     <fieldset>
-        <legend>Revisión de condiciones</legend>
+        <legend>Revisión de inventario</legend>
 
-        <div id="condicionesContainer">
-            Selecciona una salida para cargar las condiciones.
+        <div id="inventarioContainer">
+            Selecciona una salida para cargar el inventario.
         </div>
 
         <br>
-    <button id="btnGuardarCondiciones" type="button">Guardar cambios</button>
+
+        <button id="btnGuardarInventario" type="button">
+            Guardar inventario
+        </button>
     </fieldset>
 
     <p id="mensaje"></p>
 
     <script src="../js/api.js"></script>
-    <script src="../js/condicion.js"></script>
+    <script src="../js/inventario.js"></script>
 
 </body>
 </html>
