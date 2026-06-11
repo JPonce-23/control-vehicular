@@ -42,7 +42,6 @@ async function registrarRegreso(event) {
         observaciones: document.getElementById("observaciones").value
     };
 
-    console.log(datosRegreso);
 
     try {
         const regreso = await apiFetch("/regresos/", {

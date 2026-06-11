@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Condiciones de funcionalidad</title>
+</head>
+<body>
+    
+    <h1>Condiciones de funcionalidad</h1>
+
+    <label for="salida_id">*Selecciona una salida con regreso:</label>
+    <br>
+    <select name="salida_id" id="salida_id">
+        <option value="">Selecciona una salida</option>
+    </select> <br><br>
+
+    <fieldset>
+    <legend>Condiciones de funcionalidad</legend>
+
+    <div id="condicionesContainer">
+    <p>B R M</p>
+    <label for="carroceria">Carrocería</label>
+    <input type="radio" id="carroceria" name="carroceria" value="carroceria_b">
+    <input type="radio" id="carroceria" name="carroceria" value="carroceria_r">
+    <input type="radio" id="carroceria" name="carroceria" value="carroceria_m">
+    
+    <label for="sistema_electrico">Sistema Eléctrico</label>
+    <input type="radio" id="sistema_electrico" name="sistema_electrico" value="sistema_electrico_b">
+    <input type="radio" id="sistema_electrico" name="sistema_electrico" value="sistema_electrico_r">
+    <input type="radio" id="sistema_electrico" name="sistema_electrico" value="sistema_electrico_m">
+    <br>
+    
+    
+    <label for="pintura">Pintura</label>
+    <input type="radio" id="pintura" name="pintura" value="pintura_b">
+    <input type="radio" id="pintura" name="pintura" value="pintura_r">
+    <input type="radio" id="pintura" name="pintura" value="pintura_m"> 
+    
+    <label for="sistema_encendido">Sistema de encendido</label>
+    <input type="radio" id="sistema_encendido" name="sistema_encendido" value="sistema_encendido_b">
+    <input type="radio" id="sistema_encendido" name="sistema_encendido" value="sistema_encendido_r">
+    <input type="radio" id="sistema_encendido" name="sistema_encendido" value="sistema_encendido_m"> 
+    <br>
+
+    <label for="vestidura">Vestidura</label>
+    <input type="radio" id="vestidura" name="vestidura" value="vestidura_b">
+    <input type="radio" id="vestidura" name="vestidura" value="vestidura_r">
+    <input type="radio" id="vestidura" name="vestidura" value="vestidura_m">
+    
+    <label for="sistema_frenos">Sistema de frenos</label>
+    <input type="radio" id="sistema_frenos" name="sistema_frenos" value="sistema_frenos_b">
+    <input type="radio" id="sistema_frenos" name="sistema_frenos" value="sistema_frenos_r">
+    <input type="radio" id="sistema_frenos" name="sistema_frenos" value="sistema_frenos_m">
+    <br>
+
+    <label for="direccion">Dirección</label>
+    <input type="radio" id="direccion" name="direccion" value="direccion_b">
+    <input type="radio" id="direccion" name="direccion" value="direccion_r">
+    <input type="radio" id="direccion" name="direccion" value="direccion_m">
+    
+    <label for="sistema_suspension">Sistema de suspensión</label>
+    <input type="radio" id="sistema_suspension" name="sistema_suspension" value="sistema_suspension_b">
+    <input type="radio" id="sistema_suspension" name="sistema_suspension" value="sistema_suspension_r">
+    <input type="radio" id="sistema_suspension" name="sistema_suspension" value="sistema_suspension_m">
+    <br>
+
+    <label for="motor">Motor</label>
+    <input type="radio" id="motor" name="motor" value="motor_b">
+    <input type="radio" id="motor" name="motor" value="motor_r">
+    <input type="radio" id="motor" name="motor" value="motor_m">
+    
+    <label for="sistema_transmision">Sistema de transmisión</label>
+    <input type="radio" id="sistema_transmision" name="sistema_transmision" value="sistema_transmision_b">
+    <input type="radio" id="sistema_transmision" name="sistema_transmision" value="sistema_transmision_r">
+    <input type="radio" id="sistema_transmision" name="sistema_transmision" value="sistema_transmision_m">
+    </div>
+
+    <br><br>
+    
+    <button id="btnGuardarCondiciones" type="button">Guardar cambios</button>
+    </fieldset>
+
+    <p id="mensaje"></p>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/condicion.js"></script>
+
+</body>
+</html>

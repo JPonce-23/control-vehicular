@@ -340,6 +340,7 @@ def preview_resguardo(
     
     
 @router.post("/{salida_id}/resguardo")
+
 def generar_resguardo(
     salida_id: int,
     db: Session = Depends(get_db),
@@ -386,7 +387,7 @@ def generar_resguardo(
         RevisionCondicion.item_condicion_id == ItemCondicion.id
     ).filter(
         RevisionCondicion.salida_id == salida.id
-    ).all()
+    ).all()   
 
     inventario = db.query(
         RevisionInventario,
@@ -455,6 +456,8 @@ def generar_resguardo(
         "archivo": nuevo_resguardo.nombre_archivo,
         "ruta": nuevo_resguardo.ruta_archivo
     }
+    
+    
     
 
     

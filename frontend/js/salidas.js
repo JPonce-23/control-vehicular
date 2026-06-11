@@ -66,8 +66,6 @@ async function registrarSalida(event) {
         observaciones_croquis: document.getElementById("observaciones_croquis").value
     };
 
-    console.log(datosSalida);
-
     try {
         const salida = await apiFetch("/salidas/", {
             method: "POST",

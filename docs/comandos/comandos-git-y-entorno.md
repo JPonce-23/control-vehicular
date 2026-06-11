@@ -44,3 +44,16 @@ Agregar archivos
 # Levantar backend
     cd backend
         .\.venv\Scripts\Activate.ps1
+
+
+## Cómo correr el proyecto en desarrollo
+
+Terminal 1 (backend):
+cd backend
+python -m uvicorn app.main:app --reload
+
+Terminal 2 (frontend):
+cd frontend
+python -m http.server 3000
+
+Abrir en navegador: http://localhost:3000
