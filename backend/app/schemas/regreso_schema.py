@@ -5,7 +5,6 @@ from typing import Optional
 
 class RegresoCreate(BaseModel):
     salida_id: int
-    capturado_por: int
     fecha_regreso: Optional[datetime] = None
     km_odometro_regreso: Decimal
     nivel_gasolina_regreso: str

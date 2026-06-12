@@ -6,7 +6,6 @@ from typing import Optional
 class SalidaCreate(BaseModel):
     vehiculo_id: int
     persona_id: int
-    capturado_por: int
     fecha_salida: Optional[datetime] = None
     num_oficio: Optional[str] = None
     num_expediente: Optional[str] = None

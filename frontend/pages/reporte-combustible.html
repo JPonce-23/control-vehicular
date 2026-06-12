@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de combustible</title>
+</head>
+<body>
+
+    <h1>Consulta / Reporte de combustible</h1>
+
+    <button onclick="window.location.href='../dashboard.html'">
+        Volver al dashboard
+    </button>
+
+    <br><br>
+
+    <section>
+        <h2>Buscar vehículo</h2>
+
+        <label for="vehiculo_id">*Elige un vehículo:</label>
+        <br>
+        <select id="vehiculo_id" required>
+            <option value="">Selecciona un vehículo</option>
+        </select>
+
+        <br><br>
+
+        <label for="anio_reporte">*Año:</label>
+        <br>
+        <input type="number" id="anio_reporte" required>
+
+        <br><br>
+
+        <button id="btnConsultarReporte" type="button">
+            Consultar reporte
+        </button>
+    </section>
+
+    <br>
+
+    <section id="resumenVehiculo">
+        <h2>Resumen del vehículo</h2>
+        <p>Selecciona un vehículo y año para consultar información.</p>
+    </section>
+
+    <br>
+
+    <section>
+        <h2>Gráfica circular del presupuesto</h2>
+        <canvas id="graficaCircular" width="300" height="300" style="border: 1px solid black;"></canvas>
+    </section>
+
+    <br>
+
+    <section>
+        <h2>Gráfica mensual de combustible</h2>
+        <canvas id="graficaBarras" width="900" height="350" style="border: 1px solid black;"></canvas>
+    </section>
+
+    <br>
+
+    <section>
+        <h2>Reporte mensual</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Mes</th>
+                    <th>Monto autorizado</th>
+                    <th>Gasto del mes</th>
+                    <th>Restante del mes</th>
+                    <th>Gasto acumulado</th>
+                    <th>Restante total</th>
+                </tr>
+            </thead>
+            <tbody id="tablaReporteMensual">
+            </tbody>
+        </table>
+    </section>
+
+    <br>
+
+    <section>
+        <h2>Historial de gastos de gasolina</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Salida</th>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Nivel tanque</th>
+                    <th>Odómetro</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaGastos">
+            </tbody>
+        </table>
+    </section>
+
+    <br>
+
+    <section>
+        <h2>Historial de viajes del vehículo</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Salida</th>
+                    <th>Persona</th>
+                    <th>Fecha salida</th>
+                    <th>Fecha regreso</th>
+                    <th>Km salida</th>
+                    <th>Km regreso</th>
+                    <th>Km recorridos</th>
+                    <th>Finalidad</th>
+                </tr>
+            </thead>
+            <tbody id="tablaViajes">
+            </tbody>
+        </table>
+    </section>
+
+    <p id="mensaje"></p>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/reporte-combustible.js"></script>
+
+</body>
+</html>

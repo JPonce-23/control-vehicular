@@ -18,10 +18,12 @@ router = APIRouter(
 def listar_regresos(db: Session = Depends(get_db)):
     return db.query(Regreso).all()
 
+
 @router.post("/", response_model=RegresoResponse)
-def crear_regreso(regreso: RegresoCreate, 
-                  db: Session = Depends(get_db), 
-                  usuario_actual = Depends(requerir_rol(["administrador", "capturista"]))
+def crear_regreso(
+    regreso: RegresoCreate,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador", "capturista"]))
 ):
     salida = db.query(Salida).filter(Salida.id == regreso.salida_id).first()
 
@@ -29,32 +31,34 @@ def crear_regreso(regreso: RegresoCreate,
         raise HTTPException(status_code=404, detail="Salida no encontrada")
     
     regreso_existente = db.query(Regreso).filter(
-    Regreso.salida_id == regreso.salida_id
+        Regreso.salida_id == regreso.salida_id
     ).first()
 
     if regreso_existente:
         raise HTTPException(
-        status_code=400,
-        detail="Esta salida ya tiene un regreso registrado"
-    )
+            status_code=400,
+            detail="Esta salida ya tiene un regreso registrado"
+        )
         
     if regreso.km_odometro_regreso < salida.km_odometro_salida:
         raise HTTPException(
-        status_code=400,
-        detail="El kilometraje de regreso no puede ser menor al de salida"
-    )
+            status_code=400,
+            detail="El kilometraje de regreso no puede ser menor al de salida"
+        )
 
     vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
 
     if vehiculo is None:
         raise HTTPException(status_code=404, detail="Vehículo no encontrado")
     
-
     datos_regreso = regreso.model_dump(exclude_none=True)
-    nuevo_regreso = Regreso(**datos_regreso)
+
+    nuevo_regreso = Regreso(
+        **datos_regreso,
+        capturado_por=usuario_actual.id
+    )
 
     vehiculo.estado = "disponible"
-    
     vehiculo.km_acumulado = regreso.km_odometro_regreso
 
     db.add(nuevo_regreso)
@@ -62,7 +66,7 @@ def crear_regreso(regreso: RegresoCreate,
 
     historial = HistorialSalida(
         salida_id=regreso.salida_id,
-        usuario_id=regreso.capturado_por,
+        usuario_id=usuario_actual.id,
         accion="registro_regreso",
         descripcion="Se registró el regreso del vehículo",
         fecha=date.today()
@@ -73,6 +77,8 @@ def crear_regreso(regreso: RegresoCreate,
     db.refresh(nuevo_regreso)
 
     return nuevo_regreso
+
+
 
 @router.get("/salida/{salida_id}", response_model=RegresoResponse)
 def obtener_regreso_por_salida(

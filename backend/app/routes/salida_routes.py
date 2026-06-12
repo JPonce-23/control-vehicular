@@ -28,22 +28,16 @@ def listar_salidas(db: Session = Depends(get_db)):
     return db.query(Salida).all()
 
 @router.post("/", response_model=SalidaResponse)
-def crear_salida(salida: SalidaCreate, 
-db: Session = Depends(get_db), 
-usuario_actual = Depends(requerir_rol(["administrador", "capturista"]))
+def crear_salida(
+    salida: SalidaCreate,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador", "capturista"]))
 ):
     vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
-    
 
     if vehiculo is None:
         raise HTTPException(status_code=404, detail="Vehículo no encontrado")
 
-    if vehiculo.estado != "disponible":
-        raise HTTPException(
-            status_code=400,
-            detail="El vehículo no está disponible para salida"
-        )
-        
     if vehiculo.estado == "en_uso":
         raise HTTPException(
             status_code=400,
@@ -70,52 +64,54 @@ usuario_actual = Depends(requerir_rol(["administrador", "capturista"]))
 
     if salida.km_odometro_salida < vehiculo.km_acumulado:
         raise HTTPException(
-        status_code=400,
-        detail="El kilometraje de salida no puede ser menor al kilometraje actual del vehículo"
-    )
+            status_code=400,
+            detail="El kilometraje de salida no puede ser menor al kilometraje actual del vehículo"
+        )
 
-    datos_salida = salida.model_dump(exclude_none=True)
-    nueva_salida = Salida(**datos_salida)
-
-    vehiculo.estado = "en_uso"
-    
     persona = db.query(PersonaAutorizada).filter(
-    PersonaAutorizada.id == salida.persona_id
+        PersonaAutorizada.id == salida.persona_id
     ).first()
 
     if persona is None:
         raise HTTPException(status_code=404, detail="Persona autorizada no encontrada")
-    
+
     if persona.estado != "activo":
         raise HTTPException(
-        status_code=400,
-        detail="La persona autorizada no está activa"
-    )
+            status_code=400,
+            detail="La persona autorizada no está activa"
+        )
 
     if persona.vigencia_licencia < date.today():
         raise HTTPException(
-        status_code=400,
-        detail="La licencia del conductor está vencida"
+            status_code=400,
+            detail="La licencia del conductor está vencida"
+        )
+
+    datos_salida = salida.model_dump(exclude_none=True)
+
+    nueva_salida = Salida(
+        **datos_salida,
+        capturado_por=usuario_actual.id
     )
-    
+
+    vehiculo.estado = "en_uso"
+
     db.add(nueva_salida)
     db.flush()
 
-    historial = HistorialSalida (
+    historial = HistorialSalida(
         salida_id=nueva_salida.id,
-        usuario_id=salida.capturado_por,
+        usuario_id=usuario_actual.id,
         accion="registro_salida",
         descripcion="Se registró una nueva salida",
         fecha=date.today()
     )
-    
 
     db.add(historial)
     db.commit()
     db.refresh(nueva_salida)
 
     return nueva_salida
-
 
 
 @router.get("/{salida_id}", response_model=SalidaResponse)
