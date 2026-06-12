@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría por vehículo</title>
+</head>
+<body>
+
+    <h1>Auditoría por vehículo</h1>
+
+    <button onclick="window.location.href='../dashboard.html'">
+        Volver al dashboard
+    </button>
+
+    <br><br>
+
+    <section>
+        <h2>Filtros</h2>
+
+        <form id="formAuditoria" autocomplete="off">
+
+            <label for="vehiculo_id">*Selecciona un vehículo:</label>
+            <br>
+            <select id="vehiculo_id" required>
+                <option value="">Selecciona un vehículo</option>
+            </select>
+
+            <br><br>
+
+            <label for="accion">Acción:</label>
+            <br>
+            <select id="accion">
+                <option value="">Todas las acciones</option>
+                <option value="registro_salida">Registro de salida</option>
+                <option value="registro_regreso">Registro de regreso</option>
+                <option value="modificacion">Modificación / Corrección</option>
+                <option value="generacion_resguardo">Generación de resguardo</option>
+            </select>
+
+            <br><br>
+
+            <button type="submit">Consultar auditoría</button>
+            <button type="button" id="btnLimpiar">Limpiar</button>
+
+        </form>
+    </section>
+
+    <br>
+
+    <section id="resumenAuditoria">
+        <h2>Resumen</h2>
+        <p>Selecciona un vehículo para consultar sus movimientos.</p>
+    </section>
+
+    <br>
+
+    <section>
+        <h2>Movimientos registrados</h2>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Vehículo</th>
+                    <th>Placa</th>
+                    <th>Persona autorizada</th>
+                    <th>Fecha salida</th>
+                    <th>Fecha regreso</th>
+                    <th>Acción</th>
+                    <th>Descripción</th>
+                    <th>Fecha movimiento</th>
+                    <th>Usuario que capturó</th>
+                </tr>
+            </thead>
+            <tbody id="tablaAuditoria">
+            </tbody>
+        </table>
+    </section>
+
+    <p id="mensaje"></p>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/auditoria.js"></script>
+
+</body>
+</html>

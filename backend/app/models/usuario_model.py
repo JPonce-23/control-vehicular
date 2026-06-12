@@ -1,5 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
 from app.database import Base
+from pydantic import BaseModel
+from typing import Optional
+from datetime import date
 
 class UsuarioSistema(Base):
     __tablename__ = "usuario_sistema"
@@ -15,3 +18,6 @@ class UsuarioSistema(Base):
     estado = Column(String)
     fecha_alta = Column(DateTime, nullable=False, server_default=func.now())
     ultimo_acceso = Column(DateTime)
+    
+    
+    
