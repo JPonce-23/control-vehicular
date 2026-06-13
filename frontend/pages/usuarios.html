@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuarios</title>
+</head>
+<body>
+
+    <h1>Gestión de usuarios</h1>
+
+    <button type="button" onclick="window.location.href='../dashboard.html'">
+        Volver al dashboard
+    </button>
+
+    <br><br>
+
+    <section>
+        <h2>Usuarios registrados</h2>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre completo</th>
+                    <th>Núm. empleado</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Fecha alta</th>
+                    <th>Último acceso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaUsuarios"></tbody>
+        </table>
+
+        <br>
+
+        <button type="button" id="btnMostrarFormulario">
+            Crear usuario
+        </button>
+    </section>
+
+    <br>
+
+    <section id="seccionFormulario" style="display: none;">
+        <h2 id="tituloFormulario">Crear usuario</h2>
+
+        <form id="formUsuario" autocomplete="off">
+            <input type="hidden" id="usuario_id_edicion">
+
+            <label for="nombre">*Nombre:</label><br>
+            <input type="text" id="nombre" required>
+
+            <br><br>
+
+            <label for="apellido_paterno">*Apellido paterno:</label><br>
+            <input type="text" id="apellido_paterno" required>
+
+            <br><br>
+
+            <label for="apellido_materno">Apellido materno:</label><br>
+            <input type="text" id="apellido_materno">
+
+            <br><br>
+
+            <label for="num_empleado">*Número de empleado:</label><br>
+            <input type="text" id="num_empleado" required>
+
+            <br><br>
+
+            <label for="correo">*Correo:</label><br>
+            <input type="email" id="correo" required>
+
+            <br><br>
+
+            <div id="contenedorPassword">
+                <label for="password">*Contraseña inicial:</label><br>
+                <input type="password" id="password">
+
+                <br><br>
+            </div>
+
+            <input type="submit" id="btnGuardar" value="Crear usuario">
+
+            <button type="button" id="btnCancelar">
+                Cancelar
+            </button>
+        </form>
+    </section>
+
+    <br>
+
+    <section id="seccionPasswordTemporal" style="display: none;">
+        <h2>Contraseña temporal generada</h2>
+        <p>Entrega esta contraseña al usuario para que pueda iniciar sesión y después cambiarla.</p>
+        <p><strong>Usuario ID:</strong> <span id="usuarioTemporalId"></span></p>
+        <p><strong>Contraseña temporal:</strong> <span id="passwordTemporal"></span></p>
+    </section>
+
+    <p id="mensaje"></p>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/usuarios.js"></script>
+
+</body>
+</html>

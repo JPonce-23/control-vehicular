@@ -11,6 +11,8 @@ from app.schemas.combustible_schema import (
     ViajeRespuesta
 )
 from app.services.auth_service import requerir_rol, obtener_usuario_actual
+from datetime import date
+from app.models.vehiculo_model import Vehiculo
 
 router = APIRouter(tags=["Combustible"])
 
@@ -30,16 +32,26 @@ def crear_presupuesto(
     db: Session = Depends(get_db),
     usuario_actual = Depends(requerir_rol(["administrador"]))
 ):
-    from app.models.vehiculo_model import Vehiculo
-
+    
     vehiculo = db.query(Vehiculo).filter(Vehiculo.id == vehiculo_id).first()
     if not vehiculo:
         raise HTTPException(status_code=404, detail="Vehículo no encontrado")
+    
+    anio_actual = date.today().year
+
+    anio_actual = date.today().year
+    anios_permitidos = [anio_actual, anio_actual + 1]
+
+    if datos.anio not in anios_permitidos:
+        raise HTTPException(
+            status_code=400,
+            detail="Solo se puede crear presupuesto para el año actual o el año siguiente"
+    )
 
     if datos.mes_inicio > datos.mes_fin:
-        raise HTTPException(status_code=400, detail="El mes de inicio no puede ser mayor al mes de fin")
+        raise HTTPException (status_code=400, detail="El mes de inicio no puede ser mayor al mes de fin")
 
-    existente = db.query(PresupuestoGasolina).filter(
+    existente = db.query (PresupuestoGasolina).filter(
         PresupuestoGasolina.vehiculo_id == vehiculo_id,
         PresupuestoGasolina.anio == datos.anio
     ).first()

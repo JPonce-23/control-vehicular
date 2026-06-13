@@ -18,7 +18,7 @@ router = APIRouter(
 @router.get("/", response_model=list[UsuarioResponse])
 def listar_usuarios(
     db: Session = Depends(get_db),
-    usuario_actual = Depends(obtener_usuario_actual)
+    usuario_actual = Depends(requerir_rol(["administrador"]))
 ):
     return db.query(UsuarioSistema).all()
 
@@ -26,7 +26,7 @@ def listar_usuarios(
 def obtener_usuario_por_id(
     usuario_id: int,
     db: Session = Depends(get_db),
-    usuario_actual = Depends(obtener_usuario_actual)
+    usuario_actual = Depends(requerir_rol(["administrador"]))
 ):
     usuario = db.query(UsuarioSistema).filter(
         UsuarioSistema.id == usuario_id
