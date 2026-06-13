@@ -7,37 +7,96 @@
 </head>
 <body>
 
-    <h1>Personas registradas</h1>
+    <h1>Gestión de personas autorizadas</h1>
 
-    <button onclick="window.location.href='../dashboard.html'">
+    <button type="button" onclick="window.location.href='../dashboard.html'">
         Volver al dashboard
     </button>
 
     <br><br>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellido Paterno</th>
-                <th>Apellido Materno</th>
-                <th>RFC</th>
-                <th>Numero de licencia</th>
-                <th>Tipo de licencia</th>
-                <th>Vigencia de licencia</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody id="tablaPersonas">
-        </tbody>
-    </table>
+    <section>
+        <h2>Personas registradas</h2>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre completo</th>
+                    <th>RFC</th>
+                    <th>Número de licencia</th>
+                    <th>Tipo de licencia</th>
+                    <th>Vigencia de licencia</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaPersonas">
+            </tbody>
+        </table>
+
+        <br>
+
+        <button type="button" id="btnMostrarFormulario">
+            Registrar persona
+        </button>
+    </section>
+
+    <br>
+
+    <section id="seccionFormulario" style="display: none;">
+        <h2 id="tituloFormulario">Registrar persona autorizada</h2>
+
+        <form id="formPersona" autocomplete="off">
+            <input type="hidden" id="persona_id_edicion">
+
+            <label for="nombre">*Nombre:</label><br>
+            <input type="text" id="nombre" required>
+
+            <br><br>
+
+            <label for="apellido_paterno">*Apellido paterno:</label><br>
+            <input type="text" id="apellido_paterno" required>
+
+            <br><br>
+
+            <label for="apellido_materno">Apellido materno:</label><br>
+            <input type="text" id="apellido_materno">
+
+            <br><br>
+
+            <label for="rfc">RFC:</label><br>
+            <input type="text" id="rfc">
+
+            <br><br>
+
+            <label for="num_licencia">*Número de licencia:</label><br>
+            <input type="text" id="num_licencia" required>
+
+            <br><br>
+
+            <label for="tipo_licencia">*Tipo de licencia:</label><br>
+            <input type="text" id="tipo_licencia" required>
+
+            <br><br>
+
+            <label for="vigencia_licencia">*Vigencia de licencia:</label><br>
+            <input type="date" id="vigencia_licencia" required>
+
+            <br><br>
+
+            <input type="submit" id="btnGuardar" value="Registrar persona">
+
+            <button type="button" id="btnCancelarEdicion">
+                Cancelar
+            </button>
+        </form>
+    </section>
 
     <p id="mensaje"></p>
 
     <script src="../js/api.js"></script>
     <script src="../js/personas.js"></script>
 
-    
 </body>
 </html>
