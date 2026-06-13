@@ -41,3 +41,18 @@ class VehiculoEstadoUpdate(BaseModel):
 
     class Config:
         from_attributes = True
+        
+        
+class VehiculoUpdate(BaseModel):
+    placa: str
+    marca: str
+    tipo: str
+    modelo_anio: int
+    cilindros: int
+    num_serie: str
+    num_motor: Optional[str] = None
+    num_poliza: Optional[str] = None
+    num_inventario: Optional[str] = None
+    color: str
+    num_tarjeta_gasolina: Optional[str] = None
+    km_acumulado: Decimal

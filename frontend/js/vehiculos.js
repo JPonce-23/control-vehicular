@@ -1,6 +1,9 @@
 const tablaVehiculos = document.getElementById("tablaVehiculos");
 const mensaje = document.getElementById("mensaje");
 
+const seccionFormulario = document.getElementById("seccionFormulario");
+const btnMostrarFormulario = document.getElementById("btnMostrarFormulario");
+
 const formVehiculo = document.getElementById("formVehiculo");
 const tituloFormulario = document.getElementById("tituloFormulario");
 const btnGuardar = document.getElementById("btnGuardar");
@@ -24,16 +27,23 @@ let vehiculosGuardados = [];
 
 document.addEventListener("DOMContentLoaded", cargarVehiculos);
 
+btnMostrarFormulario.addEventListener("click", function () {
+    limpiarFormulario();
+    mostrarFormularioRegistro();
+});
+
 formVehiculo.addEventListener("submit", guardarVehiculo);
 
-btnCancelarEdicion.addEventListener("click", limpiarFormulario);
+btnCancelarEdicion.addEventListener("click", function () {
+    limpiarFormulario();
+    ocultarFormulario();
+});
 
 async function cargarVehiculos() {
     try {
         const vehiculos = await apiFetch("/vehiculos/");
 
         vehiculosGuardados = vehiculos;
-
         tablaVehiculos.innerHTML = "";
 
         if (vehiculos.length === 0) {
@@ -109,6 +119,7 @@ async function guardarVehiculo(event) {
         }
 
         limpiarFormulario();
+        ocultarFormulario();
         await cargarVehiculos();
 
     } catch (error) {
@@ -160,7 +171,8 @@ function editarVehiculo(vehiculoId) {
     tituloFormulario.textContent = "Editar vehículo";
     btnGuardar.value = "Guardar cambios";
 
-    window.scrollTo(0, 0);
+    seccionFormulario.style.display = "block";
+    window.scrollTo(0, document.body.scrollHeight);
 }
 
 async function cambiarEstadoVehiculo(vehiculoId, nuevoEstado) {
@@ -186,13 +198,22 @@ async function cambiarEstadoVehiculo(vehiculoId, nuevoEstado) {
     }
 }
 
+function mostrarFormularioRegistro() {
+    tituloFormulario.textContent = "Registrar vehículo";
+    btnGuardar.value = "Registrar vehículo";
+    seccionFormulario.style.display = "block";
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
+function ocultarFormulario() {
+    seccionFormulario.style.display = "none";
+}
+
 function limpiarFormulario() {
     formVehiculo.reset();
-
     inputVehiculoIdEdicion.value = "";
     tituloFormulario.textContent = "Registrar vehículo";
     btnGuardar.value = "Registrar vehículo";
-    mensaje.textContent = "";
 }
 
 function formatearEstado(estado) {

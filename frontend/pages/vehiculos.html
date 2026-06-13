@@ -8,13 +8,43 @@
 
     <h1>Gestión de vehículos</h1>
 
-    <button onclick="window.location.href='../dashboard.html'">
+    <button type="button" onclick="window.location.href='../dashboard.html'">
         Volver al dashboard
     </button>
 
     <br><br>
 
     <section>
+        <h2>Vehículos registrados</h2>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Placa</th>
+                    <th>Marca</th>
+                    <th>Tipo</th>
+                    <th>Modelo</th>
+                    <th>Serie</th>
+                    <th>Color</th>
+                    <th>Km acumulado</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaVehiculos"></tbody>
+        </table>
+
+        <br>
+
+        <button type="button" id="btnMostrarFormulario">
+            Registrar vehículo
+        </button>
+    </section>
+
+    <br>
+
+    <section id="seccionFormulario" style="display: none;">
         <h2 id="tituloFormulario">Registrar vehículo</h2>
 
         <form id="formVehiculo" autocomplete="off">
@@ -81,33 +111,11 @@
             <br><br>
 
             <input type="submit" id="btnGuardar" value="Registrar vehículo">
-            <button type="button" id="btnCancelarEdicion">Cancelar edición</button>
+
+            <button type="button" id="btnCancelarEdicion">
+                Cancelar
+            </button>
         </form>
-    </section>
-
-    <br>
-
-    <section>
-        <h2>Vehículos registrados</h2>
-
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Placa</th>
-                    <th>Marca</th>
-                    <th>Tipo</th>
-                    <th>Modelo</th>
-                    <th>Serie</th>
-                    <th>Color</th>
-                    <th>Km acumulado</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tablaVehiculos">
-            </tbody>
-        </table>
     </section>
 
     <p id="mensaje"></p>

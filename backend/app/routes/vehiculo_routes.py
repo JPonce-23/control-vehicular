@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.vehiculo_model import Vehiculo
 from app.schemas.vehiculo_schema import VehiculoResponse, VehiculoCreate
-from app.schemas.vehiculo_schema import VehiculoEstadoUpdate
+from app.schemas.vehiculo_schema import VehiculoEstadoUpdate, VehiculoUpdate
 from app.services.auth_service import obtener_usuario_actual, requerir_rol
 
 router = APIRouter(
@@ -108,4 +108,69 @@ def obtener_vehiculo_por_id(
 
     return vehiculo
 
+
+@router.put("/{vehiculo_id}", response_model=VehiculoResponse)
+def actualizar_vehiculo(
+    vehiculo_id: int,
+    datos: VehiculoUpdate,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador"]))
+):
+    vehiculo = db.query(Vehiculo).filter(Vehiculo.id == vehiculo_id).first()
+
+    if vehiculo is None:
+        raise HTTPException(status_code=404, detail="Vehículo no encontrado")
+
+    placa_existente = db.query(Vehiculo).filter(
+        Vehiculo.placa == datos.placa,
+        Vehiculo.id != vehiculo_id
+    ).first()
+
+    if placa_existente:
+        raise HTTPException(status_code=400, detail="Ya existe un vehículo con esa placa")
+
+    serie_existente = db.query(Vehiculo).filter(
+        Vehiculo.num_serie == datos.num_serie,
+        Vehiculo.id != vehiculo_id
+    ).first()
+
+    if serie_existente:
+        raise HTTPException(status_code=400, detail="Ya existe un vehículo con ese número de serie")
+
+    if datos.num_motor:
+        motor_existente = db.query(Vehiculo).filter(
+            Vehiculo.num_motor == datos.num_motor,
+            Vehiculo.id != vehiculo_id
+        ).first()
+
+        if motor_existente:
+            raise HTTPException(status_code=400, detail="Ya existe un vehículo con ese número de motor")
+
+    if datos.num_inventario:
+        inventario_existente = db.query(Vehiculo).filter(
+            Vehiculo.num_inventario == datos.num_inventario,
+            Vehiculo.id != vehiculo_id
+        ).first()
+
+        if inventario_existente:
+            raise HTTPException(status_code=400, detail="Ya existe un vehículo con ese número de inventario")
+
+    if datos.num_tarjeta_gasolina:
+        tarjeta_existente = db.query(Vehiculo).filter(
+            Vehiculo.num_tarjeta_gasolina == datos.num_tarjeta_gasolina,
+            Vehiculo.id != vehiculo_id
+        ).first()
+
+        if tarjeta_existente:
+            raise HTTPException(status_code=400, detail="Ya existe un vehículo con esa tarjeta de gasolina")
+
+    datos_actualizados = datos.model_dump()
+
+    for campo, valor in datos_actualizados.items():
+        setattr(vehiculo, campo, valor)
+
+    db.commit()
+    db.refresh(vehiculo)
+
+    return vehiculo
 
