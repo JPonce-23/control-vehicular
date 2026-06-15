@@ -4,25 +4,33 @@
     <meta charset="UTF-8">
     <title>Dashboard - Control Vehicular</title>
 </head>
-<body>
+<body data-roles="administrador,capturista">
 
     <h1>Sistema de Control Vehicular</h1>
 
+    <p>
+        Usuario: <strong id="nombreUsuario"></strong>
+    </p>
+
+    <p>
+        Rol: <strong id="rolUsuario"></strong>
+    </p>
+
     <nav>
         <ul>
-            <li><a href="pages/vehiculos.html">Vehículos</a></li>
-            <li><a href="pages/personas.html">Personas autorizadas</a></li>
-            <li><a href="pages/salidas.html">Registrar salida</a></li>
-            <li><a href="pages/regreso.html">Registrar regreso</a></li>
-            <li><a href="pages/resguardo.html">Resguardo</a></li>
-            <li><a href="pages/condicion.html">Condiciones del vehículo</a></li>
-            <li><a href="pages/inventario.html">Inventario del vehículo</a></li>
-            <li><a href="pages/gasto-gasolina.html">Capturar gasto de gasolina</a></li>
-            <li><a href="pages/reporte-combustible.html">Reporte de combustible</a></li>
-            <li><a href="pages/auditoria.html">Auditoría</a></li>
-            <li><a href="pages/usuarios.html">Gestión de usuarios</a></li>
-            <li><a href="pages/cambiar-password.html">Cambiar mi contraseña</a></li>
-            <li><a href="pages/presupuesto-gasolina.html">Presupuesto de gasolina</a></li>
+            <li data-menu-roles="administrador"><a href="pages/vehiculos.html">Vehículos</a></li>
+            <li data-menu-roles="administrador"><a href="pages/personas.html">Personas autorizadas</a></li>
+            <li data-menu-roles="administrador,capturista"><a href="pages/salidas.html">Registrar salida</a></li>
+            <li data-menu-roles="administrador,capturista"><a href="pages/regreso.html">Registrar regreso</a></li>
+            <li data-menu-roles="administrador,capturista"><a href="pages/resguardo.html">Resguardo</a></li>
+            <li data-menu-roles="administrador,capturista"><a href="pages/condicion.html">Condiciones del vehículo</a></li>
+            <li data-menu-roles="administrador,capturista"><a href="pages/inventario.html">Inventario del vehículo</a></li>
+            <li data-menu-roles="administrador,capturista"><a href="pages/gasto-gasolina.html">Capturar gasto de gasolina</a></li>
+            <li data-menu-roles="administrador"><a href="pages/reporte-combustible.html">Reporte de combustible</a></li>
+            <li data-menu-roles="administrador"><a href="pages/auditoria.html">Auditoría</a></li>
+            <li data-menu-roles="administrador"><a href="pages/usuarios.html">Gestión de usuarios</a></li>
+            <li data-menu-roles="administrador,capturista"><a href="pages/cambiar-password.html">Cambiar mi contraseña</a></li>
+            <li data-menu-roles="administrador"><a href="pages/presupuesto-gasolina.html">Presupuesto de gasolina</a></li>
         </ul>
     </nav>
 
@@ -34,6 +42,11 @@
             window.location.href = "index.html";
         }
     </script>
+
+
+    <script src="js/api.js"></script>
+    <script src="js/auth-guard.js"></script>
+    <script src="js/dashboard.js"></script>
 
 </body>
 </html>

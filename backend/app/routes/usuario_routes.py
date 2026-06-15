@@ -22,6 +22,14 @@ def listar_usuarios(
 ):
     return db.query(UsuarioSistema).all()
 
+
+@router.get("/me", response_model=UsuarioResponse)
+def obtener_mi_usuario(
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    return usuario_actual
+
+
 @router.get("/{usuario_id}", response_model=UsuarioResponse)
 def obtener_usuario_por_id(
     usuario_id: int,
@@ -251,3 +259,5 @@ def cambiar_mi_password(
     return {
         "mensaje": "Contraseña actualizada correctamente"
     }
+    
+    
