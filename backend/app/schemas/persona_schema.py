@@ -7,10 +7,11 @@ class PersonaCreate(BaseModel):
     nombre: str
     apellido_paterno: str
     apellido_materno: Optional[str] = None
-    num_licencia: str
+    cargo: str
+    num_licencia: Optional[str] = None
     rfc: Optional[str] = None
-    vigencia_licencia: date
-    tipo_licencia: str
+    vigencia_licencia: Optional[date] = None
+    tipo_licencia: Optional[str] = None
     estado: str = "activo"
 
 
@@ -18,10 +19,11 @@ class PersonaUpdate(BaseModel):
     nombre: str
     apellido_paterno: str
     apellido_materno: Optional[str] = None
-    num_licencia: str
+    cargo: str
+    num_licencia: Optional[str] = None
     rfc: Optional[str] = None
-    vigencia_licencia: date
-    tipo_licencia: str
+    vigencia_licencia: Optional[date] = None
+    tipo_licencia: Optional[str] = None
 
 
 class PersonaResponse(BaseModel):
@@ -29,10 +31,11 @@ class PersonaResponse(BaseModel):
     nombre: str
     apellido_paterno: str
     apellido_materno: Optional[str]
-    num_licencia: str
+    cargo: str
+    num_licencia: Optional[str]
     rfc: Optional[str]
-    vigencia_licencia: date
-    tipo_licencia: str
+    vigencia_licencia: Optional[date]
+    tipo_licencia: Optional[str]
     estado: str
 
     class Config:

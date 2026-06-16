@@ -12,7 +12,6 @@ class Salida(Base):
     fecha_salida = Column(DateTime, nullable=False, server_default=func.now())
     num_oficio = Column(String)
     num_expediente = Column(String)
-    cargo_en_viaje = Column(String)
     area_en_viaje = Column(String)
     tipo_movimiento = Column(String)
     forma_movimiento = Column(String)

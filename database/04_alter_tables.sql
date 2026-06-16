@@ -86,3 +86,39 @@ ALTER COLUMN salida_id SET NOT NULL;
 
 ALTER TABLE vehiculo
 ALTER COLUMN num_economico DROP NOT NULL;
+
+
+-- ==================================
+-- Se modifica tabla persona_autorizada ya que el usuario
+-- no registra de forma obligatoria datos de la licencia
+-- ==================================
+
+ALTER TABLE persona_autorizada ALTER COLUMN num_licencia DROP NOT NULL;
+ALTER TABLE persona_autorizada ALTER COLUMN vigencia_licencia DROP NOT NULL;
+ALTER TABLE persona_autorizada ALTER COLUMN tipo_licencia DROP NOT NULL;
+
+
+-- ================================
+-- Se agrega el cargo a usuario y no al viaje
+-- ================================
+
+ALTER TABLE persona_autorizada
+ADD COLUMN IF NOT EXISTS cargo VARCHAR(150);
+
+
+UPDATE persona_autorizada p
+SET cargo = COALESCE(
+    (
+        SELECT s.cargo_en_viaje
+        FROM salida s
+        WHERE s.persona_id = p.id
+        ORDER BY s.fecha_salida DESC
+        LIMIT 1
+    ),
+    'Pendiente por definir'
+)
+WHERE p.cargo IS NULL;
+
+
+ALTER TABLE persona_autorizada
+ALTER COLUMN cargo SET NOT NULL;

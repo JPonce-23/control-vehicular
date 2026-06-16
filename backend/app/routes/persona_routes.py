@@ -2,8 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.persona_model import PersonaAutorizada
-from app.schemas.persona_schema import PersonaResponse, PersonaCreate, PersonaUpdate, PersonaEstadoUpdate
-from app.services.auth_service import obtener_usuario_actual, requerir_rol
+from app.schemas.persona_schema import (
+    PersonaResponse,
+    PersonaCreate,
+    PersonaUpdate,
+    PersonaEstadoUpdate
+)
+from app.services.auth_service import requerir_rol
 
 router = APIRouter(
     prefix="/personas",
@@ -25,15 +30,16 @@ def crear_persona(
     db: Session = Depends(get_db),
     usuario_actual = Depends(requerir_rol(["administrador"]))
 ):
-    licencia_existente = db.query(PersonaAutorizada).filter(
-        PersonaAutorizada.num_licencia == persona.num_licencia
-    ).first()
+    if persona.num_licencia:
+        licencia_existente = db.query(PersonaAutorizada).filter(
+            PersonaAutorizada.num_licencia == persona.num_licencia
+        ).first()
 
-    if licencia_existente:
-        raise HTTPException(
-            status_code=400,
-            detail="Ya existe una persona con ese número de licencia"
-        )
+        if licencia_existente:
+            raise HTTPException(
+                status_code=400,
+                detail="Ya existe una persona con ese número de licencia"
+            )
 
     if persona.rfc:
         rfc_existente = db.query(PersonaAutorizada).filter(
@@ -47,6 +53,7 @@ def crear_persona(
             )
 
     nueva_persona = PersonaAutorizada(**persona.model_dump())
+
     db.add(nueva_persona)
     db.commit()
     db.refresh(nueva_persona)
@@ -71,16 +78,17 @@ def actualizar_persona(
             detail="Persona autorizada no encontrada"
         )
 
-    licencia_existente = db.query(PersonaAutorizada).filter(
-        PersonaAutorizada.num_licencia == datos.num_licencia,
-        PersonaAutorizada.id != persona_id
-    ).first()
+    if datos.num_licencia:
+        licencia_existente = db.query(PersonaAutorizada).filter(
+            PersonaAutorizada.num_licencia == datos.num_licencia,
+            PersonaAutorizada.id != persona_id
+        ).first()
 
-    if licencia_existente:
-        raise HTTPException(
-            status_code=400,
-            detail="Ya existe una persona con ese número de licencia"
-        )
+        if licencia_existente:
+            raise HTTPException(
+                status_code=400,
+                detail="Ya existe una persona con ese número de licencia"
+            )
 
     if datos.rfc:
         rfc_existente = db.query(PersonaAutorizada).filter(

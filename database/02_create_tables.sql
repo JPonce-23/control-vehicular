@@ -66,10 +66,11 @@ CREATE TABLE persona_autorizada (
     nombre VARCHAR(100) NOT NULL,
     apellido_paterno VARCHAR(100) NOT NULL,
     apellido_materno VARCHAR(100),
-    num_licencia VARCHAR(25) NOT NULL UNIQUE,
+    cargo VARCHAR(150) NOT NULL,
+    num_licencia VARCHAR(25) UNIQUE,
     rfc VARCHAR(13) UNIQUE,
-    vigencia_licencia DATE NOT NULL,
-    tipo_licencia VARCHAR(50) NOT NULL,
+    vigencia_licencia DATE,
+    tipo_licencia VARCHAR(50),
     estado estado_persona_autorizada NOT NULL DEFAULT 'activo'
 );
 
@@ -116,7 +117,6 @@ CREATE TABLE salida (
     fecha_salida TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     num_oficio VARCHAR(100),
     num_expediente VARCHAR(100),
-    cargo_en_viaje VARCHAR(100) NOT NULL,
     area_en_viaje VARCHAR(100) NOT NULL,
     tipo_movimiento tipo_movimiento NOT NULL,
     forma_movimiento forma_movimiento NOT NULL,

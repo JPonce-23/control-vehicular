@@ -13,6 +13,7 @@ const inputPersonaIdEdicion = document.getElementById("persona_id_edicion");
 const inputNombre = document.getElementById("nombre");
 const inputApellidoPaterno = document.getElementById("apellido_paterno");
 const inputApellidoMaterno = document.getElementById("apellido_materno");
+const inputCargo = document.getElementById("cargo");
 const inputRfc = document.getElementById("rfc");
 const inputNumLicencia = document.getElementById("num_licencia");
 const inputTipoLicencia = document.getElementById("tipo_licencia");
@@ -56,6 +57,7 @@ async function cargarPersonas() {
             fila.innerHTML = `
                 <td>${persona.id}</td>
                 <td>${obtenerNombreCompleto(persona)}</td>
+                <td>${persona.cargo || ""}</td>
                 <td>${persona.rfc || ""}</td>
                 <td>${persona.num_licencia || ""}</td>
                 <td>${persona.tipo_licencia || ""}</td>
@@ -88,6 +90,7 @@ async function guardarPersona(event) {
     event.preventDefault();
 
     const personaId = inputPersonaIdEdicion.value;
+    console.log("ID en edición:", personaId);
     const datosPersona = obtenerDatosFormulario();
 
     try {
@@ -124,10 +127,11 @@ function obtenerDatosFormulario() {
         nombre: inputNombre.value.trim(),
         apellido_paterno: inputApellidoPaterno.value.trim(),
         apellido_materno: inputApellidoMaterno.value.trim() || null,
+        cargo: inputCargo.value.trim(),
         rfc: inputRfc.value.trim() || null,
-        num_licencia: inputNumLicencia.value.trim(),
-        tipo_licencia: inputTipoLicencia.value.trim(),
-        vigencia_licencia: inputVigenciaLicencia.value
+        num_licencia: inputNumLicencia.value.trim() || null,
+        tipo_licencia: inputTipoLicencia.value.trim() || null,
+        vigencia_licencia: inputVigenciaLicencia.value || null
     };
 }
 
@@ -142,9 +146,11 @@ function editarPersona(personaId) {
     }
 
     inputPersonaIdEdicion.value = persona.id;
+
     inputNombre.value = persona.nombre || "";
     inputApellidoPaterno.value = persona.apellido_paterno || "";
     inputApellidoMaterno.value = persona.apellido_materno || "";
+    inputCargo.value = persona.cargo || "";
     inputRfc.value = persona.rfc || "";
     inputNumLicencia.value = persona.num_licencia || "";
     inputTipoLicencia.value = persona.tipo_licencia || "";

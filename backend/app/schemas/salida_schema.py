@@ -9,7 +9,6 @@ class SalidaCreate(BaseModel):
     fecha_salida: Optional[datetime] = None
     num_oficio: Optional[str] = None
     num_expediente: Optional[str] = None
-    cargo_en_viaje: str
     area_en_viaje: str
     tipo_movimiento: str
     forma_movimiento: str
@@ -29,7 +28,6 @@ class SalidaResponse(BaseModel):
     fecha_salida: datetime
     num_oficio: Optional[str]
     num_expediente: Optional[str]
-    cargo_en_viaje: str
     area_en_viaje: str
     tipo_movimiento: str
     forma_movimiento: str
@@ -47,7 +45,6 @@ class SalidaResponse(BaseModel):
 class SalidaUpdate(BaseModel):
     num_oficio: Optional[str] = None
     num_expediente: Optional[str] = None
-    cargo_en_viaje: Optional[str] = None
     area_en_viaje: Optional[str] = None
     tipo_movimiento: Optional[str] = None
     forma_movimiento: Optional[str] = None

@@ -81,11 +81,11 @@ def crear_salida(
             detail="La persona autorizada no está activa"
         )
 
-    if persona.vigencia_licencia < date.today():
+    if persona.vigencia_licencia is not None and persona.vigencia_licencia < date.today():
         raise HTTPException(
             status_code=400,
             detail="La licencia del conductor está vencida"
-        )
+    )
 
     datos_salida = salida.model_dump(exclude_none=True)
 

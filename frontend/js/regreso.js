@@ -12,12 +12,33 @@ regresoForm.addEventListener("submit", registrarRegreso);
 async function cargarSalidasActivas() {
     try {
         const salidas = await apiFetch("/salidas/activas/");
+        const vehiculos = await apiFetch("/vehiculos/");
+        const personas = await apiFetch("/personas/");
+
+        selectSalida.innerHTML = `
+            <option value="">Selecciona una salida</option>
+        `;
+
+        if (salidas.length === 0) {
+            selectSalida.innerHTML = `
+                <option value="">No hay salidas activas</option>
+            `;
+            return;
+        }
 
         salidas.forEach(function (salida) {
+            const vehiculo = vehiculos.find(function (item) {
+                return item.id === salida.vehiculo_id;
+            });
+
+            const persona = personas.find(function (item) {
+                return item.id === salida.persona_id;
+            });
+
             const option = document.createElement("option");
 
             option.value = salida.id;
-            option.textContent = `Salida #${salida.id} - Vehículo ${salida.vehiculo_id} - Persona ${salida.persona_id}`;
+            option.textContent = `Salida #${salida.id} - ${obtenerNombreVehiculo(vehiculo)} - ${obtenerNombrePersona(persona)}`;
 
             selectSalida.appendChild(option);
         });
@@ -55,4 +76,31 @@ async function registrarRegreso(event) {
     } catch (error) {
         mensaje.textContent = error.message;
     }
+}
+
+
+function obtenerNombreVehiculo(vehiculo) {
+    if (!vehiculo) {
+        return "Vehículo no encontrado";
+    }
+
+    const placa = vehiculo.placa || "Sin placa";
+    const marca = vehiculo.marca || "";
+    const tipo = vehiculo.tipo || "";
+
+    return `${placa} - ${marca} ${tipo}`.trim();
+}
+
+function obtenerNombrePersona(persona) {
+    if (!persona) {
+        return "Persona no encontrada";
+    }
+
+    const partes = [
+        persona.nombre,
+        persona.apellido_paterno,
+        persona.apellido_materno
+    ].filter(Boolean);
+
+    return partes.join(" ");
 }

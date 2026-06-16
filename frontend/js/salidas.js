@@ -50,10 +50,8 @@ async function registrarSalida(event) {
     const datosSalida = {
         vehiculo_id: Number(document.getElementById("vehiculo_id").value),
         persona_id: Number(document.getElementById("persona_id").value),
-        capturado_por: 1,
         num_oficio: document.getElementById("num_oficio").value,
         num_expediente: document.getElementById("num_expediente").value,
-        cargo_en_viaje: document.getElementById("cargo_en_viaje").value,
         area_en_viaje: document.getElementById("area_en_viaje").value,
         tipo_movimiento: document.getElementById("tipo_movimiento").value,
         forma_movimiento: document.getElementById("forma_movimiento").value,
