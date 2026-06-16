@@ -326,6 +326,7 @@
                         <tr>
                             <td colspan="2">
                                 <span class="campo-label">NOMBRE:</span> <span class="campo-valor">${p.nombre || ""} ${p.apellido_paterno || ""} ${p.apellido_materno || ""}</span><br>
+                                <span class="campo-label">CARGO:</span> <span class="campo-valor">${p.cargo || ""}</span><br>
                                 <span class="campo-label">No. LICENCIA:</span> <span class="campo-valor">${p.num_licencia || ""}</span> &nbsp;
                                 <span class="campo-label">RFC:</span> <span class="campo-valor">${p.rfc || ""}</span>
                             </td>

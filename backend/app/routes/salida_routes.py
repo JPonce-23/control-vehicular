@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from datetime import date, datetime
 from sqlalchemy.orm import Session
 from app.database import get_db
+from typing import Optional
+from sqlalchemy import or_, func
 from app.models.salida_model import Salida
 from app.schemas.salida_schema import SalidaResponse, SalidaCreate, SalidaUpdate, SalidaCorreccionAdministrativa, CondicionUpdateRequest, InventarioUpdateRequest
 from app.models.vehiculo_model import Vehiculo
@@ -22,6 +24,84 @@ router = APIRouter(
     prefix="/salidas",
     tags=["Salidas"]
 )
+
+
+@router.get("/buscar-correccion")
+def buscar_salidas_para_correccion(
+    placa: Optional[str] = None,
+    persona: Optional[str] = None,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador"]))
+):
+    query = db.query(
+        Salida,
+        Vehiculo,
+        PersonaAutorizada,
+        Regreso
+    ).join(
+        Vehiculo,
+        Salida.vehiculo_id == Vehiculo.id
+    ).join(
+        PersonaAutorizada,
+        Salida.persona_id == PersonaAutorizada.id
+    ).join(
+        Regreso,
+        Regreso.salida_id == Salida.id
+    )
+
+    if placa:
+        query = query.filter(
+            Vehiculo.placa.ilike(f"%{placa}%")
+        )
+
+    if persona:
+        texto_persona = f"%{persona}%"
+
+        query = query.filter(
+            or_(
+                PersonaAutorizada.nombre.ilike(texto_persona),
+                PersonaAutorizada.apellido_paterno.ilike(texto_persona),
+                PersonaAutorizada.apellido_materno.ilike(texto_persona),
+                func.concat(
+                    PersonaAutorizada.nombre,
+                    " ",
+                    PersonaAutorizada.apellido_paterno,
+                    " ",
+                    func.coalesce(PersonaAutorizada.apellido_materno, "")
+                ).ilike(texto_persona)
+            )
+        )
+
+    resultados = query.order_by(Salida.fecha_salida.desc()).all()
+
+    respuesta = []
+
+    for salida, vehiculo, persona_autorizada, regreso in resultados:
+        nombre_persona = " ".join(
+            parte for parte in [
+                persona_autorizada.nombre,
+                persona_autorizada.apellido_paterno,
+                persona_autorizada.apellido_materno
+            ] if parte
+        )
+
+        respuesta.append({
+            "salida_id": salida.id,
+            "vehiculo_id": vehiculo.id,
+            "vehiculo": f"{vehiculo.marca} {vehiculo.tipo}",
+            "placa": vehiculo.placa,
+            "persona_id": persona_autorizada.id,
+            "persona": nombre_persona,
+            "cargo": persona_autorizada.cargo,
+            "fecha_salida": salida.fecha_salida,
+            "fecha_regreso": regreso.fecha_regreso,
+            "finalidad_uso": salida.finalidad_uso,
+            "km_odometro_salida": salida.km_odometro_salida,
+            "km_odometro_regreso": regreso.km_odometro_regreso
+        })
+
+    return respuesta
+
 
 @router.get("/", response_model=list[SalidaResponse])
 def listar_salidas(db: Session = Depends(get_db)):
