@@ -53,14 +53,13 @@ async function registrarRegreso(event) {
 
     const datosRegreso = {
         salida_id: Number(document.getElementById("salida_id").value),
-        capturado_por: 1,
         fecha_regreso: document.getElementById("fecha_regreso").value,
         km_odometro_regreso: Number(document.getElementById("km_odometro_regreso").value),
         nivel_gasolina_regreso: document.getElementById("nivel_gasolina_regreso").value,
         estado_llantas_regreso: document.getElementById("estado_llantas_regreso").value,
         estado_vehiculo_regreso: document.getElementById("estado_vehiculo_regreso").value,
         finalidad_devolucion: document.getElementById("finalidad_devolucion").value,
-        observaciones: document.getElementById("observaciones").value
+        observaciones: document.getElementById("observaciones").value || null
     };
 
 
