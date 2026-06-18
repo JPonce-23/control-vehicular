@@ -40,12 +40,28 @@
         async function cargarRegresos() {
             try {
                 const regresos = await apiFetch("/regresos/");
-                regresos.forEach(function (regreso) {
+                const vehiculos = await apiFetch("/vehiculos/");
+
+                selectSalida.innerHTML = `
+                    <option value="">— Selecciona una salida —</option>
+                `;
+
+                for (const regreso of regresos) {
+                    const salida = await apiFetch(`/salidas/${regreso.salida_id}`);
+
+                    const vehiculo = vehiculos.find(function (itemVehiculo) {
+                        return itemVehiculo.id === salida.vehiculo_id;
+                    });
+
                     const option = document.createElement("option");
+
                     option.value = regreso.salida_id;
-                    option.textContent = `Salida #${regreso.salida_id} — Regreso #${regreso.id}`;
+
+                    option.textContent = `${obtenerNombreVehiculo(vehiculo)} | Salida: ${formatearFechaHora(salida.fecha_salida)} | Regreso: ${formatearFechaHora(regreso.fecha_regreso)}`;
+
                     selectSalida.appendChild(option);
-                });
+                }
+
             } catch (error) {
                 mostrarMsg(mensajeSalida, error.message, "error");
             }
@@ -534,3 +550,26 @@
         }
 
     });
+
+
+
+    function obtenerNombreVehiculo(vehiculo) {
+    if (!vehiculo) {
+        return "Vehículo no encontrado";
+    }
+
+    const placa = vehiculo.placa || "Sin placa";
+    const marca = vehiculo.marca || "";
+    const tipo = vehiculo.tipo || "";
+    const modelo = vehiculo.modelo_anio || "";
+
+    return `${placa} - ${marca} ${tipo} ${modelo}`.trim();
+}
+
+function formatearFechaHora(fecha) {
+    if (!fecha) {
+        return "Sin fecha";
+    }
+
+    return String(fecha).replace("T", " ").substring(0, 16);
+}
