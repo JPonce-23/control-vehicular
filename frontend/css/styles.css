@@ -1,5 +1,5 @@
 /* ====================
-  ||VAREABLES GLOBALES||
+  ||VARIABLES GLOBALES||
    ====================*/
 
 :root {
@@ -12,56 +12,92 @@
     --color-error: #c62828;
     --color-ok: #2e7d32;
     --color-azul: #2e4f7d;
+    --color-partido: #804040;
+    --color-letra-blanca: #dddddd;
 }
 
 /* ====================
   ||ESTILOS GENERALES ||
    ====================*/
 
-   * {
+* {
     box-sizing: border-box;
 }
 
-body {
+html, body {
+    height: 100%;              /* EL BODY USA TODA LA PANTALLA */
     margin: 0;
-    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;    /* ORGANIZA EN COLUMNA: header/main/footer */
+}
+
+body {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     background: var(--color-fondo);
     color: var(--color-texto);
+}
+
+main {
+    flex: 1;                   /* OCUPA TODO EL ESPACIO DISPONIBLE */
+}
+
+footer {
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+    background-color: var(--color-partido);
+    color: whitesmoke;
 }
 
 /* ====================
   ||      LOGIN       ||
    ====================*/
 
+.login {
+    background-image: url("../assets/Sembradio.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
 .login h1 {
-    margin: 0 0 50px;
+    margin: 25px 0 50px;
     padding: 0;
-    font-size: 65px;
+    font-size: 60px;
+    text-align: center;
+    color: var(--color-partido);
 }
 
 .login .contenedor {
-    margin: 50px auto;
+    margin: 11px auto;
     width: 400px;
-    padding: 30px;
-    background-color:rgba(58, 58, 58, 0.5);
+    padding: 50px;
+    background-color: rgba(119, 119, 119, 0.5);
     border-radius: 10px;
+    text-align: center;
 }
 
-.login .contenedor h2
-{
+.contenedor .logo-pa {
+    display: block;
+    margin: 0 auto 20px;
+    width: 150px;   /* controla tamaño proporcional */
+    height: auto;
+}
+
+.contenedor h2 {
     margin: 0 0 30px;
     padding: 0;
     font-size: 30px;
     color: var(--color-principal);
-    border-color: var(--color-texto);
     text-align: center;
 }
 
-.login .contenedor .elemento {
-    color: var(--color-texto);
+.contenedor .elemento {
+    text-align: left;
+    color: var(--color-letra-blanca);
 }
 
-.login .contenedor .elemento input {
+.contenedor .elemento input {
     width: 100%;
     padding: 10px 0;
     color: var(--color-tarjeta);
@@ -71,13 +107,21 @@ body {
     margin-bottom: 30px;
 }
 
-.login .btnlogin {
-    background-color: var(--color-principal-oscuro);
+.contenedor .btnlogin {
+    background-color: var(--color-partido);
     border: none;
     letter-spacing: 3px;
     cursor: pointer;
-    padding: 15px;
+    padding: 15px 30px;
     margin-top: 30px;
     border-radius: 8px;
+    color: var(--color-letra-blanca);
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.btnlogin:hover {
+    background-color: var(--color-letra-blanca);
+    color: var(--color-partido);
+}
