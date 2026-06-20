@@ -3,37 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - Control Vehicular</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body data-roles="administrador,capturista">
+<body class="pagina-dashboard" data-roles="administrador,capturista">
 
-    <h1>Sistema de Control Vehicular</h1>
+    <header class="app-header">
+        <div>
+            <h1>Sistema de Control Vehicular</h1>
+            <p>Procuraduría Agraria</p>
+        </div>
 
-    <p>
-        Usuario: <strong id="nombreUsuario"></strong>
-    </p>
+        <div class="usuario-box">
+            <i class="bi bi-person-circle"></i><span id="nombreUsuario"></span>
+            <span id="rolUsuario"></span>
+            <button id="btnCerrarSesion" onclick="cerrarSesion()"><i class="bi bi-box-arrow-left"></i> Cerrar sesión</button>
+        </div>
 
-    <p>
-        Rol: <strong id="rolUsuario"></strong>
-    </p>
+    </header>
 
-    <nav>
-        <ul>
-            <li data-menu-roles="administrador"><a href="pages/vehiculos.html">Vehículos</a></li>
-            <li data-menu-roles="administrador"><a href="pages/personas.html">Personas autorizadas</a></li>
-            <li data-menu-roles="administrador,capturista"><a href="pages/salidas.html">Registrar salida</a></li>
-            <li data-menu-roles="administrador,capturista"><a href="pages/regreso.html">Registrar regreso</a></li>
-            <li data-menu-roles="administrador,capturista"><a href="pages/gasto-gasolina.html">Capturar gasto de gasolina</a></li>
-            <li data-menu-roles="administrador"><a href="pages/reporte-combustible.html">Reporte de combustible</a></li>
-            <li data-menu-roles="administrador"><a href="pages/auditoria.html">Auditoría</a></li>
-            <li data-menu-roles="administrador"><a href="pages/usuarios.html">Gestión de usuarios</a></li>
-            <li data-menu-roles="administrador,capturista"><a href="pages/cambiar-password.html">Cambiar mi contraseña</a></li>
-            <li data-menu-roles="administrador"><a href="pages/presupuesto-gasolina.html">Presupuesto de gasolina</a></li>
-            <li data-menu-roles="administrador,capturista"><a href="pages/generacion-resguardo.html">Generación resguardo</a></li>
-            <li data-menu-roles="administrador"><a href="pages/correccion-salida.html">Corrección administrativa de salida</a></li>
-        </ul>
-    </nav>
 
-    <button onclick="cerrarSesion()">Cerrar sesión</button>
+    <main class="menu-dashboard">
+        <section class="dashboard-bienvenida">
+            <h2>Menú principal</h2>
+            <p>Selecciona la acción que deseas realizar.</p>
+        </section>
+
+        <section class="menu-section">
+            <h3>Operación</h3>
+        <div class="menu-grid">
+            <a class="menu-card" href="pages/salidas.html" data-menu-roles="administrador,capturista">
+                <h4> <i class="bi bi-caret-right-square-fill"></i> Registrar salida</h4>
+                <p>Captura la salida de un vehículo autorizado.</p>
+            </a>
+
+            <a class="menu-card" href="pages/regreso.html" data-menu-roles="administrador,capturista">
+                <h4> <i class="bi bi-caret-left-square-fill"></i> Registrar regreso</h4>
+                <p>Registra kilometraje, gasolina y estado de retorno.</p>
+            </a>
+
+            <a class="menu-card" href="pages/generacion-resguardo.html" data-menu-roles="administrador,capturista">
+                <h4> <i class="bi bi-file-earmark-text"></i> Generación de resguardo</h4>
+                <p>Guarda condiciones, inventario y genera el documento Word.</p>
+            </a>
+
+            <a class="menu-card" href="pages/gasto-gasolina.html" data-menu-roles="administrador,capturista">
+                <h4> <i class="bi bi-cash-coin"></i> Captura gasto gasolina</h4>
+                <p>Registra gastos vinculados a una salida.</p>
+            </a>
+
+
+
+            <a class="menu-card" href="pages/vehiculos.html" data-menu-roles="administrador">
+                <h4> <i class="bi bi-car-front-fill"></i> Vehículos</h4>
+                <p>Alta, edición y estado del parque vehicular.</p>
+            </a>
+
+            <a class="menu-card" href="pages/personas.html" data-menu-roles="administrador">
+                <h4> <i class="bi bi-people-fill"></i> Personas autorizadas</h4>
+                <p>Registro y control de usuarios autorizados para conducir.</p>
+            </a>
+
+            <a class="menu-card" href="pages/usuarios.html" data-menu-roles="administrador">
+                <h4> <i class="bi bi-person-gear"></i> Usuarios del sistema</h4>
+                <p>Administración de cuentas, roles y estados.</p>
+            </a>
+
+            <a class="menu-card" href="pages/presupuesto-gasolina.html" data-menu-roles="administrador">
+                <h4> <i class="bi bi-cash-stack"></i> Presupuesto gasolina</h4>
+                <p>Asignación anual de presupuesto por vehículo.</p>
+            </a>
+
+
+
+            <a class="menu-card" href="pages/auditoria.html" data-menu-roles="administrador">
+                <h4> <i class="bi bi-clock-history"></i> Auditoría</h4>
+                <p>Consulta movimientos por vehículo y usuario.</p>
+            </a>
+
+            <a class="menu-card" href="pages/reporte-combustible.html" data-menu-roles="administrador">
+                <h4> <i class="bi bi-flag"></i> Reporte combustible</h4>
+                <p>Revisión mensual de gastos y presupuesto.</p>
+            </a>
+
+            <a class="menu-card" href="pages/correccion-salida.html" data-menu-roles="administrador">
+                <h4> <i class="bi bi-file-earmark-break"></i> Corrección administrativa</h4>
+                <p>Corrige salidas con regreso dejando trazabilidad.</p>
+            </a>
+
+            <a class="menu-card" href="pages/cambiar-password.html" data-menu-roles="administrador,capturista">
+                <h4> <i class="bi bi-key"></i> Cambiar contraseña</h4>
+                <p>Actualiza tu contraseña de acceso.</p>
+            </a>
+        </div>
+        </section>
+    </main>
+
+    
 
     <script>
         function cerrarSesion() {

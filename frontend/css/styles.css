@@ -48,6 +48,9 @@ footer {
     color: whitesmoke;
 }
 
+
+
+
 /* ====================
   ||      LOGIN       ||
    ====================*/
@@ -124,4 +127,147 @@ footer {
 .btnlogin:hover {
     background-color: var(--color-letra-blanca);
     color: var(--color-partido);
+}
+
+
+
+
+/* ====================
+  ||      DASHBOARD   ||
+   ====================*/
+
+.pagina-dashboard {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0fcf0 0%, #ffffff 100%);
+}
+
+.app-header {
+    width: 100%;
+    padding: 18px 40px;
+    background-color: var(--color-principal);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 6px solid var(--color-partido);
+}
+
+.app-header h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: 1px;
+}
+
+.app-header p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--color-letra-blanca);
+}
+
+.usuario-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+}
+
+#rolUsuario {
+    background-color: var(--color-partido);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+#btnCerrarSesion {
+    background-color: white;
+    color: var(--color-principal);
+    border: none;
+    padding: 9px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#btnCerrarSesion:hover {
+    background-color: var(--color-letra-blanca);
+}
+
+.menu-dashboard {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.dashboard-bienvenida {
+    background-color: var(--color-tarjeta);
+    border: 1px solid var(--color-borde);
+    border-left: 8px solid var(--color-principal);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-bienvenida h2 {
+    margin: 0 0 8px;
+    font-size: 30px;
+    color: var(--color-principal);
+}
+
+.dashboard-bienvenida p {
+    margin: 0;
+    color: #555;
+}
+
+.menu-section {
+    margin-bottom: 30px;
+}
+
+.menu-section h3 {
+    font-size: 20px;
+    margin-bottom: 14px;
+    color: var(--color-partido);
+    border-bottom: 2px solid var(--color-borde);
+    padding-bottom: 8px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.menu-card {
+    display: block;
+    text-decoration: none;
+    color: var(--color-texto);
+    background-color: var(--color-tarjeta);
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+    padding: 22px;
+    min-height: 140px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    background-color: var(--color-borde);
+    border-color: var(--color-principal);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.menu-card h4 {
+    margin: 0 0 10px;
+    font-size: 18px;
+    color: var(--color-principal);
+}
+
+.menu-card p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.4;
 }
