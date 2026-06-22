@@ -16,7 +16,8 @@
         </div>
 
         <div class="usuario-box">
-            <i class="bi bi-person-circle"></i><span id="nombreUsuario"></span>
+            <i class="bi bi-person-circle"></i>
+            <span id="nombreUsuario"></span>
             <span id="rolUsuario"></span>
             <button id="btnCerrarSesion" onclick="cerrarSesion()"><i class="bi bi-box-arrow-left"></i> Cerrar sesión</button>
         </div>
@@ -40,17 +41,17 @@
 
             <a class="menu-card" href="pages/regreso.html" data-menu-roles="administrador,capturista">
                 <h4> <i class="bi bi-caret-left-square-fill"></i> Registrar regreso</h4>
-                <p>Registra kilometraje, gasolina y estado de retorno.</p>
+                <p>Captura el regreso de un vehículo.</p>
             </a>
 
             <a class="menu-card" href="pages/generacion-resguardo.html" data-menu-roles="administrador,capturista">
                 <h4> <i class="bi bi-file-earmark-text"></i> Generación de resguardo</h4>
-                <p>Guarda condiciones, inventario y genera el documento Word.</p>
+                <p>Generar documento Word de resguardo.</p>
             </a>
 
             <a class="menu-card" href="pages/gasto-gasolina.html" data-menu-roles="administrador,capturista">
-                <h4> <i class="bi bi-cash-coin"></i> Captura gasto gasolina</h4>
-                <p>Registra gastos vinculados a una salida.</p>
+                <h4> <i class="bi bi-cash-coin"></i> Capturar gasto de gasolina</h4>
+                <p>Registra gastos de gasolina vinculados a una salida.</p>
             </a>
 
 
@@ -79,17 +80,17 @@
 
             <a class="menu-card" href="pages/auditoria.html" data-menu-roles="administrador">
                 <h4> <i class="bi bi-clock-history"></i> Auditoría</h4>
-                <p>Consulta movimientos por vehículo y usuario.</p>
+                <p>Consulta los movimientos de un vehículo.</p>
             </a>
 
             <a class="menu-card" href="pages/reporte-combustible.html" data-menu-roles="administrador">
-                <h4> <i class="bi bi-flag"></i> Reporte combustible</h4>
+                <h4> <i class="bi bi-flag"></i> Reporte de combustible</h4>
                 <p>Revisión mensual de gastos y presupuesto.</p>
             </a>
 
             <a class="menu-card" href="pages/correccion-salida.html" data-menu-roles="administrador">
                 <h4> <i class="bi bi-file-earmark-break"></i> Corrección administrativa</h4>
-                <p>Corrige salidas con regreso dejando trazabilidad.</p>
+                <p>Corrige salidas con regreso.</p>
             </a>
 
             <a class="menu-card" href="pages/cambiar-password.html" data-menu-roles="administrador,capturista">
@@ -100,6 +101,10 @@
         </section>
     </main>
 
+
+    <footer>
+        <p>&copy; 2026 Procuraduría Agraria. Todos los derechos reservados.</p>
+    </footer>
     
 
     <script>
