@@ -510,9 +510,9 @@
         // ── Helpers ──────────────────────────────────────────────
         function mostrarMsg(el, texto, tipo) {
             el.textContent = texto;
-            el.className   = "mensaje " + tipo;
+            el.className   = "message " + tipo;
             if (tipo === "ok") {
-                setTimeout(() => { el.textContent = ""; el.className = "mensaje"; }, 3000);
+                setTimeout(() => { el.textContent = ""; el.className = "message"; }, 3000);
             }
         }
 

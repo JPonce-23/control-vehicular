@@ -4,303 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resguardo Vehicular</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            background: #f5f5f5;
-            color: #111;
-            padding: 20px;
-        }
-
-        h1 { font-size: 20px; margin-bottom: 4px; }
-        .subtitulo { color: #555; margin-bottom: 20px; font-size: 13px; }
-
-        .tarjeta {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-
-        .tarjeta h2 {
-            font-size: 15px;
-            margin-bottom: 14px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .paso-badge {
-            background: #1a6b3c;
-            color: white;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-
-        .paso-badge.completado { background: #4caf50; }
-        .paso-badge.bloqueado { background: #aaa; }
-
-        select {
-            width: 100%;
-            max-width: 480px;
-            padding: 8px 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 13px; }
-
-        /* Condiciones e inventario */
-        .items-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 10px;
-        }
-
-        .condicion-item, .inventario-item {
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            padding: 10px 12px;
-            background: #fafafa;
-        }
-
-        .condicion-item p, .inventario-item p {
-            font-weight: bold;
-            margin-bottom: 6px;
-            font-size: 13px;
-        }
-
-        .radio-grupo { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
-
-        .radio-grupo label {
-            font-weight: normal;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .observacion-input {
-            width: 100%;
-            padding: 5px 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        /* Botones */
-        .btn {
-            padding: 8px 18px;
-            border: none;
-            border-radius: 4px;
-            font-size: 13px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s, opacity 0.2s;
-        }
-
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .btn-primario { background: #1a6b3c; color: white; }
-        .btn-primario:not(:disabled):hover { background: #145730; }
-        .btn-secundario { background: #e0e0e0; color: #333; }
-        .btn-secundario:not(:disabled):hover { background: #ccc; }
-        .btn-descarga { background: #1565c0; color: white; }
-        .btn-descarga:not(:disabled):hover { background: #0d47a1; }
-
-        .acciones { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-
-        /* Mensaje */
-        .mensaje {
-            margin-top: 10px;
-            font-size: 13px;
-            min-height: 18px;
-            font-weight: bold;
-        }
-
-        .mensaje.error { color: #c62828; }
-        .mensaje.ok { color: #2e7d32; }
-
-        /* Vista previa - replica el documento */
-        #previewContainer {
-            display: none;
-        }
-
-        .resguardo-doc {
-            background: white;
-            border: 1px solid #999;
-            padding: 20px;
-            font-size: 12px;
-            font-family: Arial, sans-serif;
-            max-width: 860px;
-        }
-
-        .resguardo-doc table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 0;
-        }
-
-        .resguardo-doc td, .resguardo-doc th {
-            border: 1px solid #333;
-            padding: 4px 6px;
-            vertical-align: top;
-        }
-
-        .resguardo-header {
-            text-align: center;
-            font-weight: bold;
-            font-size: 11px;
-            text-transform: uppercase;
-        }
-
-        .seccion-titulo {
-            background: #d9d9d9;
-            font-weight: bold;
-            font-size: 11px;
-            text-transform: uppercase;
-        }
-
-        .campo-label { font-weight: bold; font-size: 11px; }
-        .campo-valor { font-size: 11px; }
-
-        .check-cell { text-align: center; font-size: 13px; }
-
-        .estado-B { font-weight: bold; color: #1a6b3c; }
-        .estado-R { font-weight: bold; color: #e65100; }
-        .estado-M { font-weight: bold; color: #c62828; }
-
-        /* Indicador de progreso */
-        .progreso {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .progreso-paso {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .progreso-paso.activo { color: #1a6b3c; font-weight: bold; }
-        .progreso-paso.listo { color: #4caf50; }
-
-        .progreso-separador { color: #ccc; font-size: 16px; }
-
-        .seccion-bloqueada { opacity: 0.5; pointer-events: none; }
-
-        .aviso-bloqueo {
-            font-size: 12px;
-            color: #888;
-            font-style: italic;
-            margin-top: 6px;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-roles="administrador,capturista">
+<body class="app-page" data-roles="administrador,capturista">
 
-    <h1>Resguardo Vehicular</h1>
-
-    <button type="button" onclick="window.location.href='../dashboard.html'">
-        Volver al dashboard
-    </button>
-
-    <!-- Indicador de progreso -->
-    <div class="progreso">
-        <div class="progreso-paso" id="prog1">① Seleccionar salida</div>
-        <span class="progreso-separador">›</span>
-        <div class="progreso-paso" id="prog2">② Guardar condiciones</div>
-        <span class="progreso-separador">›</span>
-        <div class="progreso-paso" id="prog3">③ Guardar inventario</div>
-        <span class="progreso-separador">›</span>
-        <div class="progreso-paso" id="prog4">④ Vista previa y generar</div>
-    </div>
-
-    <!-- PASO 1: Seleccionar salida -->
-    <div class="tarjeta">
-        <h2><span class="paso-badge" id="badge1">1</span> Seleccionar salida</h2>
-        <label for="salida_id">Salida con regreso registrado:</label>
-        <select id="salida_id">
-            <option value="">— Selecciona una salida —</option>
-        </select>
-        <div class="mensaje" id="mensajeSalida"></div>
-    </div>
-
-    <!-- PASO 2: Condiciones -->
-    <div class="tarjeta" id="seccionCondiciones">
-        <h2><span class="paso-badge bloqueado" id="badge2">2</span> Condiciones de funcionalidad</h2>
-        <p class="aviso-bloqueo" id="avisoCondiciones">Selecciona una salida primero.</p>
-        <div id="condicionesContainer" class="items-grid"></div>
-        <div class="acciones">
-            <button class="btn btn-primario" id="btnGuardarCondiciones" disabled>
-                Guardar condiciones
-            </button>
+    <header class="app-header">
+        <div>
+            <h1>Control vehicular</h1>
+            <p>Procuraduría Agraria</p>
         </div>
-        <div class="mensaje" id="mensajeCondiciones"></div>
-    </div>
+        <button class="btn btn-secondary" type="button" onclick="window.location.href='../dashboard.html'">
+            Volver al menú
+        </button>
+    </header>
 
-    <!-- PASO 3: Inventario -->
-    <div class="tarjeta" id="seccionInventario">
-        <h2><span class="paso-badge bloqueado" id="badge3">3</span> Inventario del vehículo</h2>
-        <p class="aviso-bloqueo" id="avisoInventario">Guarda las condiciones primero.</p>
-        <div id="inventarioContainer" class="items-grid"></div>
-        <div class="acciones">
-            <button class="btn btn-primario" id="btnGuardarInventario" disabled>
-                Guardar inventario
-            </button>
+    <main class="app-main">
+
+        <section class="page-title">
+            <h2>Generación del resguardo</h2>
+        </section>
+
+        <div class="progreso">
+            <div class="progreso-paso" id="prog1">① Seleccionar salida</div>
+            <span class="progreso-separador">›</span>
+            <div class="progreso-paso" id="prog2">② Guardar condiciones</div>
+            <span class="progreso-separador">›</span>
+            <div class="progreso-paso" id="prog3">③ Guardar inventario</div>
+            <span class="progreso-separador">›</span>
+            <div class="progreso-paso" id="prog4">④ Vista previa y generar</div>
         </div>
-        <div class="mensaje" id="mensajeInventario"></div>
-    </div>
 
-    <!-- PASO 4: Vista previa y generación -->
-    <div class="tarjeta" id="seccionResguardo">
-        <h2><span class="paso-badge bloqueado" id="badge4">4</span> Vista previa y resguardo</h2>
-        <p class="aviso-bloqueo" id="avisoResguardo">Guarda el inventario primero.</p>
+        <section class="card resguardo-card">
+            <h2><span class="paso-badge" id="badge1">1</span> Seleccionar salida</h2>
+            <div class="form-group">
+                <label for="salida_id">Salida con regreso registrado:</label>
+                <select id="salida_id">
+                    <option value="">— Selecciona una salida —</option>
+                </select>
+            </div>
+            <div class="message" id="mensajeSalida"></div>
+        </section>
 
-        <div class="acciones">
-            <button class="btn btn-secundario" id="btnPreview" disabled>
-                Ver vista previa
-            </button>
-            <button class="btn btn-primario" id="btnGenerar" disabled>
-                Generar resguardo
-            </button>
-            <button class="btn btn-descarga" id="btnDescargar" disabled>
-                Descargar resguardo
-            </button>
-        </div>
-        <div class="mensaje" id="mensajeResguardo"></div>
+        <section class="card resguardo-card" id="seccionCondiciones">
+            <h2><span class="paso-badge bloqueado" id="badge2">2</span> Condiciones de funcionalidad</h2>
+            <p class="aviso-bloqueo" id="avisoCondiciones">Selecciona una salida primero.</p>
+            <div id="condicionesContainer" class="items-grid"></div>
+            <div class="acciones">
+                <button class="btn btn-primary" id="btnGuardarCondiciones" disabled>
+                    Guardar condiciones
+                </button>
+            </div>
+            <div class="message" id="mensajeCondiciones"></div>
+        </section>
 
-        <br>
-        <div id="previewContainer"></div>
-    </div>
+        <section class="card resguardo-card" id="seccionInventario">
+            <h2><span class="paso-badge bloqueado" id="badge3">3</span> Inventario del vehículo</h2>
+            <p class="aviso-bloqueo" id="avisoInventario">Guarda las condiciones primero.</p>
+            <div id="inventarioContainer" class="items-grid"></div>
+            <div class="acciones">
+                <button class="btn btn-primary" id="btnGuardarInventario" disabled>
+                    Guardar inventario
+                </button>
+            </div>
+            <div class="message" id="mensajeInventario"></div>
+        </section>
+
+        <section class="card resguardo-card" id="seccionResguardo">
+            <h2><span class="paso-badge bloqueado" id="badge4">4</span> Vista previa y resguardo</h2>
+            <p class="aviso-bloqueo" id="avisoResguardo">Guarda el inventario primero.</p>
+
+            <div class="acciones">
+                <button class="btn btn-secondary" id="btnPreview" disabled>
+                    Ver vista previa
+                </button>
+                <button class="btn btn-primary" id="btnGenerar" disabled>
+                    Generar resguardo
+                </button>
+                <button class="btn btn-descarga" id="btnDescargar" disabled>
+                    Descargar resguardo
+                </button>
+            </div>
+            <div class="message" id="mensajeResguardo"></div>
+
+            <br>
+            <div id="previewContainer"></div>
+        </section>
+
+    </main>
 
     <script src="../js/api.js"></script>
     <script src="../js/auth-guard.js"></script>
     <script src="../js/generacion-resguardo.js"></script>
-
 </body>
 </html>

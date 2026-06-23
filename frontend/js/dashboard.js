@@ -43,3 +43,41 @@ function formatearRol(rol) {
 
     return roles[rol] || rol;
 }
+
+
+
+// ── Huevo de pascua del footer ───────────────────────────
+
+const easterYear = document.getElementById("easterYear");
+const easterEgg = document.getElementById("easterEgg");
+
+let contadorClicksYear = 0;
+let temporizadorClicks = null;
+let temporizadorEasterEgg = null;
+
+if (easterYear && easterEgg) {
+    easterYear.addEventListener("click", function () {
+        contadorClicksYear++;
+
+        clearTimeout(temporizadorClicks);
+
+        temporizadorClicks = setTimeout(function () {
+            contadorClicksYear = 0;
+        }, 2000);
+
+        if (contadorClicksYear >= 8) {
+            contadorClicksYear = 0;
+            mostrarEasterEgg();
+        }
+    });
+}
+
+function mostrarEasterEgg() {
+    clearTimeout(temporizadorEasterEgg);
+
+    easterEgg.classList.add("mostrar");
+
+    temporizadorEasterEgg = setTimeout(function () {
+        easterEgg.classList.remove("mostrar");
+    }, 5000);
+}

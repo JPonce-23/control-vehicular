@@ -49,6 +49,7 @@ footer {
 }
 
 .bi {
+    padding-top: 5px;
     font-size: 1.5rem;
 }
 
@@ -561,4 +562,352 @@ footer {
 
 .message.error {
     color: var(--color-error);
+}
+
+
+
+/* ================================
+  || GENERACIÓN DE RESGUARDO      ||
+   ================================*/
+
+.progreso {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+
+.progreso-paso {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #777;
+    background-color: #ffffff;
+    border: 1px solid var(--color-borde);
+    border-radius: 20px;
+    padding: 7px 12px;
+}
+
+.progreso-paso.activo {
+    color: var(--color-principal);
+    border-color: var(--color-principal);
+    font-weight: bold;
+}
+
+.progreso-paso.listo {
+    color: var(--color-ok);
+    border-color: var(--color-ok);
+    font-weight: bold;
+}
+
+.progreso-separador {
+    color: #999;
+    font-size: 18px;
+}
+
+
+.paso-badge {
+    background-color: var(--color-principal);
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.paso-badge.completado {
+    background-color: var(--color-ok);
+}
+
+.paso-badge.bloqueado {
+    background-color: #aaa;
+}
+
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+.condicion-item,
+.inventario-item {
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 14px;
+    background-color: #fbfdfb;
+}
+
+.condicion-item p,
+.inventario-item p {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--color-texto);
+}
+
+.radio-grupo {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.radio-grupo label {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.observacion-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--color-borde);
+    border-radius: 7px;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.acciones {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+.btn-descarga {
+    background-color: var(--color-azul);
+    color: white;
+}
+
+.btn-descarga:not(:disabled):hover {
+    background-color: #1f3d63;
+}
+
+.seccion-bloqueada {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.aviso-bloqueo {
+    font-size: 13px;
+    color: #777;
+    font-style: italic;
+    margin-top: 6px;
+    margin-bottom: 12px;
+}
+
+
+/* ================================
+  || VISTA PREVIA DEL RESGUARDO  ||
+   ================================*/
+
+#previewContainer {
+    display: none;
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.resguardo-doc {
+    background-color: white;
+    border: 1px solid #999;
+    padding: 20px;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    max-width: 860px;
+    min-width: 780px;
+}
+
+.resguardo-doc table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0;
+}
+
+.resguardo-doc td,
+.resguardo-doc th {
+    border: 1px solid #333;
+    padding: 4px 6px;
+    vertical-align: top;
+}
+
+.resguardo-header {
+    text-align: center;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.seccion-titulo {
+    background-color: #d9d9d9;
+    font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.campo-label {
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.campo-valor {
+    font-size: 11px;
+}
+
+.check-cell {
+    text-align: center;
+    font-size: 13px;
+}
+
+.estado-B {
+    font-weight: bold;
+    color: var(--color-principal);
+}
+
+.estado-R {
+    font-weight: bold;
+    color: #e65100;
+}
+
+.estado-M {
+    font-weight: bold;
+    color: var(--color-error);
+}
+
+
+.resguardo-card h2 {
+    font-size: 21px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--color-borde);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-texto);
+}
+
+
+
+
+
+/* ================================
+  || HUEVO DE PASCUA DASHBOARD    ||
+   ================================*/
+
+.easter-year {
+    cursor: pointer;
+    font-weight: bold;
+    color: inherit;
+    display: inline-block;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.easter-year:hover {
+    transform: scale(1.08);
+}
+
+.easter-year:active {
+    transform: scale(0.95);
+}
+
+.easter-egg {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%) translateY(140%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    max-width: 520px;
+    width: calc(100% - 40px);
+    padding: 18px 22px;
+
+    background-color: var(--color-tarjeta);
+    border: 2px solid var(--color-principal);
+    border-left: 8px solid var(--color-partido);
+    border-radius: 14px;
+
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.easter-egg.mostrar {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.easter-egg strong {
+    color: var(--color-principal);
+    font-size: 17px;
+}
+
+.easter-egg p {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.llanta-easter {
+    width: 54px;
+    height: 54px;
+    border: 8px solid #1f2933;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+    animation: girarLlanta 0.8s linear infinite;
+}
+
+.llanta-easter::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background-color: var(--color-principal);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.llanta-easter::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 38px;
+    background-color: #1f2933;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 6px;
+}
+
+@keyframes girarLlanta {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }

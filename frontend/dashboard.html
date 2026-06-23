@@ -19,7 +19,7 @@
             <i class="bi bi-person-circle"></i>
             <span id="nombreUsuario"></span>
             <span id="rolUsuario"></span>
-            <button id="btnCerrarSesion" onclick="cerrarSesion()"><i class="bi bi-box-arrow-left"></i> Cerrar sesión</button>
+            <button id="btnCerrarSesion" onclick="cerrarSesion()"><i class="bi bi-box-arrow-left" style="font-size: 1rem;"></i> Cerrar sesión</button>
         </div>
 
     </header>
@@ -102,9 +102,23 @@
     </main>
 
 
-    <footer>
-        <p>&copy; 2026 Procuraduría Agraria. Todos los derechos reservados.</p>
+    <footer class="dashboard-footer">
+    <p>
+        &copy; <span id="easterYear" class="easter-year">2026</span>
+        Procuraduría Agraria. Todos los derechos reservados.
+    </p>
     </footer>
+
+    <div id="easterEgg" class="easter-egg">
+        <div class="llanta-easter"></div>
+
+        <div>
+            <strong>¡¡Gracias por usar mi Software.!!</strong>
+            <p>Proyecto realizado en Junio del 2026.</p>
+            <p>Autor: Jonathan Ponce</p>
+            <p>Última actualización: 23/06/2026</p>
+        </div>
+    </div>
     
 
     <script>
