@@ -4,84 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auditoría por vehículo</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-role="administrador">
+<body class="app-page" data-roles="administrador">
+<main class="app-main">
 
-    <h1>Auditoría por vehículo</h1>
 
-    <button onclick="window.location.href='../dashboard.html'">
-        Volver al dashboard
+    <header class="app-header">
+    <div>
+        <h1>Control vehicular</h1>
+        <p>Procuraduría Agraria</p>
+    </div>
+
+    <button class="btn btn-secondary" type="button" onclick="window.location.href='../dashboard.html'">
+        Volver al menú
     </button>
+    </header>
 
-    <br><br>
+    <section class="page-title">
+        <h2>Auditoría por vehículo</h2>
+    </section>
 
-    <section>
+
+    <section class="card">
         <h2>Filtros</h2>
 
-        <form id="formAuditoria" autocomplete="off">
+        <form id="formAuditoria" class="form-grid" autocomplete="off">
 
-            <label for="vehiculo_id">*Selecciona un vehículo:</label>
-            <br>
-            <select id="vehiculo_id" required>
-                <option value="">Selecciona un vehículo</option>
-            </select>
+            <div class="form-group">
+                <label for="vehiculo_id">*Selecciona un vehículo:</label>
+                <select id="vehiculo_id" required>
+                    <option value="">Selecciona un vehículo</option>
+                </select>
+            </div>
+            
 
-            <br><br>
+            <div class="form-group">
+                <label for="accion">Acción:</label>
+                <select id="accion">
+                    <option value="">Todas las acciones</option>
+                    <option value="registro_salida">Registro de salida</option>
+                    <option value="registro_regreso">Registro de regreso</option>
+                    <option value="modificacion">Modificación / Corrección</option>
+                    <option value="generacion_resguardo">Generación de resguardo</option>
+                </select>
+            </div>
+            
 
-            <label for="accion">Acción:</label>
-            <br>
-            <select id="accion">
-                <option value="">Todas las acciones</option>
-                <option value="registro_salida">Registro de salida</option>
-                <option value="registro_regreso">Registro de regreso</option>
-                <option value="modificacion">Modificación / Corrección</option>
-                <option value="generacion_resguardo">Generación de resguardo</option>
-            </select>
-
-            <br><br>
-
-            <button type="submit">Consultar auditoría</button>
-            <button type="button" id="btnLimpiar">Limpiar</button>
+            <button class="btn btn-secondary" type="submit">Consultar auditoría</button>
+            <button class="btn btn-secondary" type="button" id="btnLimpiar">Limpiar</button>
 
         </form>
     </section>
 
-    <br>
+    
 
-    <section id="resumenAuditoria">
+    <section class="card" id="resumenAuditoria">
         <h2>Resumen</h2>
         <p>Selecciona un vehículo para consultar sus movimientos.</p>
     </section>
 
-    <br>
+    
 
-    <section>
+    <section class="card">
         <h2>Movimientos registrados</h2>
 
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Vehículo</th>
-                    <th>Placa</th>
-                    <th>Persona autorizada</th>
-                    <th>Fecha salida</th>
-                    <th>Fecha regreso</th>
-                    <th>Acción</th>
-                    <th>Descripción</th>
-                    <th>Fecha movimiento</th>
-                    <th>Usuario que capturó</th>
-                </tr>
-            </thead>
-            <tbody id="tablaAuditoria">
-            </tbody>
-        </table>
+        <div class="table-container">
+            <table class="data-table"border="1">
+                <thead>
+                    <tr>
+                        <th>Vehículo</th>
+                        <th>Placa</th>
+                        <th>Persona autorizada</th>
+                        <th>Fecha salida</th>
+                        <th>Fecha regreso</th>
+                        <th>Acción</th>
+                        <th>Descripción</th>
+                        <th>Fecha movimiento</th>
+                        <th>Usuario que capturó</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaAuditoria">
+                </tbody>
+            </table>
+        </div>
     </section>
 
-    <p id="mensaje"></p>
+    <p id="mensaje" class="message"></p>
 
     <script src="../js/api.js"></script>
     <script src="../js/auth-guard.js"></script>
     <script src="../js/auditoria.js"></script>
 
+
+</main>
 </body>
 </html>

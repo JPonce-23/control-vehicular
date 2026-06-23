@@ -5,15 +5,15 @@
     <title>Vehículos</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-role="administrador">
+<body class="app-page" data-roles="administrador">
 
-    <header>
+    <header class="app-header">
         <div>
             <h1>Control vehicular</h1>
             <p>Procuraduría Agraria</p>
         </div>
 
-        <button type="button" onclick="window.location.href='../dashboard.html'">
+        <button class="btn btn-secondary" type="button" onclick="window.location.href='../dashboard.html'">
             Volver al Menú
         </button>
     </header>
@@ -25,103 +25,102 @@
         <p>Consulta, registra y actualiza la información del parque vehicular.</p>
     </section>
 
-    <section class="card">
 
-        <section>
+        <section class="card">
             <h2>Vehículos registrados</h2>
 
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Placa</th>
-                        <th>Marca</th>
-                        <th>Tipo</th>
-                        <th>Modelo</th>
-                        <th>Serie</th>
-                        <th>Color</th>
-                        <th>Km acumulado</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaVehiculos"></tbody>
-            </table>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Placa</th>
+                            <th>Marca</th>
+                            <th>Tipo</th>
+                            <th>Modelo</th>
+                            <th>Serie</th>
+                            <th>Color</th>
+                            <th>Km acumulado</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaVehiculos"></tbody>
+                </table>
+            </div>
 
-            <br>
-
-            <button type="button" id="btnMostrarFormulario">
+            <button class="btn btn-primary" type="button" id="btnMostrarFormulario">
                 Registrar vehículo
             </button>
         </section>
 
-        <br>
 
-        <section id="seccionFormulario" style="display: none;">
+        <section class="card" id="seccionFormulario" class="form-grid" style="display: none;">
             <h2 id="tituloFormulario">Registrar vehículo</h2>
 
-            <form id="formVehiculo" autocomplete="off">
+            <form id="formVehiculo" class="form-grid" autocomplete="off">
                 <input type="hidden" id="vehiculo_id_edicion">
 
-                <label for="placa">*Placa:</label><br>
-                <input type="text" id="placa" required>
+                <div class="form-group">
+                    <label for="placa">*Placa:</label>
+                    <input type="text" id="placa" required>
+                </div>
 
-                <br><br>
+                <div class="form-group">
+                    <label for="marca">*Marca:</label><br>
+                    <input type="text" id="marca" required>
+                </div>
+               
+                <div class="form-group">
+                    <label for="tipo">*Tipo:</label><br>
+                    <input type="text" id="tipo" required>
+                </div>
 
-                <label for="marca">*Marca:</label><br>
-                <input type="text" id="marca" required>
-
-                <br><br>
-
-                <label for="tipo">*Tipo:</label><br>
-                <input type="text" id="tipo" required>
-
-                <br><br>
-
-                <label for="modelo_anio">*Año modelo:</label><br>
-                <input type="number" id="modelo_anio" required>
-
-                <br><br>
-
-                <label for="cilindros">*Cilindros:</label><br>
-                <input type="number" id="cilindros" required>
-
-                <br><br>
-
-                <label for="num_serie">*Número de serie:</label><br>
-                <input type="text" id="num_serie" required>
-
-                <br><br>
-
-                <label for="num_motor">Número de motor:</label><br>
-                <input type="text" id="num_motor">
-
-                <br><br>
-
-                <label for="num_poliza">Número de póliza:</label><br>
-                <input type="text" id="num_poliza">
-
-                <br><br>
-
-                <label for="num_inventario">Número de inventario:</label><br>
-                <input type="text" id="num_inventario">
-
-                <br><br>
-
+                <div class="form-group">
+                    <label for="modelo_anio">*Año modelo:</label><br>
+                    <input type="number" id="modelo_anio" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cilindros">*Cilindros:</label><br>
+                    <input type="number" id="cilindros" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="num_serie">*Número de serie:</label><br>
+                    <input type="text" id="num_serie" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="num_motor">Número de motor:</label><br>
+                    <input type="text" id="num_motor">
+                </div>
+                
+                <div class="form-group">
+                    <label for="num_poliza">Número de póliza:</label><br>
+                    <input type="text" id="num_poliza">
+                </div>
+                
+                <div class="form-group">
+                    <label for="num_inventario">Número de inventario:</label><br>
+                    <input type="text" id="num_inventario">
+                </div>
+                
+                <div class="form-group">
                 <label for="color">*Color:</label><br>
                 <input type="text" id="color" required>
-
-                <br><br>
-
-                <label for="num_tarjeta_gasolina">Número de tarjeta de gasolina:</label><br>
-                <input type="text" id="num_tarjeta_gasolina">
-
-                <br><br>
-
+                </div>
+                
+                <div class="form-group">
+                    <label for="num_tarjeta_gasolina">Número de tarjeta de gasolina:</label><br>
+                    <input type="text" id="num_tarjeta_gasolina">
+                </div>
+                
+                <div class="form-group">
                 <label for="km_acumulado">*Kilometraje acumulado:</label><br>
                 <input type="number" step="0.01" id="km_acumulado" required>
-
-                <br><br>
+                </div>
+                
 
                 <input type="submit" id="btnGuardar" value="Registrar vehículo">
 
@@ -130,9 +129,9 @@
                 </button>
             </form>
         </section>
-    </section>
+        
 
-    <p id="mensaje"></p>
+    <p id="mensaje" class="message"></p>
 
     <script src="../js/api.js"></script>
     <script src="../js/auth-guard.js"></script>

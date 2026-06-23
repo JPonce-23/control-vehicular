@@ -3,168 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <title>Corrección administrativa de salida</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-roles="administrador">
+<body class="app-page" data-roles="administrador">
+<main class="app-main">
 
-    <h1>Corrección administrativa de salida</h1>
+    <header class="app-header">
+    <div>
+        <h1>Control vehicular</h1>
+        <p>Procuraduría Agraria</p>
+    </div>
 
-    <button type="button" onclick="window.location.href='../dashboard.html'">
-        Volver al dashboard
+    <button class="btn btn-secondary" type="button" onclick="window.location.href='../dashboard.html'">
+        Volver al menú
     </button>
+    </header>
 
-    <br><br>
-
-    <section>
-        <h2>Buscar salida</h2>
-
-        <label for="placa_busqueda">Placa del vehículo:</label><br>
-        <input type="text" id="placa_busqueda">
-
-        <br><br>
-
-        <label for="persona_busqueda">Nombre de la persona:</label><br>
-        <input type="text" id="persona_busqueda">
-
-        <br><br>
-
-        <button type="button" id="btnBuscarCoincidencias">
-            Buscar salidas
-        </button>
-
-        <br><br>
-
-        <label for="salida_id">Salida encontrada:</label><br>
-        <select id="salida_id">
-            <option value="">Busca una salida primero</option>
-        </select>
+    <section class="page-title">
+        <h2>Corrección administrativa de salida</h2>
+        <p>Corrige alguna salida.</p>
     </section>
 
-    <br>
 
-    <section id="resumenSalida">
+    
+    <section class="card">
+        <h2>Buscar salida</h2>
+
+        <div class="form-group">
+            <label for="placa_busqueda">Placa del vehículo:</label><br>
+            <input type="text" id="placa_busqueda">
+        </div>
+
+        <div class="form-group">
+            <label for="persona_busqueda">Nombre de la persona:</label><br>
+            <input type="text" id="persona_busqueda">
+        </div>
+        
+        <div class="form-group">
+            <button type="button" class="btn btn-secondary" id="btnBuscarCoincidencias">
+                Buscar salidas
+            </button>
+        </div>
+        
+
+        <div class="form-group">
+            <label for="salida_id">Salida encontrada:</label><br>
+            <select id="salida_id">
+                <option value="">Busca una salida primero</option>
+            </select>
+        </div>
+    </section>
+
+    <section class="card" id="resumenSalida">
         <h2>Resumen</h2>
         <p>Busca una salida por placa del vehículo o nombre de la persona.</p>
     </section>
 
     <br>
 
-    <section id="seccionFormulario" style="display: none;">
+    <section class="card" id="seccionFormulario" style="display: none;">
         <h2>Datos a corregir</h2>
 
-        <form id="formCorreccion" autocomplete="off">
+        <form class="form-correccion" id="formCorreccion" autocomplete="off">
 
-            <h3>Datos de salida</h3>
+            <h3 class="form-section-title">Datos de salida</h3>
 
-            <label for="km_odometro_salida">*Kilometraje de salida:</label><br>
-            <input type="number" step="0.01" id="km_odometro_salida" required>
+            <div class="form-group">
+                <label for="km_odometro_salida">*Kilometraje de salida:</label>
+                <input type="number" step="0.01" id="km_odometro_salida" required>
+            </div>
 
-            <br><br>
+            <div class="form-group">
+                <label for="nivel_gasolina_salida">*Nivel de gasolina de salida:</label>
+                <select id="nivel_gasolina_salida" required>
+                    <option value="">Selecciona nivel</option>
+                    <option value="vacio">Vacío</option>
+                    <option value="cuarto">1/4</option>
+                    <option value="medio">1/2</option>
+                    <option value="tres_cuartos">3/4</option>
+                    <option value="lleno">Lleno</option>
+                </select>
+            </div>
 
-            <label for="nivel_gasolina_salida">*Nivel de gasolina de salida:</label><br>
-            <select id="nivel_gasolina_salida" required>
-                <option value="">Selecciona nivel</option>
-                <option value="vacio">Vacío</option>
-                <option value="cuarto">1/4</option>
-                <option value="medio">1/2</option>
-                <option value="tres_cuartos">3/4</option>
-                <option value="lleno">Lleno</option>
-            </select>
+            <div class="form-group">
+                <label for="estado_llantas_salida">*Estado de llantas de salida:</label>
+                <select id="estado_llantas_salida" required>
+                    <option value="">Selecciona estado</option>
+                    <option value="cuarto">1/4</option>
+                    <option value="medio">1/2</option>
+                    <option value="tres_cuartos">3/4</option>
+                    <option value="lleno">Lleno</option>
+                </select>
+            </div>
 
-            <br><br>
+            <div class="form-group form-group-full">
+                <label for="finalidad_uso">*Finalidad de uso:</label>
+                <textarea id="finalidad_uso" required></textarea>
+            </div>
 
-            <label for="estado_llantas_salida">*Estado de llantas de salida:</label><br>
-            <select id="estado_llantas_salida" required>
-                <option value="">Selecciona estado</option>
-                <option value="cuarto">1/4</option>
-                <option value="medio">1/2</option>
-                <option value="tres_cuartos">3/4</option>
-                <option value="lleno">Lleno</option>
-            </select>
+            <div class="form-group form-group-full">
+                <label for="observaciones_salida">Observaciones de salida:</label>
+                <textarea id="observaciones_salida"></textarea>
+            </div>
 
-            <br><br>
 
-            <label for="finalidad_uso">*Finalidad de uso:</label><br>
-            <textarea id="finalidad_uso" required></textarea>
+            <h3 class="form-section-title">Datos de regreso</h3>
 
-            <br><br>
+            <div class="form-group">
+                <label for="km_odometro_regreso">*Kilometraje de regreso:</label>
+                <input type="number" step="0.01" id="km_odometro_regreso" required>
+            </div>
 
-            <label for="observaciones_salida">Observaciones de salida:</label><br>
-            <textarea id="observaciones_salida"></textarea>
+            <div class="form-group">
+                <label for="nivel_gasolina_regreso">*Nivel de gasolina de regreso:</label>
+                <select id="nivel_gasolina_regreso" required>
+                    <option value="">Selecciona nivel</option>
+                    <option value="vacio">Vacío</option>
+                    <option value="cuarto">1/4</option>
+                    <option value="medio">1/2</option>
+                    <option value="tres_cuartos">3/4</option>
+                    <option value="lleno">Lleno</option>
+                </select>
+            </div>
 
-            <br><br>
+            <div class="form-group">
+                <label for="estado_llantas_regreso">*Estado de llantas de regreso:</label>
+                <select id="estado_llantas_regreso" required>
+                    <option value="">Selecciona estado</option>
+                    <option value="cuarto">1/4</option>
+                    <option value="medio">1/2</option>
+                    <option value="tres_cuartos">3/4</option>
+                    <option value="lleno">Lleno</option>
+                </select>
+            </div>
 
-            <h3>Datos de regreso</h3>
+            <div class="form-group">
+                <label for="estado_vehiculo_regreso">*Estado del vehículo al regreso:</label>
+                <select id="estado_vehiculo_regreso" required>
+                    <option value="">Selecciona estado</option>
+                    <option value="bueno">Bueno</option>
+                    <option value="dañado">Dañado</option>
+                    <option value="mantenimiento">Mantenimiento</option>
+                </select>
+            </div>
 
-            <label for="km_odometro_regreso">*Kilometraje de regreso:</label><br>
-            <input type="number" step="0.01" id="km_odometro_regreso" required>
+            <div class="form-group">
+                <label for="finalidad_devolucion">*Finalidad de devolución:</label>
+                <select id="finalidad_devolucion" required>
+                    <option value="">Selecciona finalidad</option>
+                    <option value="disponible">Disponible</option>
+                    <option value="reparacion">Reparación</option>
+                    <option value="sustitucion">Sustitución</option>
+                </select>
+            </div>
 
-            <br><br>
+            <div class="form-group form-group-full">
+                <label for="observaciones_regreso">Observaciones de regreso:</label>
+                <textarea id="observaciones_regreso"></textarea>
+            </div>
 
-            <label for="nivel_gasolina_regreso">*Nivel de gasolina de regreso:</label><br>
-            <select id="nivel_gasolina_regreso" required>
-                <option value="">Selecciona nivel</option>
-                <option value="vacio">Vacío</option>
-                <option value="cuarto">1/4</option>
-                <option value="medio">1/2</option>
-                <option value="tres_cuartos">3/4</option>
-                <option value="lleno">Lleno</option>
-            </select>
 
-            <br><br>
+            <h3 class="form-section-title">Motivo administrativo</h3>
 
-            <label for="estado_llantas_regreso">*Estado de llantas de regreso:</label><br>
-            <select id="estado_llantas_regreso" required>
-                <option value="">Selecciona estado</option>
-                <option value="cuarto">1/4</option>
-                <option value="medio">1/2</option>
-                <option value="tres_cuartos">3/4</option>
-                <option value="lleno">Lleno</option>
-            </select>
+            <div class="form-group form-group-full">
+                <label for="motivo">*Motivo de la corrección:</label>
+                <textarea id="motivo" required></textarea>
+            </div>
 
-            <br><br>
-
-            <label for="estado_vehiculo_regreso">*Estado del vehículo al regreso:</label><br>
-            <select id="estado_vehiculo_regreso" required>
-                <option value="">Selecciona estado</option>
-                <option value="bueno">Bueno</option>
-                <option value="dañado">Dañado</option>
-                <option value="mantenimiento">Mantenimiento</option>
-            </select>
-
-            <br><br>
-
-            <label for="finalidad_devolucion">*Finalidad de devolución:</label><br>
-            <select id="finalidad_devolucion" required>
-                <option value="">Selecciona finalidad</option>
-                <option value="disponible">Disponible</option>
-                <option value="reparacion">Reparación</option>
-                <option value="sustitucion">Sustitución</option>
-            </select>
-
-            <br><br>
-
-            <label for="observaciones_regreso">Observaciones de regreso:</label><br>
-            <textarea id="observaciones_regreso"></textarea>
-
-            <br><br>
-
-            <h3>Motivo administrativo</h3>
-
-            <label for="motivo">*Motivo de la corrección:</label><br>
-            <textarea id="motivo" required></textarea>
-
-            <br><br>
-
-            <input type="submit" value="Guardar corrección administrativa">
+            <div class="form-actions">
+                <input class="btn btn-primary" type="submit" value="Guardar corrección administrativa">
+            </div>
 
         </form>
     </section>
 
-    <p id="mensaje"></p>
+    <p id="mensaje" class="message"></p>
 
     <script src="../js/api.js"></script>
     <script src="../js/auth-guard.js"></script>
     <script src="../js/correccion-salida.js"></script>
 
+</main>
 </body>
 </html>

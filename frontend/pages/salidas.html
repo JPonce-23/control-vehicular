@@ -4,94 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de salidas</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-roles="administrador,capturista">
-    
-    <h1>Registrar salida</h1>
+<body class="app-page" data-roles="administrador,capturista">
+<main class="app-main">
 
-    <button onclick="window.location.href='../dashboard.html'">
-        Volver al dashboard
+    <header class="app-header">
+    <div>
+        <h1>Control vehicular</h1>
+        <p>Procuraduría Agraria</p>
+    </div>
+
+    <button class="btn btn-secondary" type="button" onclick="window.location.href='../dashboard.html'">
+        Volver al menú
     </button>
+    </header>
 
-    <form id="salidaForm" method="POST" autocomplete="off">
-        <fieldset>
-            <legend>Registra una salida</legend>
-            <label for="vehiculo_id">*Elige un vehículo:</label> <br>
-            <select name="vehiculo" id="vehiculo_id" required>
-                <option value="">Selecciona un vehículo</option>
-            </select> <br><br>
+    <section class="page-title">
+        <h2>Registrar salida</h2>
+    </section>
 
-            <label for="persona_id">*Elige una persona:</label> <br>
-            <select name="persona" id="persona_id" required>
-                <option value="">Selecciona una persona</option>
-            </select> <br><br>
 
-            <label for="num_oficio">Numero de oficio:</label> <br>
-            <input type="text" name="num_oficio" id="num_oficio"> <br><br>
+    <section class="card">
+        <form id="salidaForm" class="form-grid" method="POST" autocomplete="off">
+            <fieldset>
+                <legend>Registra una salida</legend>
 
-            <label for="num_expediente">Numero de expediente:</label> <br>
-            <input type="text" name="num_expediente" id="num_expediente"> <br><br>
-            
-            <label for="area_en_viaje">*Área de viaje:</label> <br>
-            <input type="text" name="area_en_viaje" id="area_en_viaje" required> <br><br>
-            
-            <label for="tipo_movimiento">*Tipo de movimiento:</label> <br>
-            <select name="tipo_movimiento" id="tipo_movimiento" required>
-                <option value="">Selecciona un tipo de movimiento</option>
-                <option value="asignacion">Asignación</option>
-                <option value="devolucion">Devolución</option>
-            </select> <br><br>
+                <div class="form-group">
+                    <label for="vehiculo_id">*Elige un vehículo:</label> 
+                    <select name="vehiculo" id="vehiculo_id" required>
+                        <option value="">Selecciona un vehículo</option>
+                    </select> 
+                </div>
 
-            <label for="forma_movimiento">*Forma de movimiento</label> <br>
-            <select name="forma_movimiento" id="forma_movimiento" required>
-                <option value=""></option>
-                <option value="permanente">Permanente</option>
-                <option value="provisional">Provisional</option>
-            </select> <br><br>
-            
-            <label for="fecha_fin_provisional">Fecha de fin provisional:</label> <br>
-            <input type="date" id="fecha_fin_provisional" name="fecha_fin_provisional"> <br><br>
-            
-            <label for="finalidad_uso">Finalidad de uso:</label> <br>
-            <input type="text" name="finalidad_uso" id="finalidad_uso"> <br><br>
-            
-            <label for="km_odometro_salida">*Kilometraje de salida:</label> <br>
-            <input type="number" step="0.01" name="km_odometro_salida" id="km_odometro_salida" required> <br><br>
-            
-            <label for="nivel_gasolina_salida">*Nivel de gasolina de salida:</label> <br>
-            <select name="nivel_gasolina_salida" id="nivel_gasolina_salida" required>
-                <option value="vacio">0</option>
-                <option value="cuarto">1/4</option>
-                <option value="medio">2/4</option>
-                <option value="tres_cuartos">3/4</option>
-                <option value="lleno">4/4</option>
-            </select> <br><br>
-            
-            <label for="estado_llantas_salida">*Nicel de llantas:</label> <br>
-            <select name="estado_llantas_salida" id="estado_llantas_salida" required>
-                <option value="cuarto">1/4</option>
-                <option value="medio">2/4</option>
-                <option value="tres_cuartos">3/4</option>
-                <option value="lleno">4/4</option>
-            </select> <br><br>
-            
-            <label for="observaciones">Observaciones:</label> <br>
-            <input type="text" name="observaciones" id="observaciones"> <br><br> 
+                <div class="form-group">
+                    <label for="persona_id">*Elige una persona:</label> 
+                    <select name="persona" id="persona_id" required>
+                        <option value="">Selecciona una persona</option>
+                    </select> 
+                </div>
 
-            <label for="observaciones_croquis">Observaciones en croquis:</label> <br>
-            <input type="text" name="observaciones_croquis" id="observaciones_croquis"> <br><br> 
-            
-            <input type="submit" value="Registrar salida">
+                <div class="form-group">
+                    <label for="num_oficio">Numero de oficio:</label> 
+                    <input type="text" name="num_oficio" id="num_oficio">
+                </div> 
 
-        </fieldset>
+                <div class="form-group">
+                    <label for="num_expediente">Numero de expediente:</label> 
+                    <input type="text" name="num_expediente" id="num_expediente">
+                </div> 
+                
+                <div class="form-group">
+                    <label for="area_en_viaje">*Área de viaje:</label> 
+                    <input type="text" name="area_en_viaje" id="area_en_viaje" required> 
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo_movimiento">*Tipo de movimiento:</label>
+                    <select name="tipo_movimiento" id="tipo_movimiento" required>
+                        <option value="">Selecciona un tipo de movimiento</option>
+                        <option value="asignacion">Asignación</option>
+                        <option value="devolucion">Devolución</option>
+                    </select>
+                </div>
 
-    </form>
+                <div class="form-group">
+                    <label for="forma_movimiento">*Forma de movimiento</label> 
+                    <select name="forma_movimiento" id="forma_movimiento" required>
+                        <option value=""></option>
+                        <option value="permanente">Permanente</option>
+                        <option value="provisional">Provisional</option>
+                    </select> 
+                </div>
+                
+                <div class="form-group">
+                    <label for="fecha_fin_provisional">Fecha de salida:</label> 
+                    <input type="date" id="fecha_fin_provisional" name="fecha_fin_provisional">
+                </div>
 
-    <p id="mensaje"></p>
+                <div class="form-group">
+                    <label for="finalidad_uso">Finalidad de uso:</label> 
+                    <input type="text" name="finalidad_uso" id="finalidad_uso"> 
+                </div>
+
+                <div class="form-group">
+                    <label for="km_odometro_salida">*Kilometraje de salida:</label> 
+                    <input type="number" step="0.01" name="km_odometro_salida" id="km_odometro_salida" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nivel_gasolina_salida">*Nivel de gasolina de salida:</label> 
+                    <select name="nivel_gasolina_salida" id="nivel_gasolina_salida" required>
+                        <option value="vacio">0</option>
+                        <option value="cuarto">1/4</option>
+                        <option value="medio">2/4</option>
+                        <option value="tres_cuartos">3/4</option>
+                        <option value="lleno">4/4</option>
+                    </select> 
+                </div>
+                
+                <div class="form-group">
+                    <label for="estado_llantas_salida">*Nivel de llantas:</label> 
+                    <select name="estado_llantas_salida" id="estado_llantas_salida" required>
+                        <option value="cuarto">1/4</option>
+                        <option value="medio">2/4</option>
+                        <option value="tres_cuartos">3/4</option>
+                        <option value="lleno">4/4</option>
+                    </select> 
+                </div>
+                
+                <div class="form-group">
+                    <label for="observaciones">Observaciones:</label> 
+                    <input type="text" name="observaciones" id="observaciones"> 
+                </div>
+                
+                <div class="form-group">
+                    <label for="observaciones_croquis">Observaciones en croquis:</label> 
+                    <input type="text" name="observaciones_croquis" id="observaciones_croquis">                 
+                </div>
+
+
+                <input class="btn btn-primary" type="submit" value="Registrar salida">
+
+            </fieldset>
+
+        </form>
+    </section>
+
+    <p id="mensaje" class="message"></p>
 
     <script src="../js/api.js"></script>
     <script src="../js/auth-guard.js"></script>
     <script src="../js/salidas.js"></script>
 
+</main>
 </body>
 </html>

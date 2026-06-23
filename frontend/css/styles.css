@@ -324,3 +324,241 @@ footer {
 .toolbar select {
     max-width: 320px;
 }
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.data-table th {
+    background-color: var(--color-principal);
+    color: white;
+    padding: 12px 10px;
+    text-align: left;
+}
+
+.data-table td {
+    padding: 11px 10px;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.data-table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background-color: #eef7ee;
+}
+
+.data-table tbody tr:hover {
+    background-color: #dff0df;
+}
+
+.data-table button {
+    border: none;
+    border-radius: 6px;
+    padding: 7px 10px;
+    margin: 3px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #e5e7eb;
+    color: var(--color-texto);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.data-table button:hover {
+    transform: translateY(-1px);
+    background-color: #d1d5db;
+}
+
+.data-table button:nth-child(1) {
+    background-color: var(--color-azul);
+    color: white;
+}
+
+.data-table button:nth-child(2) {
+    background-color: var(--color-principal);
+    color: white;
+}
+
+.data-table button:nth-child(3) {
+    background-color: #b7791f;
+    color: white;
+}
+
+.data-table button:nth-child(4) {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.form-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px 22px;
+    align-items: end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: var(--color-texto);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-borde);
+    border-radius: 7px;
+    font-size: 14px;
+    background-color: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-principal);
+    box-shadow: 0 0 0 2px rgba(26, 107, 60, 0.15);
+}
+
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+
+
+.form-section-title {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+    margin-bottom: 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--color-borde);
+    color: var(--color-principal);
+    font-size: 22px;
+}
+
+.form-group-full {
+    grid-column: 1 / -1;
+}
+
+.form-group textarea {
+    min-height: 70px;
+    resize: vertical;
+}
+
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+
+
+.form-correccion {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-section {
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fbfdfb;
+}
+
+.form-section h3 {
+    margin: 0 0 18px;
+    color: var(--color-principal);
+    font-size: 22px;
+    border-bottom: 2px solid var(--color-borde);
+    padding-bottom: 8px;
+}
+
+.form-section-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px 24px;
+}
+
+.form-group-full {
+    grid-column: 1 / -1;
+}
+
+.form-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+
+
+.btn {
+    border: none;
+    border-radius: 7px;
+    padding: 10px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background-color: var(--color-principal);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-principal-oscuro);
+}
+
+.btn-secondary {
+    background-color: #e5e7eb;
+    color: var(--color-texto);
+}
+
+.btn-secondary:hover {
+    background-color: #d1d5db;
+}
+
+.message {
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.message.ok {
+    color: var(--color-ok);
+}
+
+.message.error {
+    color: var(--color-error);
+}

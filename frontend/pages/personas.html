@@ -4,106 +4,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personas</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body data-role="administrador">
+<main class="app-main">
 
-    <h1>Gestión de personas autorizadas</h1>
+    <header class="app-header">
+    <div>
+        <h1>Control vehicular</h1>
+        <p>Procuraduría Agraria</p>
+    </div>
 
-    <button type="button" onclick="window.location.href='../dashboard.html'">
-        Volver al dashboard
+    <button class="btn btn-secondary" type="button" onclick="window.location.href='../dashboard.html'">
+        Volver al menú
     </button>
+    </header>
 
-    <br><br>
+    <section class="page-title">
+        <h2>Personas autorizadas</h2>
+        <p>Personas autorizadas para manejar un vehículo</p>
+    </section>
 
-    <section>
+
+    <section class="card">
         <h2>Personas registradas</h2>
 
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre completo</th>
-                    <th>Cargo</th>
-                    <th>RFC</th>
-                    <th>Número de licencia</th>
-                    <th>Tipo de licencia</th>
-                    <th>Vigencia de licencia</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tablaPersonas">
-            </tbody>
-        </table>
+        <div class="table">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre completo</th>
+                        <th>Cargo</th>
+                        <th>RFC</th>
+                        <th>Número de licencia</th>
+                        <th>Tipo de licencia</th>
+                        <th>Vigencia de licencia</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaPersonas">
+                </tbody>
+            </table>
+        </div>
+        
 
-        <br>
-
-        <button type="button" id="btnMostrarFormulario">
+        <button type="button" class="btn btn-primary" id="btnMostrarFormulario">
             Registrar persona
         </button>
     </section>
 
-    <br>
-
-    <section id="seccionFormulario" style="display: none;">
+  
+    <section class="card" id="seccionFormulario" style="display: none;">
         <h2 id="tituloFormulario">Registrar persona autorizada</h2>
 
-        <form id="formPersona" autocomplete="off">
+        <form class="form-grid" id="formPersona" autocomplete="off">
             <input type="hidden" id="persona_id_edicion">
 
-            <label for="nombre">*Nombre:</label><br>
-            <input type="text" id="nombre" required>
+            <div class="form-group">
+                <label for="nombre">*Nombre:</label><br>
+                <input type="text" id="nombre" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="apellido_paterno">*Apellido paterno:</label><br>
+                <input type="text" id="apellido_paterno" required>
+            </div>
 
-            <br><br>
+            <div class="form-group">
+                <label for="apellido_materno">Apellido materno:</label><br>
+                <input type="text" id="apellido_materno">
+            </div>
 
-            <label for="apellido_paterno">*Apellido paterno:</label><br>
-            <input type="text" id="apellido_paterno" required>
+            <div class="form-group">
+                <label for="cargo">*Cargo:</label><br>
+                <input type="text" id="cargo" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="rfc">RFC:</label><br>
+                <input type="text" id="rfc">
+            </div>
+            
+            <div class="form-group">
+                <label for="num_licencia">Número de licencia:</label><br>
+                <input type="text" id="num_licencia">
+            </div>
+            
+            <div class="form-group">
+                <label for="tipo_licencia">Tipo de licencia:</label><br>
+                <input type="text" id="tipo_licencia">
+            </div>
+            
+            <div class="form-group">
+                <label for="vigencia_licencia">Vigencia de licencia:</label><br>
+                <input type="date" id="vigencia_licencia">
+            </div>
+            
 
-            <br><br>
+            <input type="submit" class="btn btn-secondary" id="btnGuardar" value="Registrar persona">
 
-            <label for="apellido_materno">Apellido materno:</label><br>
-            <input type="text" id="apellido_materno">
-
-            <br><br>
-
-            <label for="cargo">*Cargo:</label><br>
-            <input type="text" id="cargo" required>
-
-            <br><br>
-
-            <label for="rfc">RFC:</label><br>
-            <input type="text" id="rfc">
-
-            <br><br>
-
-            <label for="num_licencia">Número de licencia:</label><br>
-            <input type="text" id="num_licencia">
-
-            <br><br>
-
-            <label for="tipo_licencia">Tipo de licencia:</label><br>
-            <input type="text" id="tipo_licencia">
-
-            <br><br>
-
-            <label for="vigencia_licencia">Vigencia de licencia:</label><br>
-            <input type="date" id="vigencia_licencia">
-
-            <br><br>
-
-            <input type="submit" id="btnGuardar" value="Registrar persona">
-
-            <button type="button" id="btnCancelarEdicion">
+            <button type="button" class="btn btn-secondary" id="btnCancelarEdicion">
                 Cancelar
             </button>
         </form>
     </section>
 
-    <p id="mensaje"></p>
+    <p id="mensaje" class="message"></p>
 
     <script src="../js/api.js"></script>
     <script src="../js/auth-guard.js"></script>
     <script src="../js/personas.js"></script>
 
+</main>
 </body>
 </html>

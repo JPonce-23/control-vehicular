@@ -3,82 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <title>Usuarios</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
-<body data-role="administrador">
+<body class="app-page" data-roles="administrador">
+<main class="app-main">
 
-    <h1>Gestión de usuarios</h1>
+    <header class="app-header">
+    <div>
+        <h1>Control vehicular</h1>
+        <p>Procuraduría Agraria</p>
+    </div>
 
-    <button type="button" onclick="window.location.href='../dashboard.html'">
-        Volver al dashboard
+    <button class="btn btn-secondary" type="button" onclick="window.location.href='../dashboard.html'">
+        Volver al menú
     </button>
+    </header>
 
-    <br><br>
+    <section class="page-title">
+        <h2>Gestión de usuarios</h2>
+    </section>
 
-    <section>
+    <section class="card">
         <h2>Usuarios registrados</h2>
 
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre completo</th>
-                    <th>Núm. empleado</th>
-                    <th>Correo</th>
-                    <th>Rol</th>
-                    <th>Estado</th>
-                    <th>Fecha alta</th>
-                    <th>Último acceso</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tablaUsuarios"></tbody>
-        </table>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre completo</th>
+                        <th>Núm. empleado</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Fecha alta</th>
+                        <th>Último acceso</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUsuarios"></tbody>
+            </table>
+        </div>
 
-        <br>
-
-        <button type="button" id="btnMostrarFormulario">
+        <button type="button" class="btn btn-primary" id="btnMostrarFormulario">
             Crear usuario
         </button>
     </section>
 
-    <br>
 
-    <section id="seccionFormulario" style="display: none;">
+    <section id="seccionFormulario" class="card" style="display: none;">
         <h2 id="tituloFormulario">Crear usuario</h2>
 
-        <form id="formUsuario" autocomplete="off">
+        <form id="formUsuario" class="form-grid" autocomplete="off">
             <input type="hidden" id="usuario_id_edicion">
 
-            <label for="nombre">*Nombre:</label><br>
-            <input type="text" id="nombre" required>
+            <div class="form-group">
+                <label for="nombre">*Nombre:</label>
+                <input type="text" id="nombre" required>
+            </div>
 
-            <br><br>
+            <div class="form-group">
+                <label for="apellido_paterno">*Apellido paterno:</label>
+                <input type="text" id="apellido_paterno" required>
+            </div>
 
-            <label for="apellido_paterno">*Apellido paterno:</label><br>
-            <input type="text" id="apellido_paterno" required>
+            <div class="form-group">
+                <label for="apellido_materno">Apellido materno:</label>
+                <input type="text" id="apellido_materno">
+            </div>
 
-            <br><br>
+            <div class="form-group">
+                <label for="num_empleado">*Número de empleado:</label>
+                <input type="text" id="num_empleado" required>
+            </div>
 
-            <label for="apellido_materno">Apellido materno:</label><br>
-            <input type="text" id="apellido_materno">
+            <div class="form-group">
+                <label for="correo">*Correo:</label>
+                <input type="email" id="correo" required>
+            </div>
 
-            <br><br>
-
-            <label for="num_empleado">*Número de empleado:</label><br>
-            <input type="text" id="num_empleado" required>
-
-            <br><br>
-
-            <label for="correo">*Correo:</label><br>
-            <input type="email" id="correo" required>
-
-            <br><br>
-
+            <div class="form-group">
             <div id="contenedorPassword">
-                <label for="password">*Contraseña inicial:</label><br>
+                <label for="password">*Contraseña inicial:</label>
                 <input type="password" id="password">
-
-                <br><br>
+            </div>
             </div>
 
             <input type="submit" id="btnGuardar" value="Crear usuario">
@@ -89,20 +97,20 @@
         </form>
     </section>
 
-    <br>
 
-    <section id="seccionPasswordTemporal" style="display: none;">
+    <section id="seccionPasswordTemporal" class="card" style="display: none;">
         <h2>Contraseña temporal generada</h2>
         <p>Entrega esta contraseña al usuario para que pueda iniciar sesión y después cambiarla.</p>
         <p><strong>Usuario ID:</strong> <span id="usuarioTemporalId"></span></p>
         <p><strong>Contraseña temporal:</strong> <span id="passwordTemporal"></span></p>
     </section>
 
-    <p id="mensaje"></p>
+    <p id="mensaje" class="message"></p>
 
     <script src="../js/api.js"></script>
     <script src="../js/auth-guard.js"></script>
     <script src="../js/usuarios.js"></script>
 
+</main>
 </body>
 </html>
