@@ -183,8 +183,8 @@ def crear_salida(
         salida_id=nueva_salida.id,
         usuario_id=usuario_actual.id,
         accion="registro_salida",
-        descripcion="Se registró una nueva salida",
-        fecha=date.today()
+        descripcion="Se registró la salida del vehículo",
+        fecha=datetime.now()
     )
 
     db.add(historial)

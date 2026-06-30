@@ -125,128 +125,54 @@ def listar_auditoria_por_vehiculo(
     if vehiculo is None:
         raise HTTPException(status_code=404, detail="Vehículo no encontrado")
 
-    UsuarioSalida = aliased(UsuarioSistema)
-    UsuarioRegreso = aliased(UsuarioSistema)
     UsuarioHistorial = aliased(UsuarioSistema)
+
+    # ÚNICA fuente de verdad: historial_salida.
+    # Salida/Regreso/PersonaAutorizada solo se usan para enriquecer cada fila.
+    historial_query = db.query(
+        HistorialSalida,
+        Salida,
+        UsuarioHistorial
+    ).join(
+        Salida,
+        HistorialSalida.salida_id == Salida.id
+    ).outerjoin(
+        UsuarioHistorial,
+        HistorialSalida.usuario_id == UsuarioHistorial.id
+    ).filter(
+        Salida.vehiculo_id == vehiculo_id
+    )
+
+    if accion is not None:
+        historial_query = historial_query.filter(HistorialSalida.accion == accion)
+
+    historial_registros = historial_query.order_by(HistorialSalida.id.desc()).all()
 
     respuesta = []
 
-    salidas = db.query(
-        Salida,
-        PersonaAutorizada,
-        UsuarioSalida
-    ).outerjoin(
-        PersonaAutorizada,
-        Salida.persona_id == PersonaAutorizada.id
-    ).outerjoin(
-        UsuarioSalida,
-        Salida.capturado_por == UsuarioSalida.id
-    ).filter(
-        Salida.vehiculo_id == vehiculo_id
-    ).order_by(
-        Salida.fecha_salida.desc()
-    ).all()
-
-    salida_ids = []
-
-    for salida, persona, usuario_salida in salidas:
-        salida_ids.append(salida.id)
-
-        regreso = db.query(Regreso, UsuarioRegreso).outerjoin(
-            UsuarioRegreso,
-            Regreso.capturado_por == UsuarioRegreso.id
-        ).filter(
-            Regreso.salida_id == salida.id
+    for historial, salida_historial, usuario_historial in historial_registros:
+        regreso_historial = db.query(Regreso).filter(
+            Regreso.salida_id == salida_historial.id
         ).first()
 
-        fecha_regreso = None
+        persona_historial = db.query(PersonaAutorizada).filter(
+            PersonaAutorizada.id == salida_historial.persona_id
+        ).first()
 
-        if regreso:
-            regreso_obj, usuario_regreso = regreso
-            fecha_regreso = regreso_obj.fecha_regreso
-        else:
-            regreso_obj = None
-            usuario_regreso = None
-
-        if accion is None or accion == "registro_salida":
-            respuesta.append({
-                "salida_id": salida.id,
-                "vehiculo_id": vehiculo.id,
-                "vehiculo": f"{vehiculo.marca} {vehiculo.tipo}",
-                "placa": vehiculo.placa,
-                "persona": obtener_nombre_persona(persona),
-                "fecha_salida": fecha_a_texto(salida.fecha_salida),
-                "fecha_regreso": fecha_a_texto(fecha_regreso),
-                "accion": "registro_salida",
-                "descripcion": "Se registró la salida del vehículo",
-                "fecha_movimiento": fecha_a_texto(salida.fecha_salida),
-                "usuario_id": salida.capturado_por,
-                "usuario": obtener_nombre_usuario(usuario_salida)
-            })
-
-        if regreso_obj and (accion is None or accion == "registro_regreso"):
-            respuesta.append({
-                "salida_id": salida.id,
-                "vehiculo_id": vehiculo.id,
-                "vehiculo": f"{vehiculo.marca} {vehiculo.tipo}",
-                "placa": vehiculo.placa,
-                "persona": obtener_nombre_persona(persona),
-                "fecha_salida": fecha_a_texto(salida.fecha_salida),
-                "fecha_regreso": fecha_a_texto(regreso_obj.fecha_regreso),
-                "accion": "registro_regreso",
-                "descripcion": "Se registró el regreso del vehículo",
-                "fecha_movimiento": fecha_a_texto(regreso_obj.fecha_regreso),
-                "usuario_id": regreso_obj.capturado_por,
-                "usuario": obtener_nombre_usuario(usuario_regreso)
-            })
-
-    if salida_ids:
-        historial_query = db.query(
-            HistorialSalida,
-            Salida,
-            UsuarioHistorial
-        ).join(
-            Salida,
-            HistorialSalida.salida_id == Salida.id
-        ).outerjoin(
-            UsuarioHistorial,
-            HistorialSalida.usuario_id == UsuarioHistorial.id
-        ).filter(
-            Salida.vehiculo_id == vehiculo_id
-        )
-
-        if accion:
-            historial_query = historial_query.filter(HistorialSalida.accion == accion)
-        else:
-            historial_query = historial_query.filter(
-                HistorialSalida.accion.notin_(["registro_salida", "registro_regreso"])
-            )
-
-        historial_registros = historial_query.order_by(HistorialSalida.id.desc()).all()
-
-        for historial, salida_historial, usuario_historial in historial_registros:
-            regreso_historial = db.query(Regreso).filter(
-                Regreso.salida_id == salida_historial.id
-            ).first()
-
-            persona_historial = db.query(PersonaAutorizada).filter(
-                PersonaAutorizada.id == salida_historial.persona_id
-            ).first()
-
-            respuesta.append({
-                "salida_id": salida_historial.id,
-                "vehiculo_id": vehiculo.id,
-                "vehiculo": f"{vehiculo.marca} {vehiculo.tipo}",
-                "placa": vehiculo.placa,
-                "persona": obtener_nombre_persona(persona_historial),
-                "fecha_salida": fecha_a_texto(salida_historial.fecha_salida),
-                "fecha_regreso": fecha_a_texto(regreso_historial.fecha_regreso) if regreso_historial else None,
-                "accion": historial.accion,
-                "descripcion": historial.descripcion,
-                "fecha_movimiento": fecha_a_texto(historial.fecha),
-                "usuario_id": historial.usuario_id,
-                "usuario": obtener_nombre_usuario(usuario_historial)
-            })
+        respuesta.append({
+            "salida_id": salida_historial.id,
+            "vehiculo_id": vehiculo.id,
+            "vehiculo": f"{vehiculo.marca} {vehiculo.tipo}",
+            "placa": vehiculo.placa,
+            "persona": obtener_nombre_persona(persona_historial),
+            "fecha_salida": fecha_a_texto(salida_historial.fecha_salida),
+            "fecha_regreso": fecha_a_texto(regreso_historial.fecha_regreso) if regreso_historial else None,
+            "accion": historial.accion,
+            "descripcion": historial.descripcion,
+            "fecha_movimiento": fecha_a_texto(historial.fecha),
+            "usuario_id": historial.usuario_id,
+            "usuario": obtener_nombre_usuario(usuario_historial)
+        })
 
     respuesta.sort(
         key=lambda item: item["fecha_movimiento"] or "",

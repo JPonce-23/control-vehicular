@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from datetime import date
+from datetime import date, datetime
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.regreso_model import Regreso
@@ -69,7 +69,7 @@ def crear_regreso(
         usuario_id=usuario_actual.id,
         accion="registro_regreso",
         descripcion="Se registró el regreso del vehículo",
-        fecha=date.today()
+        fecha=datetime.now()
     )
 
     db.add(historial)

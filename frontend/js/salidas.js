@@ -2,6 +2,20 @@ const salidaForm = document.getElementById("salidaForm");
 const selectVehiculo = document.getElementById("vehiculo_id");
 const selectPersona = document.getElementById("persona_id");
 const mensaje = document.getElementById("mensaje");
+const inputNumOficio = document.getElementById("num_oficio");
+const inputNumExpediente = document.getElementById("num_expediente");
+const inputArea = document.getElementById("area_en_viaje");
+const selectTipoMovimiento = document.getElementById("tipo_movimiento");
+const selectFormaMovimiento = document.getElementById("forma_movimiento");
+const inputFechaSalida = document.getElementById("fecha_salida");
+const inputFechaFinProvisional = document.getElementById("fecha_fin_provisional");
+const inputFinalidad = document.getElementById("finalidad_uso");
+const inputKmSalida = document.getElementById("km_odometro_salida");
+const selectNivelGasolina = document.getElementById("nivel_gasolina_salida");
+const selectEstadoLlantas = document.getElementById("estado_llantas_salida");
+const inputObservaciones = document.getElementById("observaciones");
+const inputObservacionesCroquis = document.getElementById("observaciones_croquis");
+
 
 document.addEventListener("DOMContentLoaded", function () {
     cargarVehiculos();
@@ -48,20 +62,21 @@ async function registrarSalida(event) {
     event.preventDefault();
 
     const datosSalida = {
-        vehiculo_id: Number(document.getElementById("vehiculo_id").value),
-        persona_id: Number(document.getElementById("persona_id").value),
-        num_oficio: document.getElementById("num_oficio").value,
-        num_expediente: document.getElementById("num_expediente").value,
-        area_en_viaje: document.getElementById("area_en_viaje").value,
-        tipo_movimiento: document.getElementById("tipo_movimiento").value,
-        forma_movimiento: document.getElementById("forma_movimiento").value,
+        vehiculo_id: Number(selectVehiculo.value),
+        persona_id: Number(selectPersona.value),
+        fecha_salida: document.getElementById("fecha_salida").value,
+        num_oficio: inputNumOficio.value || null,
+        num_expediente: inputNumExpediente.value || null,
+        area_en_viaje: inputArea.value,
+        tipo_movimiento: selectTipoMovimiento.value,
+        forma_movimiento: selectFormaMovimiento.value,
         fecha_fin_provisional: document.getElementById("fecha_fin_provisional").value || null,
-        finalidad_uso: document.getElementById("finalidad_uso").value,
-        km_odometro_salida: Number(document.getElementById("km_odometro_salida").value),
-        nivel_gasolina_salida: document.getElementById("nivel_gasolina_salida").value,
-        estado_llantas_salida: document.getElementById("estado_llantas_salida").value,
-        observaciones: document.getElementById("observaciones").value,
-        observaciones_croquis: document.getElementById("observaciones_croquis").value
+        finalidad_uso: inputFinalidad.value,
+        km_odometro_salida: Number(inputKmSalida.value),
+        nivel_gasolina_salida: selectNivelGasolina.value,
+        estado_llantas_salida: selectEstadoLlantas.value,
+        observaciones: inputObservaciones.value || null,
+        observaciones_croquis: inputObservacionesCroquis.value || null
     };
 
     try {

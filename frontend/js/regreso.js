@@ -64,6 +64,7 @@ async function registrarRegreso(event) {
 
 
     try {
+
         const regreso = await apiFetch("/regresos/", {
             method: "POST",
             body: JSON.stringify(datosRegreso)
