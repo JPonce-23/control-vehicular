@@ -13,6 +13,7 @@ class SalidaCreate(BaseModel):
     tipo_movimiento: str
     forma_movimiento: str
     fecha_fin_provisional: Optional[date] = None
+    fecha_regreso_estimada: date
     finalidad_uso: str
     km_odometro_salida: Decimal
     nivel_gasolina_salida: str
@@ -32,6 +33,7 @@ class SalidaResponse(BaseModel):
     tipo_movimiento: str
     forma_movimiento: str
     fecha_fin_provisional: Optional[date]
+    fecha_regreso_estimada: Optional[date]
     finalidad_uso: str
     km_odometro_salida: Decimal
     nivel_gasolina_salida: str

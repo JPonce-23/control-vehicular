@@ -126,7 +126,7 @@ def generar_checks_inventario(inventario):
     return checks
 
 
-def generar_resguardo_word(salida, regreso, vehiculo, persona, condiciones=None, inventario=None):
+def generar_resguardo_word(salida, vehiculo, persona, condiciones=None, inventario=None):
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
     carpeta_resguardos = os.path.join(BASE_DIR, "archivos", "resguardos")
@@ -150,10 +150,10 @@ def generar_resguardo_word(salida, regreso, vehiculo, persona, condiciones=None,
         "mes": datetime.now().strftime("%m"),
         "anio": datetime.now().strftime("%Y"),
 
-        "fecha_salida": salida.fecha_salida.strftime("%d") if salida.fecha_salida else "",
-        "fecha_regreso": regreso.fecha_regreso.strftime("%d") if regreso and regreso.fecha_regreso else "",
-        "mes_regreso": mes_en_letra(regreso.fecha_regreso) if regreso and regreso.fecha_regreso else "",
-        "anio_regreso": regreso.fecha_regreso.strftime("%Y") if regreso and regreso.fecha_regreso else "",
+        "fecha_salida": salida.fecha_salida.day if salida.fecha_salida else "",
+        "fecha_regreso": salida.fecha_regreso_estimada.day if salida.fecha_regreso_estimada else "",
+        "mes_regreso": mes_en_letra(salida.fecha_regreso_estimada) if salida.fecha_regreso_estimada else "",
+        "anio_regreso": salida.fecha_regreso_estimada.year if salida.fecha_regreso_estimada else "",
 
         "marca": valor(vehiculo.marca),
         "tipo": valor(vehiculo.tipo),
@@ -172,7 +172,6 @@ def generar_resguardo_word(salida, regreso, vehiculo, persona, condiciones=None,
         "fecha_inicio": formatear_fecha(salida.fecha_salida),
         "fecha_fin": formatear_fecha(salida.fecha_fin_provisional),
         "finalidad_uso": valor(salida.finalidad_uso),
-        "finalidad_devolucion": valor(regreso.finalidad_devolucion if regreso else None),
 
         "num_oficio": valor(salida.num_oficio),
         "nombre_persona": nombre_persona,

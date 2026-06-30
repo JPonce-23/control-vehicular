@@ -16,6 +16,7 @@ class Salida(Base):
     tipo_movimiento = Column(String)
     forma_movimiento = Column(String)
     fecha_fin_provisional = Column(Date)
+    fecha_regreso_estimada = Column(Date, nullable=True)
     finalidad_uso = Column(Text)
     km_odometro_salida = Column(Numeric)
     nivel_gasolina_salida = Column(String)

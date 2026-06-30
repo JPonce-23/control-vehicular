@@ -430,14 +430,14 @@ def generar_resguardo(
             detail="Salida no encontrada"
         )
 
-    regreso = db.query(Regreso).filter(
-        Regreso.salida_id == salida.id
-    ).first()
+    salida = db.query(Salida).filter(
+            Salida.id == salida_id
+        ).first()
 
-    if regreso is None:
+    if salida is None:
         raise HTTPException(
-            status_code=400,
-            detail="No se puede generar el resguardo sin registrar el regreso"
+            status_code=404,
+            detail="Salida no encontrada"
         )
 
     resguardo_existente = db.query(Resguardo).filter(
@@ -477,7 +477,6 @@ def generar_resguardo(
 
     nombre_archivo, ruta_archivo = generar_resguardo_word(
         salida,
-        regreso,
         vehiculo,
         persona,
         condiciones,
