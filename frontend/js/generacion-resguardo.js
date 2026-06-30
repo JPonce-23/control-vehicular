@@ -27,7 +27,7 @@
         let resguardoGenerado    = false;
 
         // ── Inicialización ───────────────────────────────────────
-        cargarRegresos();
+        cargarSalidas();
 
         selectSalida.addEventListener("change", onSalidaChange);
         btnGuardarCondiciones.addEventListener("click", guardarCondiciones);
@@ -36,36 +36,72 @@
         btnGenerar.addEventListener("click", generarResguardo);
         btnDescargar.addEventListener("click", descargarResguardo);
 
-        // ── Cargar salidas con regreso ───────────────────────────
-        async function cargarRegresos() {
+        async function cargarSalidas() {
             try {
-                const regresos = await apiFetch("/regresos/");
+                const salidas = await apiFetch("/salidas/");
                 const vehiculos = await apiFetch("/vehiculos/");
+                const personas = await apiFetch("/personas/");
 
                 selectSalida.innerHTML = `
                     <option value="">— Selecciona una salida —</option>
                 `;
 
-                for (const regreso of regresos) {
-                    const salida = await apiFetch(`/salidas/${regreso.salida_id}`);
+                if (salidas.length === 0) {
+                    selectSalida.innerHTML = `
+                        <option value="">No hay salidas registradas</option>
+                    `;
+                    return;
+                }
 
+                salidas.forEach(function (salida) {
                     const vehiculo = vehiculos.find(function (itemVehiculo) {
                         return itemVehiculo.id === salida.vehiculo_id;
                     });
 
+                    const persona = personas.find(function (itemPersona) {
+                        return itemPersona.id === salida.persona_id;
+                    });
+
                     const option = document.createElement("option");
 
-                    option.value = regreso.salida_id;
+                    option.value = salida.id;
 
-                    option.textContent = `${obtenerNombreVehiculo(vehiculo)} | Salida: ${formatearFechaHora(salida.fecha_salida)} | Regreso: ${formatearFechaHora(regreso.fecha_regreso)}`;
+                    option.textContent = `${obtenerNombreVehiculo(vehiculo)} | ${obtenerNombrePersona(persona)} | Salida: ${formatearFechaHora(salida.fecha_salida)} | Regreso: ${formatearFecha(salida.fecha_regreso_estimada)}`;
 
                     selectSalida.appendChild(option);
-                }
+                });
 
             } catch (error) {
                 mostrarMsg(mensajeSalida, error.message, "error");
             }
         }
+
+
+        function obtenerNombrePersona(persona) {
+            if (!persona) {
+                return "Persona no encontrada";
+            }
+
+            const partes = [
+                persona.nombre,
+                persona.apellido_paterno,
+                persona.apellido_materno
+            ].filter(Boolean);
+
+            return partes.join(" ");
+        }
+
+
+
+        function formatearFecha(fecha) {
+            if (!fecha) {
+                return "Sin fecha";
+            }
+
+            return String(fecha).substring(0, 10);
+        }
+
+
 
         // ── Cambio de salida ─────────────────────────────────────
         async function onSalidaChange() {

@@ -15,6 +15,7 @@ const selectNivelGasolina = document.getElementById("nivel_gasolina_salida");
 const selectEstadoLlantas = document.getElementById("estado_llantas_salida");
 const inputObservaciones = document.getElementById("observaciones");
 const inputObservacionesCroquis = document.getElementById("observaciones_croquis");
+const inputFechaRegresoEstimada = document.getElementById("fecha_regreso_estimada");
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -71,6 +72,7 @@ async function registrarSalida(event) {
         tipo_movimiento: selectTipoMovimiento.value,
         forma_movimiento: selectFormaMovimiento.value,
         fecha_fin_provisional: document.getElementById("fecha_fin_provisional").value || null,
+        fecha_regreso_estimada: inputFechaRegresoEstimada.value,
         finalidad_uso: inputFinalidad.value,
         km_odometro_salida: Number(inputKmSalida.value),
         nivel_gasolina_salida: selectNivelGasolina.value,
