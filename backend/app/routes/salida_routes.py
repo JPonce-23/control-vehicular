@@ -187,6 +187,19 @@ def crear_salida(
         fecha=datetime.now()
     )
 
+
+    saldo_actual = vehiculo.saldo_tarjeta_gasolina or 0
+    monto_agregado = salida.monto_agregado_tarjeta or 0
+
+    saldo_salida = saldo_actual + monto_agregado
+
+    nueva_salida.monto_agregado_tarjeta = monto_agregado
+    nueva_salida.saldo_tarjeta_salida = saldo_salida
+
+    vehiculo.saldo_tarjeta_gasolina = saldo_salida
+
+
+
     db.add(historial)
     db.commit()
     db.refresh(nueva_salida)

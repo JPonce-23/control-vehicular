@@ -23,3 +23,5 @@ class Salida(Base):
     estado_llantas_salida = Column(String)
     observaciones = Column(Text)
     observaciones_croquis = Column(Text)
+    monto_agregado_tarjeta = Column(Numeric(10, 2), nullable=False, default=0)
+    saldo_tarjeta_salida = Column(Numeric(10, 2), nullable=False, default=0)

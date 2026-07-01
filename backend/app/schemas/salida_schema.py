@@ -20,6 +20,7 @@ class SalidaCreate(BaseModel):
     estado_llantas_salida: str
     observaciones: Optional[str] = None
     observaciones_croquis: Optional[str] = None
+    monto_agregado_tarjeta: Decimal = Decimal("0.00")
 
 class SalidaResponse(BaseModel):
     id: int
@@ -40,6 +41,10 @@ class SalidaResponse(BaseModel):
     estado_llantas_salida: str
     observaciones: Optional[str]
     observaciones_croquis: Optional[str]
+    monto_agregado_tarjeta: Decimal
+    saldo_tarjeta_salida: Decimal
+
+
 
     class Config:
         from_attributes = True

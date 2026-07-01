@@ -71,7 +71,26 @@ def crear_regreso(
         descripcion="Se registró el regreso del vehículo",
         fecha=datetime.now()
     )
+    
+    
+    saldo_antes_regreso = salida.saldo_tarjeta_salida or 0
+    saldo_regreso = regreso.saldo_tarjeta_regreso
 
+    if saldo_regreso > saldo_antes_regreso:
+        raise HTTPException(
+            status_code=400,
+            detail="El saldo final de la tarjeta no puede ser mayor al saldo con el que salió el vehículo"
+        )
+
+    monto_gastado = saldo_antes_regreso - saldo_regreso
+
+    nuevo_regreso.saldo_tarjeta_antes_regreso = saldo_antes_regreso
+    nuevo_regreso.saldo_tarjeta_regreso = saldo_regreso
+    nuevo_regreso.monto_gastado_tarjeta = monto_gastado
+
+    vehiculo.saldo_tarjeta_gasolina = saldo_regreso
+    
+    
     db.add(historial)
     db.commit()
     db.refresh(nuevo_regreso)

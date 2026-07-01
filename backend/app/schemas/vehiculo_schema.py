@@ -16,6 +16,7 @@ class VehiculoCreate(BaseModel):
     num_inventario: Optional[str] = None
     color: str
     num_tarjeta_gasolina: Optional[str] = None
+    saldo_tarjeta_gasolina: Decimal = Decimal("0.00")
     km_acumulado: Decimal = 0
     estado: str = "disponible"
 
@@ -33,6 +34,7 @@ class VehiculoResponse(BaseModel):
     num_inventario: Optional[str]
     color: str
     num_tarjeta_gasolina: Optional[str]
+    saldo_tarjeta_gasolina: Decimal
     km_acumulado: Decimal
     estado: str
     
@@ -55,4 +57,5 @@ class VehiculoUpdate(BaseModel):
     num_inventario: Optional[str] = None
     color: str
     num_tarjeta_gasolina: Optional[str] = None
+    saldo_tarjeta_gasolina: Decimal = Decimal("0.00")
     km_acumulado: Decimal

@@ -17,5 +17,7 @@ class Vehiculo(Base):
     num_inventario = Column(String)
     color = Column(String)
     num_tarjeta_gasolina = Column(String)
+    saldo_tarjeta_gasolina = Column(Numeric(10, 2), nullable=False, default=0.00)
     km_acumulado = Column(Numeric)
     estado = Column(String)
+    

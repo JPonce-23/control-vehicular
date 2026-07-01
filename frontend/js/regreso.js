@@ -1,6 +1,7 @@
 const regresoForm = document.getElementById("regresoForm");
 const selectSalida = document.getElementById("salida_id");
 const mensaje = document.getElementById("mensaje");
+const inputSaldoTarjetaRegreso = document.getElementById("saldo_tarjeta_regreso");
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -56,6 +57,7 @@ async function registrarRegreso(event) {
         fecha_regreso: document.getElementById("fecha_regreso").value,
         km_odometro_regreso: Number(document.getElementById("km_odometro_regreso").value),
         nivel_gasolina_regreso: document.getElementById("nivel_gasolina_regreso").value,
+        saldo_tarjeta_regreso: Number(inputSaldoTarjetaRegreso.value),
         estado_llantas_regreso: document.getElementById("estado_llantas_regreso").value,
         estado_vehiculo_regreso: document.getElementById("estado_vehiculo_regreso").value,
         finalidad_devolucion: document.getElementById("finalidad_devolucion").value,

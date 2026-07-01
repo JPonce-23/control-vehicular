@@ -166,6 +166,9 @@ def actualizar_vehiculo(
 
     datos_actualizados = datos.model_dump()
 
+    if datos_actualizados.get("saldo_tarjeta_gasolina") is None:
+        datos_actualizados["saldo_tarjeta_gasolina"] = 0
+
     for campo, valor in datos_actualizados.items():
         setattr(vehiculo, campo, valor)
 

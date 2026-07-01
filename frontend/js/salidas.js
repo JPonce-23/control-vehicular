@@ -16,6 +16,11 @@ const selectEstadoLlantas = document.getElementById("estado_llantas_salida");
 const inputObservaciones = document.getElementById("observaciones");
 const inputObservacionesCroquis = document.getElementById("observaciones_croquis");
 const inputFechaRegresoEstimada = document.getElementById("fecha_regreso_estimada");
+const inputMontoAgregadoTarjeta = document.getElementById("monto_agregado_tarjeta");
+
+let vehiculosCargados = [];
+
+const saldoTarjetaVehiculo = document.getElementById("saldoTarjetaVehiculo");
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -24,10 +29,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 salidaForm.addEventListener("submit", registrarSalida);
+selectVehiculo.addEventListener("change", mostrarSaldoTarjetaVehiculo);
 
 async function cargarVehiculos() {
     try {
         const vehiculos = await apiFetch("/vehiculos/");
+        vehiculosCargados = vehiculos;
         const disponibles = vehiculos.filter(vehiculo => vehiculo.estado === "disponible");
 
         disponibles.forEach(vehiculo => {
@@ -73,6 +80,7 @@ async function registrarSalida(event) {
         forma_movimiento: selectFormaMovimiento.value,
         fecha_fin_provisional: document.getElementById("fecha_fin_provisional").value || null,
         fecha_regreso_estimada: inputFechaRegresoEstimada.value,
+        monto_agregado_tarjeta: Number(inputMontoAgregadoTarjeta.value || 0),
         finalidad_uso: inputFinalidad.value,
         km_odometro_salida: Number(inputKmSalida.value),
         nivel_gasolina_salida: selectNivelGasolina.value,
@@ -93,4 +101,36 @@ async function registrarSalida(event) {
     } catch (error) {
         mensaje.textContent = error.message;
     }
+}
+
+function mostrarSaldoTarjetaVehiculo() {
+    const vehiculoId = Number(selectVehiculo.value);
+
+    if (!vehiculoId) {
+        saldoTarjetaVehiculo.hidden = true;
+        saldoTarjetaVehiculo.textContent = "";
+        return;
+    }
+
+    const vehiculo = vehiculosCargados.find(function (item) {
+        return item.id === vehiculoId;
+    });
+
+    if (!vehiculo) {
+        saldoTarjetaVehiculo.hidden = true;
+        saldoTarjetaVehiculo.textContent = "";
+        return;
+    }
+
+    saldoTarjetaVehiculo.hidden = false;
+    saldoTarjetaVehiculo.textContent = `Saldo actual de tarjeta: ${formatearDinero(vehiculo.saldo_tarjeta_gasolina)}`;
+}
+
+function formatearDinero(valor) {
+    const numero = Number(valor || 0);
+
+    return numero.toLocaleString("es-MX", {
+        style: "currency",
+        currency: "MXN"
+    });
 }

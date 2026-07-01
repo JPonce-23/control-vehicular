@@ -21,6 +21,7 @@ const inputNumPoliza = document.getElementById("num_poliza");
 const inputNumInventario = document.getElementById("num_inventario");
 const inputColor = document.getElementById("color");
 const inputNumTarjetaGasolina = document.getElementById("num_tarjeta_gasolina");
+const inputSaldoTarjetaGasolina = document.getElementById("saldo_tarjeta_gasolina");
 const inputKmAcumulado = document.getElementById("km_acumulado");
 
 let vehiculosGuardados = [];
@@ -68,6 +69,7 @@ async function cargarVehiculos() {
                 <td>${vehiculo.color || ""}</td>
                 <td>${formatoNumero(vehiculo.km_acumulado)}</td>
                 <td>${formatearEstado(vehiculo.estado)}</td>
+                <td>${formatearDinero(vehiculo.saldo_tarjeta_gasolina)}</td>
                 <td>
                     <button type="button" onclick="editarVehiculo(${vehiculo.id})">
                         Editar
@@ -140,6 +142,7 @@ function obtenerDatosFormulario() {
         num_inventario: inputNumInventario.value.trim() || null,
         color: inputColor.value.trim(),
         num_tarjeta_gasolina: inputNumTarjetaGasolina.value.trim() || null,
+        saldo_tarjeta_gasolina: Number(inputSaldoTarjetaGasolina.value || 0),
         km_acumulado: Number(inputKmAcumulado.value)
     };
 }
@@ -166,6 +169,7 @@ function editarVehiculo(vehiculoId) {
     inputNumInventario.value = vehiculo.num_inventario || "";
     inputColor.value = vehiculo.color || "";
     inputNumTarjetaGasolina.value = vehiculo.num_tarjeta_gasolina || "";
+    inputSaldoTarjetaGasolina.value = vehiculo.saldo_tarjeta_gasolina || 0;
     inputKmAcumulado.value = vehiculo.km_acumulado || 0;
 
     tituloFormulario.textContent = "Editar vehículo";
@@ -240,4 +244,14 @@ function mostrarMensaje(texto) {
     setTimeout(function () {
         mensaje.textContent = "";
     }, 2500);
+}
+
+
+function formatearDinero(valor) {
+    const numero = Number(valor || 0);
+
+    return numero.toLocaleString("es-MX", {
+        style: "currency",
+        currency: "MXN"
+    });
 }
