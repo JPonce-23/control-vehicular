@@ -122,3 +122,20 @@ WHERE p.cargo IS NULL;
 
 ALTER TABLE persona_autorizada
 ALTER COLUMN cargo SET NOT NULL;
+
+
+
+ALTER TABLE salida
+ADD COLUMN IF NOT EXISTS fecha_regreso_estimada DATE;
+
+ALTER TABLE vehiculo
+ADD COLUMN IF NOT EXISTS saldo_tarjeta_gasolina DECIMAL(10,2) NOT NULL DEFAULT 0;
+
+ALTER TABLE salida
+ADD COLUMN IF NOT EXISTS monto_agregado_tarjeta DECIMAL(10,2) NOT NULL DEFAULT 0,
+ADD COLUMN IF NOT EXISTS saldo_tarjeta_salida DECIMAL(10,2) NOT NULL DEFAULT 0;
+
+ALTER TABLE regreso
+ADD COLUMN IF NOT EXISTS saldo_tarjeta_antes_regreso DECIMAL(10,2),
+ADD COLUMN IF NOT EXISTS saldo_tarjeta_regreso DECIMAL(10,2),
+ADD COLUMN IF NOT EXISTS monto_gastado_tarjeta DECIMAL(10,2);
