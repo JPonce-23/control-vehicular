@@ -1,5 +1,4 @@
 const loginForm = document.getElementById("loginForm");
-const mensaje = document.getElementById("mensaje");
 
 loginForm.addEventListener("submit", async function (event) {
     event.preventDefault();
@@ -18,11 +17,13 @@ loginForm.addEventListener("submit", async function (event) {
 
         localStorage.setItem("token", data.access_token);
 
-        mensaje.textContent = "Inicio de sesión correcto";
+        mostrarMensaje("Inicio de sesión correcto", "ok");
 
-        window.location.href = "dashboard.html";
+        setTimeout(() => {
+            window.location.href = "dashboard.html";
+        }, 1000);
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 });

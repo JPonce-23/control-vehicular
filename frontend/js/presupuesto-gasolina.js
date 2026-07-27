@@ -93,7 +93,7 @@ async function cargarVehiculos() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -157,7 +157,7 @@ async function consultarPresupuesto() {
     const anio = inputAnio.value;
 
     if (!vehiculoId) {
-        mensaje.textContent = "Selecciona un vehículo.";
+        mostrarMensaje("Selecciona un vehículo", "error");
         return;
     }
 
@@ -165,7 +165,7 @@ async function consultarPresupuesto() {
         const presupuesto = await apiFetch(`/vehiculos/${vehiculoId}/presupuesto-gasolina?anio=${anio}`);
 
         mostrarPresupuesto(presupuesto);
-        mensaje.textContent = "";
+        mostrarMensaje(error.message, "");
 
     } catch (error) {
         resumenPresupuesto.innerHTML = `
@@ -173,7 +173,7 @@ async function consultarPresupuesto() {
             <p>No se encontró presupuesto para este vehículo en el año actual.</p>
         `;
 
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -187,22 +187,22 @@ async function crearPresupuesto(event) {
     const mesFin = Number(selectMesFin.value);
 
     if (!vehiculoId) {
-        mensaje.textContent = "Selecciona un vehículo.";
+        mostrarMensaje(error.message, "Slecciona un Vehículo");
         return;
     }
 
     if (!montoAutorizadoTotal || montoAutorizadoTotal <= 0) {
-        mensaje.textContent = "El monto autorizado total debe ser mayor a cero.";
+        mostrarMensaje(error.message, "El monto autorizado total debe ser mayor a cero");
         return;
     }
 
     if (!mesInicio || !mesFin) {
-        mensaje.textContent = "Selecciona el mes de inicio y mes de fin.";
+        mostrarMensaje(error.message, "Selecciona el mes de inicio y el mes de fin");
         return;
     }
 
     if (mesInicio > mesFin) {
-        mensaje.textContent = "El mes de inicio no puede ser mayor que el mes de fin.";
+        mostrarMensaje("El mes de inicio no puede ser mayor que el mes de fin", "error");
         return;
     }
 
@@ -229,7 +229,7 @@ async function crearPresupuesto(event) {
         `;
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -324,9 +324,9 @@ function formatearEstado(estado) {
 }
 
 function mostrarMensaje(texto) {
-    mensaje.textContent = texto;
+    mostrarMensaje(error.message, texto);
 
     setTimeout(function () {
-        mensaje.textContent = "";
+        mostrarMensaje(error.message, " ");
     }, 2500);
 }

@@ -43,7 +43,7 @@ async function buscarSalida() {
     const salidaId = selectSalida.value;
 
     if (!salidaId) {
-        mensaje.textContent = "Selecciona una salida.";
+        mostrarMensaje(error.message, "Selecciona una salida");
         return;
     }
 
@@ -58,7 +58,7 @@ async function buscarSalida() {
         llenarFormulario(salida, regreso);
 
         seccionFormulario.style.display = "block";
-        mensaje.textContent = "";
+        mostrarMensaje(error.message, "");
 
     } catch (error) {
         salidaActual = null;
@@ -70,7 +70,7 @@ async function buscarSalida() {
             <p>No se pudo consultar la salida o su regreso.</p>
         `;
 
-        mensaje.textContent = error.message;
+       mostrarMensaje(error.message, "error");
     }
 }
 
@@ -112,12 +112,12 @@ async function guardarCorreccion(event) {
     event.preventDefault();
 
     if (!salidaActual || !regresoActual) {
-        mensaje.textContent = "Primero consulta una salida con regreso registrado.";
+        mostrarMensaje("Primero consulta una salida con regreso registrado.", "error");
         return;
     }
 
     if (!inputMotivo.value.trim()) {
-        mensaje.textContent = "El motivo de corrección es obligatorio.";
+        mostrarMensaje("El motivo de corrección es obligatorio.", "error");
         return;
     }
 
@@ -142,12 +142,12 @@ async function guardarCorreccion(event) {
             body: JSON.stringify(datosCorreccion)
         });
 
-        mensaje.textContent = respuesta.mensaje || "Corrección administrativa guardada correctamente.";
+        mostrarMensaje(respuesta.mensaje || "Corrección administrativa guardada correctamente.");
 
         await buscarSalida();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -163,7 +163,7 @@ async function buscarCoincidenciasSalida() {
     const persona = inputPersonaBusqueda.value.trim();
 
     if (!placa && !persona) {
-        mensaje.textContent = "Ingresa la placa del vehículo o el nombre de la persona.";
+        mostrarMensaje("Ingresa la placa del vehículo o el nombre de la persona.", "error");
         return;
     }
 
@@ -188,7 +188,7 @@ async function buscarCoincidenciasSalida() {
             selectSalida.innerHTML = `
                 <option value="">No se encontraron salidas con regreso</option>
             `;
-            mensaje.textContent = "No se encontraron coincidencias.";
+            mostrarMensaje("No se encontraron coincidencias.", "error");
             return;
         }
 
@@ -202,9 +202,9 @@ async function buscarCoincidenciasSalida() {
             selectSalida.appendChild(option);
         });
 
-        mensaje.textContent = `Se encontraron ${resultados.length} salida(s). Selecciona la que deseas corregir.`;
+        mostrarMensaje(`Se encontraron ${resultados.length} salida(s). Selecciona la que deseas corregir.`);
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }

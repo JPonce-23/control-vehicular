@@ -45,7 +45,7 @@ async function cargarVehiculos() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -62,7 +62,7 @@ async function cargarPersonas() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -95,11 +95,11 @@ async function registrarSalida(event) {
             body: JSON.stringify(datosSalida)
         });
 
-        mensaje.textContent = "Salida registrada correctamente";
+        mostrarMensaje("Salida registrada correctamente", "ok");
         localStorage.setItem("salida_id_actual", salida.id);
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 

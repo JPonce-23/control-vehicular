@@ -52,7 +52,7 @@ async function cargarVehiculos() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -61,12 +61,12 @@ async function consultarResumen() {
     const anio = inputAnio.value;
 
     if (!vehiculoId) {
-        mensaje.textContent = "Selecciona un vehículo";
+        mostrarMensaje(error.message, "Selecciona un vehículo");
         return;
     }
 
     if (!anio) {
-        mensaje.textContent = "Ingresa el año";
+        mostrarMensaje("Ingresa el año", "error");
         return;
     }
 
@@ -79,7 +79,7 @@ async function consultarResumen() {
 
         await cargarViajesVehiculo(vehiculoId, anio);
 
-        mensaje.textContent = "";
+        mostrarMensaje("");
 
     } catch (error) {
         resumen.innerHTML = `
@@ -89,7 +89,7 @@ async function consultarResumen() {
 
         limpiarSelectSalidas();
 
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -154,7 +154,7 @@ async function cargarViajesVehiculo(vehiculoId, anio) {
 
     } catch (error) {
         limpiarSelectSalidas();
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -171,12 +171,12 @@ async function registrarGastoGasolina(event) {
     const anio = inputAnio.value;
 
     if (!vehiculoId) {
-        mensaje.textContent = "Selecciona un vehículo";
+        mostrarMensaje("Selecciona un vehículo", "error");
         return;
     }
 
     if (!anio) {
-        mensaje.textContent = "Ingresa el año";
+        mostrarMensaje("Ingresa el año", "error");
         return;
     }
 
@@ -190,17 +190,17 @@ async function registrarGastoGasolina(event) {
     };
 
     if (!datosGasto.salida_id) {
-        mensaje.textContent = "Selecciona una salida relacionada";
+        mostrarMensaje("Selecciona una salida relacionada", "error");
         return;
     }
 
     if (!datosGasto.fecha_gasto) {
-        mensaje.textContent = "Selecciona la fecha del gasto";
+        mostrarMensaje("Selecciona la fecha del gasto", "error");
         return;
     }
 
     if (!datosGasto.monto || datosGasto.monto <= 0) {
-        mensaje.textContent = "El monto debe ser mayor a cero";
+        mostrarMensaje("El monto debe ser mayor a cero", "error");
         return;
     }
 
@@ -218,7 +218,7 @@ async function registrarGastoGasolina(event) {
         await consultarResumen();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -237,9 +237,9 @@ function formatoDineroSimple(valor) {
 }
 
 function mostrarMensaje(texto) {
-    mensaje.textContent = texto;
+    mostrarMensaje(error.message, texto);
 
     setTimeout(function () {
-        mensaje.textContent = "";
+        mostrarMensaje(error.message, "error");
     }, 2000);
 }

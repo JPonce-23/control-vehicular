@@ -93,7 +93,7 @@ async function cargarVehiculos() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -125,7 +125,7 @@ async function guardarVehiculo(event) {
         await cargarVehiculos();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -153,7 +153,7 @@ function editarVehiculo(vehiculoId) {
     });
 
     if (!vehiculo) {
-        mensaje.textContent = "Vehículo no encontrado.";
+        mostrarMensaje(error.message, "Vehículo no encontrado.", "error");
         return;
     }
 
@@ -198,7 +198,7 @@ async function cambiarEstadoVehiculo(vehiculoId, nuevoEstado) {
         await cargarVehiculos();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -239,10 +239,10 @@ function formatoNumero(valor) {
 }
 
 function mostrarMensaje(texto) {
-    mensaje.textContent = texto;
+    mostrarMensaje(error.message, texto);
 
     setTimeout(function () {
-        mensaje.textContent = "";
+        mostrarMensaje(error.message, " ");
     }, 2500);
 }
 

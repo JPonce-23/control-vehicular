@@ -42,3 +42,16 @@ async function apiFetch(endpoint, options = {}) {
 }
     return data;
 }
+
+
+function mostrarMensaje(texto, tipo = "error") {
+    const el = document.getElementById("mensaje");
+    if (!el) return;
+
+    el.textContent = texto;
+    el.className = `message ${tipo} show`;
+
+    setTimeout(() => {
+        el.classList.remove("show");
+    }, 2000);
+}

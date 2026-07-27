@@ -16,17 +16,17 @@ async function cambiarPassword(event) {
     const confirmarPassword = inputConfirmarPassword.value;
 
     if (!passwordActual || !nuevaPassword || !confirmarPassword) {
-        mensaje.textContent = "Completa todos los campos.";
+        mostrarMensaje("Completa todos los campos.", "error");
         return;
     }
 
     if (nuevaPassword !== confirmarPassword) {
-        mensaje.textContent = "La nueva contraseña y la confirmación no coinciden.";
+        mostrarMensaje("La nueva contraseña y la confirmación no coinciden.", "error");
         return;
     }
 
     if (nuevaPassword.length < 8) {
-        mensaje.textContent = "La nueva contraseña debe tener al menos 8 caracteres.";
+        mostrarMensaje("La nueva contraseña debe tener al menos 8 caracteres.", "error");
         return;
     }
 
@@ -39,11 +39,11 @@ async function cambiarPassword(event) {
             })
         });
 
-        mensaje.textContent = respuesta.mensaje || "Contraseña actualizada correctamente.";
+        mostrarMensaje(respuesta.mensaje || "Contraseña actualizada correctamente.");
 
         formCambiarPassword.reset();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }

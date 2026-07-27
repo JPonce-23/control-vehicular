@@ -40,7 +40,7 @@ async function cargarVehiculos() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -49,12 +49,12 @@ async function consultarReporteCompleto() {
     const anio = inputAnio.value;
 
     if (!vehiculoId) {
-        mensaje.textContent = "Selecciona un vehículo";
+        mostrarMensaje(error.message, "Selecciona un Vehículo");
         return;
     }
 
     if (!anio) {
-        mensaje.textContent = "Ingresa el año";
+        mostrarMensaje(error.message, "Ingresa el año");
         return;
     }
 
@@ -72,10 +72,10 @@ async function consultarReporteCompleto() {
         dibujarGraficaCircular(resumen.presupuesto);
         dibujarGraficaBarras(reporte.reporte || []);
 
-        mensaje.textContent = "";
+        mostrarMensaje(error.message, " ");
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 

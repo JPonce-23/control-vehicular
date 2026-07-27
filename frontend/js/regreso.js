@@ -45,7 +45,7 @@ async function cargarSalidasActivas() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -72,11 +72,11 @@ async function registrarRegreso(event) {
             body: JSON.stringify(datosRegreso)
         });
 
-        mensaje.textContent = "Regreso registrado correctamente";
+        mostrarMensaje("Regreso registrado correctamente", "ok");
         localStorage.setItem("salida_id_actual", datosRegreso.salida_id);
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 

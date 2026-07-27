@@ -97,7 +97,7 @@ async function cargarUsuarios() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -120,7 +120,7 @@ async function guardarUsuario(event) {
             const datosUsuario = obtenerDatosCreacion();
 
             if (!datosUsuario.password) {
-                mensaje.textContent = "Ingresa una contraseña inicial.";
+                mostrarMensaje("Ingresa una contraseña para el nuevo usuario.", "error");
                 return;
             }
 
@@ -137,7 +137,7 @@ async function guardarUsuario(event) {
         await cargarUsuarios();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -168,7 +168,7 @@ function editarUsuario(usuarioId) {
     });
 
     if (!usuario) {
-        mensaje.textContent = "Usuario no encontrado.";
+        mostrarMensaje("Usuario no encontrado.", "error");
         return;
     }
 
@@ -209,7 +209,7 @@ async function cambiarRolUsuario(usuarioId, nuevoRol) {
         await cargarUsuarios();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -232,7 +232,7 @@ async function cambiarEstadoUsuario(usuarioId, nuevoEstado) {
         await cargarUsuarios();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -255,7 +255,7 @@ async function generarPasswordTemporal(usuarioId) {
         mostrarMensaje(respuesta.mensaje || "Contraseña temporal generada correctamente.");
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -323,9 +323,9 @@ function formatearFecha(fecha) {
 }
 
 function mostrarMensaje(texto) {
-    mensaje.textContent = texto;
+    mostrarMensaje(error.message, texto);
 
     setTimeout(function () {
-        mensaje.textContent = "";
+        mostrarMensaje(error.message, " ");
     }, 2500);
 }

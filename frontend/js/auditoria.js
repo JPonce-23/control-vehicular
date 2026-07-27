@@ -27,7 +27,7 @@ btnLimpiar.addEventListener("click", function () {
     `;
 
     tablaAuditoria.innerHTML = "";
-    mensaje.textContent = "";
+    mostrarMensaje(error.message, "");
 });
 
 async function cargarVehiculos() {
@@ -54,7 +54,7 @@ async function cargarVehiculos() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -63,12 +63,12 @@ async function consultarAuditoria() {
     const accion = selectAccion.value;
 
     if (!vehiculoId) {
-        mensaje.textContent = "Selecciona un vehículo.";
+        mostrarMensaje("Selecciona un vehículo.", "error");
         return;
     }
 
     try {
-        mensaje.textContent = "Cargando auditoría...";
+        mostrarMensaje("Cargando auditoría...");
 
         let endpoint = `/historial-salida/auditoria-vehiculo?vehiculo_id=${vehiculoId}`;
 
@@ -81,11 +81,11 @@ async function consultarAuditoria() {
         mostrarResumen(registros);
         mostrarTablaAuditoria(registros);
 
-        mensaje.textContent = "";
+        mostrarMensaje("");
 
     } catch (error) {
         tablaAuditoria.innerHTML = "";
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 

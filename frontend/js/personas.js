@@ -82,7 +82,7 @@ async function cargarPersonas() {
         });
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -118,7 +118,7 @@ async function guardarPersona(event) {
         await cargarPersonas();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -141,7 +141,7 @@ function editarPersona(personaId) {
     });
 
     if (!persona) {
-        mensaje.textContent = "Persona no encontrada.";
+        mostrarMensaje("Persona no encontrada", "error");
         return;
     }
 
@@ -182,7 +182,7 @@ async function cambiarEstadoPersona(personaId, nuevoEstado) {
         await cargarPersonas();
 
     } catch (error) {
-        mensaje.textContent = error.message;
+        mostrarMensaje(error.message, "error");
     }
 }
 
@@ -224,9 +224,9 @@ function formatearEstado(estado) {
 }
 
 function mostrarMensaje(texto) {
-    mensaje.textContent = texto;
+    mostrarMensaje(error.message, texto);
 
     setTimeout(function () {
-        mensaje.textContent = "";
+        mostrarMensaje(error.message, "");
     }, 2500);
 }
