@@ -23,3 +23,12 @@ Thumbs.db
 # Archivos generados
 *.docx
 *.pdf
+# Respaldos y paquetes locales
+*.zip
+*.diff
+*.sqlite
+*.db
+estado_actual.txt
+
+# La plantilla institucional sí debe poder versionarse.
+!backend/templates/resguardo_template.docx

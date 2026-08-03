@@ -56,41 +56,27 @@ async function cargarUsuarios() {
 
         usuarios.forEach(function (usuario) {
             const fila = document.createElement("tr");
+            const acciones = usuario.es_superadmin
+                ? `<span class="badge">Cuenta protegida</span>`
+                : `
+                    <button type="button" onclick="editarUsuario(${usuario.id})">Editar</button>
+                    <button type="button" onclick="cambiarRolUsuario(${usuario.id}, 'administrador')">Hacer administrador</button>
+                    <button type="button" onclick="cambiarRolUsuario(${usuario.id}, 'capturista')">Hacer capturista</button>
+                    <button type="button" onclick="cambiarEstadoUsuario(${usuario.id}, 'activo')">Activar</button>
+                    <button type="button" onclick="cambiarEstadoUsuario(${usuario.id}, 'suspendido')">Suspender</button>
+                    <button type="button" onclick="generarPasswordTemporal(${usuario.id})">Contraseña temporal</button>
+                `;
 
             fila.innerHTML = `
                 <td>${usuario.id}</td>
-                <td>${obtenerNombreCompleto(usuario)}</td>
-                <td>${usuario.num_empleado || ""}</td>
-                <td>${usuario.correo || ""}</td>
-                <td>${formatearRol(usuario.rol)}</td>
-                <td>${formatearEstado(usuario.estado)}</td>
+                <td>${escaparHTML(obtenerNombreCompleto(usuario))}</td>
+                <td>${escaparHTML(usuario.num_empleado || "")}</td>
+                <td>${escaparHTML(usuario.correo || "")}</td>
+                <td>${escaparHTML(formatearRol(usuario.rol))}</td>
+                <td>${escaparHTML(formatearEstado(usuario.estado))}</td>
                 <td>${formatearFecha(usuario.fecha_alta)}</td>
                 <td>${formatearFecha(usuario.ultimo_acceso)}</td>
-                <td>
-                    <button type="button" onclick="editarUsuario(${usuario.id})">
-                        Editar
-                    </button>
-
-                    <button type="button" onclick="cambiarRolUsuario(${usuario.id}, 'administrador')">
-                        Hacer administrador
-                    </button>
-
-                    <button type="button" onclick="cambiarRolUsuario(${usuario.id}, 'capturista')">
-                        Hacer capturista
-                    </button>
-
-                    <button type="button" onclick="cambiarEstadoUsuario(${usuario.id}, 'activo')">
-                        Activar
-                    </button>
-
-                    <button type="button" onclick="cambiarEstadoUsuario(${usuario.id}, 'suspendido')">
-                        Suspender
-                    </button>
-
-                    <button type="button" onclick="generarPasswordTemporal(${usuario.id})">
-                        Contraseña temporal
-                    </button>
-                </td>
+                <td>${acciones}</td>
             `;
 
             tablaUsuarios.appendChild(fila);
@@ -106,6 +92,8 @@ async function guardarUsuario(event) {
 
     const usuarioId = inputUsuarioIdEdicion.value;
 
+    btnGuardar.disabled = true;
+
     try {
         if (usuarioId) {
             const datosUsuario = obtenerDatosEdicion();
@@ -116,6 +104,9 @@ async function guardarUsuario(event) {
             });
 
             mostrarMensaje("Usuario actualizado correctamente.");
+            limpiarFormulario();
+            ocultarFormulario();
+            await cargarUsuarios();
         } else {
             const datosUsuario = obtenerDatosCreacion();
 
@@ -129,15 +120,14 @@ async function guardarUsuario(event) {
                 body: JSON.stringify(datosUsuario)
             });
 
-            mostrarMensaje("Usuario creado correctamente.");
+            recargarConMensaje("Registro completado: usuario creado correctamente.");
+            return;
         }
-
-        limpiarFormulario();
-        ocultarFormulario();
-        await cargarUsuarios();
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
+    } finally {
+        btnGuardar.disabled = false;
     }
 }
 
@@ -317,15 +307,5 @@ function formatearEstado(estado) {
 }
 
 function formatearFecha(fecha) {
-    if (!fecha) return "Sin registro";
-
-    return String(fecha).replace("T", " ").substring(0, 16);
-}
-
-function mostrarMensaje(texto) {
-    mostrarMensaje(error.message, texto);
-
-    setTimeout(function () {
-        mostrarMensaje(error.message, " ");
-    }, 2500);
+    return formatearFechaSolo(fecha);
 }

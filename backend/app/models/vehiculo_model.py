@@ -1,23 +1,24 @@
-from sqlalchemy import Column, Integer, String, Numeric
+from sqlalchemy import Column, Integer, Numeric, String
+
 from app.database import Base
+
 
 class Vehiculo(Base):
     __tablename__ = "vehiculo"
 
     id = Column(Integer, primary_key=True, index=True)
-    num_economico = Column(String)
-    placa = Column(String)
-    marca = Column(String)
-    tipo = Column(String)
-    modelo_anio = Column(Integer)
-    cilindros = Column(Integer)
-    num_serie = Column(String)
-    num_motor = Column(String)
-    num_poliza = Column(String)
-    num_inventario = Column(String)
-    color = Column(String)
-    num_tarjeta_gasolina = Column(String)
-    saldo_tarjeta_gasolina = Column(Numeric(10, 2), nullable=False, default=0.00)
-    km_acumulado = Column(Numeric)
-    estado = Column(String)
-    
+    num_economico = Column(String(50), unique=True, nullable=True)
+    placa = Column(String(20), unique=True, nullable=False)
+    marca = Column(String(50), nullable=False)
+    tipo = Column(String(50), nullable=False)
+    modelo_anio = Column(Integer, nullable=False)
+    cilindros = Column(Integer, nullable=False)
+    num_serie = Column(String(50), unique=True, nullable=False)
+    num_motor = Column(String(50), unique=True, nullable=True)
+    num_poliza = Column(String(50), nullable=True)
+    num_inventario = Column(String(50), unique=True, nullable=True)
+    color = Column(String(30), nullable=False)
+    num_tarjeta_gasolina = Column(String(50), nullable=True)
+    saldo_tarjeta_gasolina = Column(Numeric(12, 2), nullable=False, default=0)
+    km_acumulado = Column(Numeric(12, 2), nullable=False, default=0)
+    estado = Column(String, nullable=False, default="disponible")

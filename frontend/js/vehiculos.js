@@ -50,7 +50,7 @@ async function cargarVehiculos() {
         if (vehiculos.length === 0) {
             tablaVehiculos.innerHTML = `
                 <tr>
-                    <td colspan="10">No hay vehículos registrados.</td>
+                    <td colspan="11">No hay vehículos registrados.</td>
                 </tr>
             `;
             return;
@@ -61,14 +61,15 @@ async function cargarVehiculos() {
 
             fila.innerHTML = `
                 <td>${vehiculo.id}</td>
-                <td>${vehiculo.placa || ""}</td>
-                <td>${vehiculo.marca || ""}</td>
-                <td>${vehiculo.tipo || ""}</td>
+                <td>${escaparHTML(vehiculo.placa || "")}</td>
+                <td>${escaparHTML(vehiculo.marca || "")}</td>
+                <td>${escaparHTML(vehiculo.tipo || "")}</td>
                 <td>${vehiculo.modelo_anio || ""}</td>
-                <td>${vehiculo.num_serie || ""}</td>
+                <td>${escaparHTML(vehiculo.num_serie || "")}</td>
                 <td>${vehiculo.color || ""}</td>
                 <td>${formatoNumero(vehiculo.km_acumulado)}</td>
-                <td>${formatearEstado(vehiculo.estado)}</td>
+                <td>${escaparHTML(formatearEstado(vehiculo.estado))}</td>
+                <td>${escaparHTML(vehiculo.num_tarjeta_gasolina || "")}</td>
                 <td>${formatearDinero(vehiculo.saldo_tarjeta_gasolina)}</td>
                 <td>
                     <button type="button" onclick="editarVehiculo(${vehiculo.id})">
@@ -103,6 +104,8 @@ async function guardarVehiculo(event) {
     const vehiculoId = inputVehiculoIdEdicion.value;
     const datosVehiculo = obtenerDatosFormulario();
 
+    btnGuardar.disabled = true;
+
     try {
         if (vehiculoId) {
             await apiFetch(`/vehiculos/${vehiculoId}`, {
@@ -111,21 +114,23 @@ async function guardarVehiculo(event) {
             });
 
             mostrarMensaje("Vehículo actualizado correctamente.");
+            limpiarFormulario();
+            ocultarFormulario();
+            await cargarVehiculos();
         } else {
             await apiFetch("/vehiculos/", {
                 method: "POST",
                 body: JSON.stringify(datosVehiculo)
             });
 
-            mostrarMensaje("Vehículo registrado correctamente.");
+            recargarConMensaje("Registro completado: vehículo registrado correctamente.");
+            return;
         }
-
-        limpiarFormulario();
-        ocultarFormulario();
-        await cargarVehiculos();
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
+    } finally {
+        btnGuardar.disabled = false;
     }
 }
 
@@ -153,7 +158,7 @@ function editarVehiculo(vehiculoId) {
     });
 
     if (!vehiculo) {
-        mostrarMensaje(error.message, "Vehículo no encontrado.", "error");
+        mostrarMensaje("Vehículo no encontrado.", "error");
         return;
     }
 
@@ -237,15 +242,6 @@ function formatoNumero(valor) {
         maximumFractionDigits: 2
     });
 }
-
-function mostrarMensaje(texto) {
-    mostrarMensaje(error.message, texto);
-
-    setTimeout(function () {
-        mostrarMensaje(error.message, " ");
-    }, 2500);
-}
-
 
 function formatearDinero(valor) {
     const numero = Number(valor || 0);

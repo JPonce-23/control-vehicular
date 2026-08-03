@@ -71,6 +71,21 @@
                     selectSalida.appendChild(option);
                 });
 
+                const salidaIdPendiente = localStorage.getItem("salida_id_actual");
+
+                if (salidaIdPendiente) {
+                    localStorage.removeItem("salida_id_actual");
+
+                    const existe = salidas.some(function (salida) {
+                        return String(salida.id) === String(salidaIdPendiente);
+                    });
+
+                    if (existe) {
+                        selectSalida.value = salidaIdPendiente;
+                        await onSalidaChange();
+                    }
+                }
+
             } catch (error) {
                 mostrarMsg(mensajeSalida, error.message, "error");
             }
@@ -136,13 +151,13 @@
                     div.dataset.itemId = condicion.item_condicion_id;
 
                     div.innerHTML = `
-                        <p>${formatearNombre(condicion.nombre)}</p>
+                        <p>${escaparHTML(formatearNombre(condicion.nombre))}</p>
                         <div class="radio-grupo">
                             <label><input type="radio" name="condicion_${condicion.item_condicion_id}" value="bueno" ${condicion.estado === "bueno" ? "checked" : ""}> B</label>
                             <label><input type="radio" name="condicion_${condicion.item_condicion_id}" value="regular" ${condicion.estado === "regular" ? "checked" : ""}> R</label>
                             <label><input type="radio" name="condicion_${condicion.item_condicion_id}" value="malo" ${condicion.estado === "malo" ? "checked" : ""}> M</label>
                         </div>
-                        <input type="text" class="observacion-input observacion-condicion" placeholder="Observaciones (opcional)" value="${condicion.observaciones || ""}">
+                        <input type="text" class="observacion-input observacion-condicion" placeholder="Observaciones (opcional)" value="${escaparHTML(condicion.observaciones || "")}">
                     `;
                     condicionesContainer.appendChild(div);
                 });
@@ -168,13 +183,13 @@
                     div.dataset.itemId = item.item_id;
 
                     div.innerHTML = `
-                        <p>${formatearNombre(item.nombre)} ${item.categoria ? `<small style="font-weight:normal">(${formatearNombre(item.categoria)})</small>` : ""}</p>
+                        <p>${escaparHTML(formatearNombre(item.nombre))} ${item.categoria ? `<small style="font-weight:normal">(${escaparHTML(formatearNombre(item.categoria))})</small>` : ""}</p>
                         <div class="radio-grupo">
                             <label><input type="radio" name="inventario_${item.item_id}" value="correcto" ${item.estado === "correcto" ? "checked" : ""}> Correcto</label>
                             <label><input type="radio" name="inventario_${item.item_id}" value="na" ${item.estado === "na" ? "checked" : ""}> N/A</label>
                             <label><input type="radio" name="inventario_${item.item_id}" value="vacio" ${item.estado === "vacio" ? "checked" : ""}> Vacío</label>
                         </div>
-                        <input type="text" class="observacion-input observacion-inventario" placeholder="Observaciones (opcional)" value="${item.observaciones || ""}">
+                        <input type="text" class="observacion-input observacion-inventario" placeholder="Observaciones (opcional)" value="${escaparHTML(item.observaciones || "")}">
                     `;
                     inventarioContainer.appendChild(div);
                 });
@@ -355,36 +370,36 @@
                         <tr><td colspan="3" class="seccion-titulo">I.- DATOS DEL VEHÍCULO</td></tr>
                         <tr>
                             <td colspan="3">
-                                <span class="campo-label">MARCA:</span> <span class="campo-valor">${v.marca || ""}</span> &nbsp;
-                                <span class="campo-label">TIPO:</span> <span class="campo-valor">${v.tipo || ""}</span> &nbsp;
+                                <span class="campo-label">MARCA:</span> <span class="campo-valor">${escaparHTML(v.marca || "")}</span> &nbsp;
+                                <span class="campo-label">TIPO:</span> <span class="campo-valor">${escaparHTML(v.tipo || "")}</span> &nbsp;
                                 <span class="campo-label">MODELO:</span> <span class="campo-valor">${v.modelo_anio || ""}</span>
                             </td>
                         </tr>
                         <tr>
-                            <td><span class="campo-label">No. SERIE:</span> <span class="campo-valor">${v.num_serie || ""}</span></td>
-                            <td><span class="campo-label">PLACAS:</span> <span class="campo-valor">${v.placa || ""}</span></td>
-                            <td><span class="campo-label">No. ECO:</span> <span class="campo-valor">${v.num_economico || ""}</span></td>
+                            <td><span class="campo-label">No. SERIE:</span> <span class="campo-valor">${escaparHTML(v.num_serie || "")}</span></td>
+                            <td><span class="campo-label">PLACAS:</span> <span class="campo-valor">${escaparHTML(v.placa || "")}</span></td>
+                            <td><span class="campo-label">No. ECO:</span> <span class="campo-valor">${escaparHTML(v.num_economico || "")}</span></td>
                         </tr>
 
                         <!-- Sección II -->
                         <tr><td colspan="3" class="seccion-titulo">II.- TIPO DE MOVIMIENTO</td></tr>
                         <tr>
-                            <td><span class="campo-label">FINALIDAD DE USO:</span><br><span class="campo-valor">${s.finalidad_uso || ""}</span></td>
-                            <td colspan="2"><span class="campo-label">FINALIDAD EN CASO DE DEVOLUCIÓN:</span><br><span class="campo-valor">${r.finalidad_devolucion || ""}</span></td>
+                            <td><span class="campo-label">FINALIDAD DE USO:</span><br><span class="campo-valor">${escaparHTML(s.finalidad_uso || "")}</span></td>
+                            <td colspan="2"><span class="campo-label">FINALIDAD EN CASO DE DEVOLUCIÓN:</span><br><span class="campo-valor">${escaparHTML(r.finalidad_devolucion || "")}</span></td>
                         </tr>
 
                         <!-- Sección III -->
                         <tr><td colspan="3" class="seccion-titulo">III.- DATOS DEL ASIGNATARIO</td></tr>
                         <tr>
                             <td colspan="2">
-                                <span class="campo-label">NOMBRE:</span> <span class="campo-valor">${p.nombre || ""} ${p.apellido_paterno || ""} ${p.apellido_materno || ""}</span><br>
-                                <span class="campo-label">CARGO:</span> <span class="campo-valor">${p.cargo || ""}</span><br>
-                                <span class="campo-label">No. LICENCIA:</span> <span class="campo-valor">${p.num_licencia || ""}</span> &nbsp;
-                                <span class="campo-label">RFC:</span> <span class="campo-valor">${p.rfc || ""}</span>
+                                <span class="campo-label">NOMBRE:</span> <span class="campo-valor">${escaparHTML(p.nombre || "")} ${escaparHTML(p.apellido_paterno || "")} ${escaparHTML(p.apellido_materno || "")}</span><br>
+                                <span class="campo-label">CARGO:</span> <span class="campo-valor">${escaparHTML(p.cargo || "")}</span><br>
+                                <span class="campo-label">No. LICENCIA:</span> <span class="campo-valor">${escaparHTML(p.num_licencia || "")}</span> &nbsp;
+                                <span class="campo-label">RFC:</span> <span class="campo-valor">${escaparHTML(p.rfc || "")}</span>
                             </td>
                             <td>
-                                <span class="campo-label">VIGENTE AL:</span> <span class="campo-valor">${p.vigencia_licencia || ""}</span><br>
-                                <span class="campo-label">TIPO:</span> <span class="campo-valor">${p.tipo_licencia || ""}</span>
+                                <span class="campo-label">VIGENTE AL:</span> <span class="campo-valor">${escaparHTML(p.vigencia_licencia || "")}</span><br>
+                                <span class="campo-label">TIPO:</span> <span class="campo-valor">${escaparHTML(p.tipo_licencia || "")}</span>
                             </td>
                         </tr>
 
@@ -455,7 +470,7 @@
                         <tr>
                             <td colspan="4" style="text-align:center;padding:20px">
                                 <div style="border-top:1px solid #333;margin-top:30px;padding-top:4px">
-                                    ${p.nombre || ""} ${p.apellido_paterno || ""}<br>
+                                    ${escaparHTML(p.nombre || "")} ${escaparHTML(p.apellido_paterno || "")}<br>
                                     <strong>NOMBRE, FIRMA Y CARGO</strong>
                                 </div>
                             </td>
@@ -603,9 +618,5 @@
 }
 
 function formatearFechaHora(fecha) {
-    if (!fecha) {
-        return "Sin fecha";
-    }
-
-    return String(fecha).replace("T", " ").substring(0, 16);
+    return formatearFechaSolo(fecha);
 }

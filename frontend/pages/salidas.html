@@ -67,8 +67,8 @@
                 </div> 
                 
                 <div class="form-group">
-                    <label for="area_en_viaje">*Área de viaje:</label> 
-                    <input type="text" name="area_en_viaje" id="area_en_viaje" required> 
+                    <label for="area_en_viaje">Área de viaje:</label> 
+                    <input type="text" name="area_en_viaje" id="area_en_viaje"> 
                 </div>
                 
                 <div class="form-group">
@@ -80,18 +80,12 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label for="forma_movimiento">*Forma de movimiento</label> 
-                    <select name="forma_movimiento" id="forma_movimiento" required>
-                        <option value=""></option>
-                        <option value="permanente">Permanente</option>
-                        <option value="provisional">Provisional</option>
-                    </select> 
-                </div>
+                <!-- Todos los resguardos son provisionales; se fija el valor de forma fija. -->
+                <input type="hidden" name="forma_movimiento" id="forma_movimiento" value="provisional">
                 
                 <div class="form-group">
-                    <label for="fecha_salida">Fecha de salida:</label>
-                    <input type="datetime-local" id="fecha_salida" name="fecha_salida" required>
+                    <label for="fecha_salida">*Fecha de salida:</label>
+                    <input type="date" id="fecha_salida" name="fecha_salida" required>
                 </div>
 
              <!--   <div class="form-group">
@@ -101,19 +95,19 @@
 
 
                 <div class="form-group">
-                    <label for="fecha_regreso_estimada">*Regreso:</label>
-                    <input type="date" id="fecha_regreso_estimada" name="fecha_regreso_estimada" required>
+                    <label for="fecha_regreso_estimada">Fecha estimada de regreso:</label>
+                    <input type="date" id="fecha_regreso_estimada" name="fecha_regreso_estimada">
                 </div>
 
 
                 <div class="form-group">
-                    <label for="finalidad_uso">Finalidad de uso:</label> 
-                    <input type="text" name="finalidad_uso" id="finalidad_uso"> 
+                    <label for="finalidad_uso">*Finalidad de uso:</label> 
+                    <input type="text" name="finalidad_uso" id="finalidad_uso" required> 
                 </div>
 
                 <div class="form-group">
                     <label for="km_odometro_salida">*Kilometraje de salida:</label> 
-                    <input type="number" step="0.01" name="km_odometro_salida" id="km_odometro_salida" required>
+                    <input type="number" name="km_odometro_salida" id="km_odometro_salida" required>
                 </div>
 
                 <div class="form-group">
@@ -157,6 +151,7 @@
 
     <p id="mensaje" class="message"></p>
 
+    <script src="../js/config.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/auth-guard.js"></script>
     <script src="../js/salidas.js"></script>

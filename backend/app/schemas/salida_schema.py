@@ -9,11 +9,11 @@ class SalidaCreate(BaseModel):
     fecha_salida: Optional[datetime] = None
     num_oficio: Optional[str] = None
     num_expediente: Optional[str] = None
-    area_en_viaje: str
+    area_en_viaje: Optional[str] = None
     tipo_movimiento: str
     forma_movimiento: str
     fecha_fin_provisional: Optional[date] = None
-    fecha_regreso_estimada: date
+    fecha_regreso_estimada: Optional[date] = None
     finalidad_uso: str
     km_odometro_salida: Decimal
     nivel_gasolina_salida: str
@@ -30,7 +30,7 @@ class SalidaResponse(BaseModel):
     fecha_salida: datetime
     num_oficio: Optional[str]
     num_expediente: Optional[str]
-    area_en_viaje: str
+    area_en_viaje: Optional[str]
     tipo_movimiento: str
     forma_movimiento: str
     fecha_fin_provisional: Optional[date]

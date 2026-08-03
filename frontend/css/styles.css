@@ -341,7 +341,7 @@ footer {
     background-color: var(--color-principal);
     color: white;
     padding: 12px 10px;
-    text-align: left;
+    text-align: center;
 }
 
 .data-table td {

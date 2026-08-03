@@ -43,7 +43,7 @@ async function buscarSalida() {
     const salidaId = selectSalida.value;
 
     if (!salidaId) {
-        mostrarMensaje(error.message, "Selecciona una salida");
+        mostrarMensaje("Selecciona una salida", "error");
         return;
     }
 
@@ -58,7 +58,6 @@ async function buscarSalida() {
         llenarFormulario(salida, regreso);
 
         seccionFormulario.style.display = "block";
-        mostrarMensaje(error.message, "");
 
     } catch (error) {
         salidaActual = null;
@@ -83,8 +82,8 @@ function mostrarResumenSalida(salida, regreso) {
         <p><strong>ID persona:</strong> ${salida.persona_id}</p>
         <p><strong>Fecha de salida:</strong> ${formatearFechaHora(salida.fecha_salida)}</p>
         <p><strong>Fecha de regreso:</strong> ${formatearFechaHora(regreso.fecha_regreso)}</p>
-        <p><strong>Finalidad de uso:</strong> ${salida.finalidad_uso || "Sin dato"}</p>
-        <p><strong>Finalidad de devolución:</strong> ${regreso.finalidad_devolucion || "Sin dato"}</p>
+        <p><strong>Finalidad de uso:</strong> ${escaparHTML(salida.finalidad_uso || "Sin dato")}</p>
+        <p><strong>Finalidad de devolución:</strong> ${escaparHTML(regreso.finalidad_devolucion || "Sin dato")}</p>
     `;
 }
 
@@ -152,9 +151,7 @@ async function guardarCorreccion(event) {
 }
 
 function formatearFechaHora(fecha) {
-    if (!fecha) return "Sin fecha";
-
-    return String(fecha).replace("T", " ").substring(0, 16);
+    return formatearFechaSolo(fecha);
 }
 
 

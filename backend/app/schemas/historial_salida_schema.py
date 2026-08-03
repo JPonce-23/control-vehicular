@@ -1,7 +1,8 @@
-from pydantic import BaseModel
-from datetime import date
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel
+
 
 class HistorialSalidaResponse(BaseModel):
     id: int
@@ -11,13 +12,7 @@ class HistorialSalidaResponse(BaseModel):
     descripcion: Optional[str]
     fecha: datetime
 
-    class Config:
-        from_attributes = True
-        
-        
-from pydantic import BaseModel
-from typing import Optional
-from datetime import date
+    model_config = {"from_attributes": True}
 
 
 class HistorialAuditoriaResponse(BaseModel):
@@ -28,15 +23,9 @@ class HistorialAuditoriaResponse(BaseModel):
     usuario_nombre: Optional[str] = None
     accion: str
     descripcion: Optional[str] = None
-    fecha: date
+    fecha: datetime
 
-    class Config:
-        from_attributes = True
-        
-        
-        
-from pydantic import BaseModel
-from typing import Optional
+    model_config = {"from_attributes": True}
 
 
 class HistorialAuditoriaVehiculoResponse(BaseModel):
@@ -53,5 +42,4 @@ class HistorialAuditoriaVehiculoResponse(BaseModel):
     usuario_id: Optional[int] = None
     usuario: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}

@@ -1,32 +1,28 @@
+from urllib.parse import quote_plus
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-import os
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-load_dotenv()
+from app.config import get_settings
 
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+settings = get_settings()
 
-DATABASE_URL = (
-    f"postgresql://{DB_USER}:{DB_PASSWORD}"
-    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
+if settings.database_url:
+    DATABASE_URL = settings.database_url
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = "postgresql://" + DATABASE_URL[len("postgres://"):]
+else:
+    password = quote_plus(settings.db_password)
+    user = quote_plus(settings.db_user)
+    DATABASE_URL = (
+        f"postgresql://{user}:{password}"
+        f"@{settings.db_host}:{settings.db_port}/{settings.db_name}"
+    )
 
-from sqlalchemy.orm import declarative_base
-
-engine = create_engine(DATABASE_URL)
-
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 Base = declarative_base()
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
 
 def get_db():
     db = SessionLocal()

@@ -11,15 +11,16 @@ class UsuarioResponse(BaseModel):
     correo: str
     rol: str
     estado: str
+    es_superadmin: bool = False
     fecha_alta: datetime
     ultimo_acceso: Optional[datetime]
+
+    class Config:
+        from_attributes = True
     
 class LoginRequest(BaseModel):
     correo: str
     password: str
-
-    class Config:
-        from_attributes = True
         
 class UsuarioCreate(BaseModel):
     nombre: str

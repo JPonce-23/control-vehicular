@@ -53,6 +53,8 @@ async function cargarVehiculos() {
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
+    } finally {
+        if (btnRegistrar) btnRegistrar.disabled = false;
     }
 }
 
@@ -61,7 +63,7 @@ async function consultarResumen() {
     const anio = inputAnio.value;
 
     if (!vehiculoId) {
-        mostrarMensaje(error.message, "Selecciona un vehículo");
+        mostrarMensaje("Selecciona un vehículo", "error");
         return;
     }
 
@@ -102,10 +104,10 @@ function mostrarResumen(data) {
         <h2>Resumen</h2>
 
         <h3>Datos del vehículo</h3>
-        <p><strong>Placa:</strong> ${vehiculo.placa || "Sin dato"}</p>
-        <p><strong>Vehículo:</strong> ${vehiculo.marca || ""} ${vehiculo.tipo || ""}</p>
-        <p><strong>Número de serie:</strong> ${vehiculo.num_serie || "Sin dato"}</p>
-        <p><strong>Tarjeta de gasolina:</strong> ${vehiculo.num_tarjeta_gasolina || "Sin dato"}</p>
+        <p><strong>Placa:</strong> ${escaparHTML(vehiculo.placa || "Sin dato")}</p>
+        <p><strong>Vehículo:</strong> ${escaparHTML(vehiculo.marca || "")} ${escaparHTML(vehiculo.tipo || "")}</p>
+        <p><strong>Número de serie:</strong> ${escaparHTML(vehiculo.num_serie || "Sin dato")}</p>
+        <p><strong>Tarjeta de gasolina:</strong> ${escaparHTML(vehiculo.num_tarjeta_gasolina || "Sin dato")}</p>
         <p><strong>Kilometraje acumulado:</strong> ${formatoDineroSimple(vehiculo.km_acumulado)} km</p>
 
         <h3>Presupuesto</h3>
@@ -119,7 +121,7 @@ function mostrarResumen(data) {
         <h3>Último gasto</h3>
         <p><strong>Fecha:</strong> ${ultimoGasto.fecha_gasto || "Sin registro"}</p>
         <p><strong>Monto:</strong> ${formatoMoneda(ultimoGasto.monto || 0)}</p>
-        <p><strong>Nivel tanque:</strong> ${ultimoGasto.nivel_tanque || "Sin dato"}</p>
+        <p><strong>Nivel tanque:</strong> ${escaparHTML(ultimoGasto.nivel_tanque || "Sin dato")}</p>
         <p><strong>Odómetro:</strong> ${ultimoGasto.km_odometro || "Sin dato"}</p>
     `;
 }
@@ -204,21 +206,22 @@ async function registrarGastoGasolina(event) {
         return;
     }
 
+    const btnRegistrar = formGasto.querySelector("input[type=submit], button[type=submit]");
+    if (btnRegistrar) btnRegistrar.disabled = true;
+
     try {
         const respuesta = await apiFetch(`/vehiculos/${vehiculoId}/gastos-gasolina`, {
             method: "POST",
             body: JSON.stringify(datosGasto)
         });
 
-        mostrarMensaje(respuesta.mensaje || "Gasto registrado correctamente");
-
-        formGasto.reset();
-        colocarFechaActual();
-
-        await consultarResumen();
+        recargarConMensaje(respuesta.mensaje || "Registro completado: gasto de gasolina registrado correctamente.");
+        return;
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
+    } finally {
+        if (btnRegistrar) btnRegistrar.disabled = false;
     }
 }
 
@@ -236,10 +239,3 @@ function formatoDineroSimple(valor) {
     });
 }
 
-function mostrarMensaje(texto) {
-    mostrarMensaje(error.message, texto);
-
-    setTimeout(function () {
-        mostrarMensaje(error.message, "error");
-    }, 2000);
-}

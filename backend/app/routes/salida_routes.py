@@ -25,6 +25,16 @@ router = APIRouter(
     tags=["Salidas"]
 )
 
+NIVELES = {"vacio", "cuarto", "medio", "tres_cuartos", "lleno"}
+TIPOS_MOVIMIENTO = {"asignacion", "devolucion"}
+ESTADOS_REGRESO = {"bueno", "dañado", "mantenimiento"}
+FINALIDADES_DEVOLUCION = {"disponible", "reparacion", "sustitucion"}
+
+
+def _validar_valor(valor, permitidos: set[str], nombre: str) -> None:
+    if valor is not None and valor not in permitidos:
+        raise HTTPException(status_code=400, detail=f"{nombre} no válido")
+
 
 @router.get("/buscar-correccion")
 def buscar_salidas_para_correccion(
@@ -104,15 +114,27 @@ def buscar_salidas_para_correccion(
 
 
 @router.get("/", response_model=list[SalidaResponse])
-def listar_salidas(db: Session = Depends(get_db)):
-    return db.query(Salida).all()
+def listar_salidas(
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    return db.query(Salida).order_by(Salida.fecha_salida.desc()).all()
 
-@router.post("/", response_model=SalidaResponse)
+@router.post("/", response_model=SalidaResponse, status_code=201)
 def crear_salida(
     salida: SalidaCreate,
     db: Session = Depends(get_db),
     usuario_actual = Depends(requerir_rol(["administrador", "capturista"]))
 ):
+    _validar_valor(salida.tipo_movimiento, TIPOS_MOVIMIENTO, "Tipo de movimiento")
+    _validar_valor(salida.nivel_gasolina_salida, NIVELES, "Nivel de gasolina")
+    _validar_valor(salida.estado_llantas_salida, NIVELES - {"vacio"}, "Nivel de llantas")
+    if not salida.finalidad_uso.strip():
+        raise HTTPException(status_code=400, detail="La finalidad de uso es obligatoria")
+    fecha_base = (salida.fecha_salida or datetime.now()).date()
+    if salida.fecha_regreso_estimada and salida.fecha_regreso_estimada < fecha_base:
+        raise HTTPException(status_code=400, detail="La fecha estimada de regreso no puede ser anterior a la salida")
+
     vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
 
     if vehiculo is None:
@@ -167,7 +189,14 @@ def crear_salida(
             detail="La licencia del conductor está vencida"
     )
 
+    if salida.monto_agregado_tarjeta < 0:
+        raise HTTPException(status_code=400, detail="El monto agregado a la tarjeta no puede ser negativo")
+
+    # La regla de negocio actual establece que todos los resguardos son provisionales.
     datos_salida = salida.model_dump(exclude_none=True)
+    datos_salida["forma_movimiento"] = "provisional"
+    if "fecha_fin_provisional" not in datos_salida and salida.fecha_regreso_estimada:
+        datos_salida["fecha_fin_provisional"] = salida.fecha_regreso_estimada
 
     nueva_salida = Salida(
         **datos_salida,
@@ -207,25 +236,7 @@ def crear_salida(
     return nueva_salida
 
 
-@router.get("/{salida_id}", response_model=SalidaResponse)
-def obtener_salida_por_id(
-    salida_id: int,
-    db: Session = Depends(get_db)
-):
-    salida = db.query(Salida).filter(
-        Salida.id == salida_id
-    ).first()
-
-    if salida is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Salida no encontrada"
-        )
-
-    return salida
-
-
-
+@router.get("/activas", response_model=list[SalidaResponse], include_in_schema=False)
 @router.get("/activas/", response_model=list[SalidaResponse])
 def listar_salidas_activas(
     db: Session = Depends(get_db),
@@ -238,6 +249,26 @@ def listar_salidas_activas(
     ).all()
 
     return salidas
+
+
+
+@router.get("/{salida_id}", response_model=SalidaResponse)
+def obtener_salida_por_id(
+    salida_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(obtener_usuario_actual)
+):
+    salida = db.query(Salida).filter(
+        Salida.id == salida_id
+    ).first()
+
+    if salida is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Salida no encontrada"
+        )
+
+    return salida
 
 
 
@@ -267,10 +298,15 @@ def actualizar_salida(
         Resguardo.salida_id == salida_id
     ).first()
 
-    if resguardo_existente and os.path.exists(resguardo_existente.ruta_archivo):
-        os.remove(resguardo_existente.ruta_archivo)
-
     datos_actualizar = datos.model_dump(exclude_unset=True)
+    _validar_valor(datos_actualizar.get("tipo_movimiento"), TIPOS_MOVIMIENTO, "Tipo de movimiento")
+    _validar_valor(datos_actualizar.get("nivel_gasolina_salida"), NIVELES, "Nivel de gasolina")
+    _validar_valor(datos_actualizar.get("estado_llantas_salida"), NIVELES - {"vacio"}, "Nivel de llantas")
+    if "finalidad_uso" in datos_actualizar and not (datos_actualizar["finalidad_uso"] or "").strip():
+        raise HTTPException(status_code=400, detail="La finalidad de uso no puede quedar vacía")
+    # La forma de movimiento se conserva provisional incluso en ediciones.
+    if "forma_movimiento" in datos_actualizar:
+        datos_actualizar["forma_movimiento"] = "provisional"
 
     for campo, valor in datos_actualizar.items():
         setattr(salida, campo, valor)
@@ -299,6 +335,12 @@ def corregir_salida_administrativa(
             status_code=400,
             detail="El motivo de la corrección es obligatorio"
         )
+    _validar_valor(datos.nivel_gasolina_salida, NIVELES, "Nivel de gasolina de salida")
+    _validar_valor(datos.nivel_gasolina_regreso, NIVELES, "Nivel de gasolina de regreso")
+    _validar_valor(datos.estado_llantas_salida, NIVELES - {"vacio"}, "Nivel de llantas de salida")
+    _validar_valor(datos.estado_llantas_regreso, NIVELES - {"vacio"}, "Nivel de llantas de regreso")
+    _validar_valor(datos.estado_vehiculo_regreso, ESTADOS_REGRESO, "Estado del vehículo al regreso")
+    _validar_valor(datos.finalidad_devolucion, FINALIDADES_DEVOLUCION, "Finalidad de devolución")
 
     regreso = db.query(Regreso).filter(Regreso.salida_id == salida_id).first()
 
@@ -347,6 +389,14 @@ def corregir_salida_administrativa(
     if datos.finalidad_devolucion is not None:
         regreso.finalidad_devolucion = datos.finalidad_devolucion
 
+    # Mantener sincronizado el estado operativo del vehículo cuando se corrige el regreso.
+    if regreso.estado_vehiculo_regreso == "dañado" or regreso.finalidad_devolucion == "sustitucion":
+        vehiculo.estado = "fuera_de_servicio"
+    elif regreso.estado_vehiculo_regreso == "mantenimiento" or regreso.finalidad_devolucion == "reparacion":
+        vehiculo.estado = "mantenimiento"
+    else:
+        vehiculo.estado = "disponible"
+
     if datos.observaciones_salida is not None:
         salida.observaciones = datos.observaciones_salida
 
@@ -358,7 +408,7 @@ def corregir_salida_administrativa(
         usuario_id=usuario_actual.id,
         accion="modificacion",
         descripcion=f"Corrección administrativa: {datos.motivo}",
-        fecha=date.today()
+        fecha=datetime.now()
     )
 
     db.add(historial)
@@ -436,29 +486,12 @@ def generar_resguardo(
     usuario_actual = Depends(obtener_usuario_actual)
 ):
     salida = db.query(Salida).filter(Salida.id == salida_id).first()
-
     if salida is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Salida no encontrada"
-        )
-
-    salida = db.query(Salida).filter(
-            Salida.id == salida_id
-        ).first()
-
-    if salida is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Salida no encontrada"
-        )
+        raise HTTPException(status_code=404, detail="Salida no encontrada")
 
     resguardo_existente = db.query(Resguardo).filter(
         Resguardo.salida_id == salida.id
     ).first()
-
-    if resguardo_existente and os.path.exists(resguardo_existente.ruta_archivo):
-        os.remove(resguardo_existente.ruta_archivo)
 
     vehiculo = db.query(Vehiculo).filter(
         Vehiculo.id == salida.vehiculo_id
@@ -467,6 +500,12 @@ def generar_resguardo(
     persona = db.query(PersonaAutorizada).filter(
         PersonaAutorizada.id == salida.persona_id
     ).first()
+
+    if vehiculo is None or persona is None:
+        raise HTTPException(
+            status_code=409,
+            detail="La salida tiene referencias incompletas de vehículo o persona",
+        )
 
     condiciones = db.query(
         RevisionCondicion,
@@ -515,8 +554,7 @@ def generar_resguardo(
         return {
             "mensaje": "Resguardo regenerado correctamente",
             "resguardo_id": resguardo_existente.id,
-            "archivo": resguardo_existente.nombre_archivo,
-            "ruta": resguardo_existente.ruta_archivo
+            "archivo": resguardo_existente.nombre_archivo
         }
 
     nuevo_resguardo = Resguardo(
@@ -541,8 +579,7 @@ def generar_resguardo(
     return {
         "mensaje": "Resguardo generado correctamente",
         "resguardo_id": nuevo_resguardo.id,
-        "archivo": nuevo_resguardo.nombre_archivo,
-        "ruta": nuevo_resguardo.ruta_archivo
+        "archivo": nuevo_resguardo.nombre_archivo
     }
     
     
@@ -567,7 +604,7 @@ def descargar_resguardo(
             detail="No existe resguardo generado para esta salida"
         )
 
-    if not os.path.exists(resguardo.ruta_archivo):
+    if not resguardo.ruta_archivo or not os.path.exists(resguardo.ruta_archivo):
         raise HTTPException(
             status_code=404,
             detail="El archivo del resguardo no existe en el servidor"
@@ -632,7 +669,10 @@ def actualizar_condicion_salida(
 
     estados_permitidos = ["bueno", "regular", "malo"]
 
+    ids_validos = {fila.id for fila in db.query(ItemCondicion.id).all()}
     for item in datos.condiciones:
+        if item.item_condicion_id not in ids_validos:
+            raise HTTPException(status_code=400, detail="El elemento de condición no existe")
         if item.estado not in estados_permitidos:
             raise HTTPException(
                 status_code=400,
@@ -717,7 +757,10 @@ def actualizar_inventario_salida(
 
     estados_permitidos = ["correcto", "na", "vacio"]  
 
+    ids_validos = {fila.id for fila in db.query(ItemInventario.id).all()}
     for item in datos.inventario:
+        if item.item_id not in ids_validos:
+            raise HTTPException(status_code=400, detail="El elemento de inventario no existe")
         estado_normalizado = item.estado.lower().strip()
 
         if estado_normalizado not in estados_permitidos:

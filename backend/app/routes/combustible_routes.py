@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import extract
-from app.database import SessionLocal
+from sqlalchemy import extract, func
+from app.database import get_db
 from app.models.presupuesto_gasolina_model import PresupuestoGasolina
 from app.models.gasto_gasolina_model import GastoGasolina
 from app.schemas.combustible_schema import (
@@ -16,16 +16,10 @@ from app.models.vehiculo_model import Vehiculo
 
 router = APIRouter(tags=["Combustible"])
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # ─── 1. Crear presupuesto anual ─────────────────────────────
 
-@router.post("/vehiculos/{vehiculo_id}/presupuesto-gasolina", response_model=PresupuestoRespuesta)
+@router.post("/vehiculos/{vehiculo_id}/presupuesto-gasolina", response_model=PresupuestoRespuesta, status_code=201)
 def crear_presupuesto(
     vehiculo_id: int,
     datos: PresupuestoCrear,
@@ -38,8 +32,6 @@ def crear_presupuesto(
         raise HTTPException(status_code=404, detail="Vehículo no encontrado")
     
     anio_actual = date.today().year
-
-    anio_actual = date.today().year
     anios_permitidos = [anio_actual, anio_actual + 1]
 
     if datos.anio not in anios_permitidos:
@@ -49,7 +41,13 @@ def crear_presupuesto(
     )
 
     if datos.mes_inicio > datos.mes_fin:
-        raise HTTPException (status_code=400, detail="El mes de inicio no puede ser mayor al mes de fin")
+        raise HTTPException(status_code=400, detail="El mes de inicio no puede ser mayor al mes de fin")
+
+    if vehiculo.estado == "fuera_de_servicio":
+        raise HTTPException(
+            status_code=400,
+            detail="El vehículo puede consultarse en el resumen, pero no recibir un presupuesto nuevo mientras esté fuera de servicio"
+        )
 
     existente = db.query (PresupuestoGasolina).filter(
         PresupuestoGasolina.vehiculo_id == vehiculo_id,
@@ -128,7 +126,7 @@ def consultar_presupuesto(
     
 # ─── 3. Registrar gasto de gasolina ─────────────────────────
 
-@router.post("/vehiculos/{vehiculo_id}/gastos-gasolina", response_model=GastoRespuesta)
+@router.post("/vehiculos/{vehiculo_id}/gastos-gasolina", response_model=GastoRespuesta, status_code=201)
 def registrar_gasto(
     vehiculo_id: int,
     datos: GastoCrear,
@@ -137,11 +135,14 @@ def registrar_gasto(
 ):
     from app.models.vehiculo_model import Vehiculo
     from app.models.salida_model import Salida
-    from sqlalchemy import func
 
     vehiculo = db.query(Vehiculo).filter(Vehiculo.id == vehiculo_id).first()
     if not vehiculo:
         raise HTTPException(status_code=404, detail="Vehículo no encontrado")
+    if datos.nivel_tanque is not None and datos.nivel_tanque not in {"vacio", "cuarto", "medio", "tres_cuartos", "lleno"}:
+        raise HTTPException(status_code=400, detail="Nivel de tanque no válido")
+    if datos.km_odometro is not None and datos.km_odometro < 0:
+        raise HTTPException(status_code=400, detail="El kilometraje no puede ser negativo")
 
     # Validar que la salida exista y pertenezca a este vehículo
     salida = db.query(Salida).filter(
@@ -160,6 +161,21 @@ def registrar_gasto(
     if not presupuesto:
         raise HTTPException(status_code=404, detail=f"No existe presupuesto para este vehículo en el año {anio_gasto}")
 
+    if not (presupuesto.mes_inicio <= datos.fecha_gasto.month <= presupuesto.mes_fin):
+        raise HTTPException(
+            status_code=400,
+            detail="La fecha del gasto está fuera del rango de meses autorizado"
+        )
+
+    utilizado_actual = db.query(func.sum(GastoGasolina.monto)).filter(
+        GastoGasolina.presupuesto_id == presupuesto.id
+    ).scalar() or 0
+    if utilizado_actual + datos.monto > presupuesto.monto_autorizado_total:
+        raise HTTPException(
+            status_code=400,
+            detail="El gasto excede el monto disponible del presupuesto"
+        )
+
     # Insertar el gasto
     nuevo_gasto = GastoGasolina(
         vehiculo_id=vehiculo_id,
@@ -174,11 +190,8 @@ def registrar_gasto(
     )
     db.add(nuevo_gasto)
 
-    # Recalcular monto_utilizado sumando todos los gastos del presupuesto
-    total_utilizado = db.query(func.sum(GastoGasolina.monto)).filter(
-        GastoGasolina.presupuesto_id == presupuesto.id
-    ).scalar() or 0
-    total_utilizado += datos.monto
+    # Recalcular monto utilizado incluyendo el gasto aún no confirmado.
+    total_utilizado = utilizado_actual + datos.monto
 
     presupuesto.monto_utilizado = total_utilizado
     presupuesto.saldo_acumulado = presupuesto.monto_autorizado_total - total_utilizado
@@ -311,7 +324,6 @@ def reporte_combustible(
     db: Session = Depends(get_db),
     usuario_actual = Depends(obtener_usuario_actual)
 ):
-    from sqlalchemy import func
     from app.models.vehiculo_model import Vehiculo
 
     vehiculo = db.query(Vehiculo).filter(Vehiculo.id == vehiculo_id).first()

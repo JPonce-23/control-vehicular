@@ -57,26 +57,29 @@ async function registrarRegreso(event) {
         fecha_regreso: document.getElementById("fecha_regreso").value,
         km_odometro_regreso: Number(document.getElementById("km_odometro_regreso").value),
         nivel_gasolina_regreso: document.getElementById("nivel_gasolina_regreso").value,
-        saldo_tarjeta_regreso: Number(inputSaldoTarjetaRegreso.value),
+        saldo_tarjeta_regreso: inputSaldoTarjetaRegreso.value === "" ? null : Number(inputSaldoTarjetaRegreso.value),
         estado_llantas_regreso: document.getElementById("estado_llantas_regreso").value,
         estado_vehiculo_regreso: document.getElementById("estado_vehiculo_regreso").value,
         finalidad_devolucion: document.getElementById("finalidad_devolucion").value,
         observaciones: document.getElementById("observaciones").value || null
     };
 
+    const btnRegistrar = regresoForm.querySelector("input[type=submit], button[type=submit]");
+    if (btnRegistrar) btnRegistrar.disabled = true;
 
     try {
 
-        const regreso = await apiFetch("/regresos/", {
+        await apiFetch("/regresos/", {
             method: "POST",
             body: JSON.stringify(datosRegreso)
         });
 
-        mostrarMensaje("Regreso registrado correctamente", "ok");
         localStorage.setItem("salida_id_actual", datosRegreso.salida_id);
+        recargarConMensaje("Registro completado: regreso registrado correctamente.");
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
+        if (btnRegistrar) btnRegistrar.disabled = false;
     }
 }
 

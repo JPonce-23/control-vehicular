@@ -45,7 +45,7 @@ async function cargarPersonas() {
         if (personas.length === 0) {
             tablaPersonas.innerHTML = `
                 <tr>
-                    <td colspan="8">No hay personas registradas.</td>
+                    <td colspan="9">No hay personas registradas.</td>
                 </tr>
             `;
             return;
@@ -53,28 +53,30 @@ async function cargarPersonas() {
 
         personas.forEach(function (persona) {
             const fila = document.createElement("tr");
+            const esActivo = persona.estado === "activo";
 
             fila.innerHTML = `
                 <td>${persona.id}</td>
-                <td>${obtenerNombreCompleto(persona)}</td>
-                <td>${persona.cargo || ""}</td>
-                <td>${persona.rfc || ""}</td>
-                <td>${persona.num_licencia || ""}</td>
-                <td>${persona.tipo_licencia || ""}</td>
-                <td>${persona.vigencia_licencia || ""}</td>
-                <td>${formatearEstado(persona.estado)}</td>
+                <td>${escaparHTML(obtenerNombreCompleto(persona))}</td>
+                <td>${escaparHTML(persona.cargo || "")}</td>
+                <td>${escaparHTML(persona.rfc || "")}</td>
+                <td>${escaparHTML(persona.num_licencia || "")}</td>
+                <td>${escaparHTML(persona.tipo_licencia || "")}</td>
+                <td>${escaparHTML(persona.vigencia_licencia || "")}</td>
+                <td>${escaparHTML(formatearEstado(persona.estado))}</td>
                 <td>
                     <button type="button" onclick="editarPersona(${persona.id})">
                         Editar
                     </button>
 
-                    <button type="button" onclick="cambiarEstadoPersona(${persona.id}, 'activo')">
-                        Activar
-                    </button>
-
-                    <button type="button" onclick="cambiarEstadoPersona(${persona.id}, 'suspendido')">
-                        Suspender
-                    </button>
+                    ${esActivo
+                        ? `<button type="button" onclick="cambiarEstadoPersona(${persona.id}, 'suspendido')">
+                               Dar de baja
+                           </button>`
+                        : `<button type="button" onclick="cambiarEstadoPersona(${persona.id}, 'activo')">
+                               Reactivar
+                           </button>`
+                    }
                 </td>
             `;
 
@@ -90,8 +92,9 @@ async function guardarPersona(event) {
     event.preventDefault();
 
     const personaId = inputPersonaIdEdicion.value;
-    console.log("ID en edición:", personaId);
     const datosPersona = obtenerDatosFormulario();
+
+    btnGuardar.disabled = true;
 
     try {
         if (personaId) {
@@ -101,6 +104,9 @@ async function guardarPersona(event) {
             });
 
             mostrarMensaje("Persona actualizada correctamente.");
+            limpiarFormulario();
+            ocultarFormulario();
+            await cargarPersonas();
         } else {
             await apiFetch("/personas/", {
                 method: "POST",
@@ -110,15 +116,14 @@ async function guardarPersona(event) {
                 })
             });
 
-            mostrarMensaje("Persona registrada correctamente.");
+            recargarConMensaje("Registro completado: persona registrada correctamente.");
+            return;
         }
-
-        limpiarFormulario();
-        ocultarFormulario();
-        await cargarPersonas();
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
+    } finally {
+        btnGuardar.disabled = false;
     }
 }
 
@@ -221,12 +226,4 @@ function formatearEstado(estado) {
     };
 
     return estados[estado] || estado;
-}
-
-function mostrarMensaje(texto) {
-    mostrarMensaje(error.message, texto);
-
-    setTimeout(function () {
-        mostrarMensaje(error.message, "");
-    }, 2500);
 }

@@ -2,13 +2,10 @@ const salidaForm = document.getElementById("salidaForm");
 const selectVehiculo = document.getElementById("vehiculo_id");
 const selectPersona = document.getElementById("persona_id");
 const mensaje = document.getElementById("mensaje");
-const inputNumOficio = document.getElementById("num_oficio");
-const inputNumExpediente = document.getElementById("num_expediente");
 const inputArea = document.getElementById("area_en_viaje");
 const selectTipoMovimiento = document.getElementById("tipo_movimiento");
 const selectFormaMovimiento = document.getElementById("forma_movimiento");
 const inputFechaSalida = document.getElementById("fecha_salida");
-const inputFechaFinProvisional = document.getElementById("fecha_fin_provisional");
 const inputFinalidad = document.getElementById("finalidad_uso");
 const inputKmSalida = document.getElementById("km_odometro_salida");
 const selectNivelGasolina = document.getElementById("nivel_gasolina_salida");
@@ -21,6 +18,10 @@ const inputMontoAgregadoTarjeta = document.getElementById("monto_agregado_tarjet
 let vehiculosCargados = [];
 
 const saldoTarjetaVehiculo = document.getElementById("saldoTarjetaVehiculo");
+const panelConfirmacion = document.getElementById("panelConfirmacion");
+const btnGenerarResguardo = document.getElementById("btnGenerarResguardo");
+const btnVolverListado = document.getElementById("btnVolverListado");
+const seccionFormulario = salidaForm.closest("section.card");
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -30,6 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 salidaForm.addEventListener("submit", registrarSalida);
 selectVehiculo.addEventListener("change", mostrarSaldoTarjetaVehiculo);
+
+btnGenerarResguardo.addEventListener("click", function () {
+    window.location.href = "generacion-resguardo.html";
+});
+
+btnVolverListado.addEventListener("click", function () {
+    window.location.href = "../dashboard.html";
+});
 
 async function cargarVehiculos() {
     try {
@@ -72,14 +81,14 @@ async function registrarSalida(event) {
     const datosSalida = {
         vehiculo_id: Number(selectVehiculo.value),
         persona_id: Number(selectPersona.value),
-        fecha_salida: document.getElementById("fecha_salida").value,
+        fecha_salida: inputFechaSalida.value || null,
         num_oficio: inputNumOficio.value || null,
         num_expediente: inputNumExpediente.value || null,
-        area_en_viaje: inputArea.value,
+        area_en_viaje: inputArea.value.trim() || null,
         tipo_movimiento: selectTipoMovimiento.value,
         forma_movimiento: selectFormaMovimiento.value,
-        fecha_fin_provisional: document.getElementById("fecha_fin_provisional").value || null,
-        fecha_regreso_estimada: inputFechaRegresoEstimada.value,
+        fecha_fin_provisional: null,
+        fecha_regreso_estimada: inputFechaRegresoEstimada.value || null,
         monto_agregado_tarjeta: Number(inputMontoAgregadoTarjeta.value || 0),
         finalidad_uso: inputFinalidad.value,
         km_odometro_salida: Number(inputKmSalida.value),
@@ -89,17 +98,21 @@ async function registrarSalida(event) {
         observaciones_croquis: inputObservacionesCroquis.value || null
     };
 
+    const btnRegistrar = salidaForm.querySelector("input[type=submit]");
+    if (btnRegistrar) btnRegistrar.disabled = true;
+
     try {
         const salida = await apiFetch("/salidas/", {
             method: "POST",
             body: JSON.stringify(datosSalida)
         });
 
-        mostrarMensaje("Salida registrada correctamente", "ok");
         localStorage.setItem("salida_id_actual", salida.id);
+        recargarConMensaje("Registro completado: salida registrada correctamente.");
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
+        if (btnRegistrar) btnRegistrar.disabled = false;
     }
 }
 

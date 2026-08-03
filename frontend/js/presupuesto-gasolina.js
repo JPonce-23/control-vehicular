@@ -77,13 +77,11 @@ async function cargarVehiculos() {
             <option value="">Selecciona un vehículo</option>
         `;
 
-        const vehiculosPermitidos = vehiculos.filter(function (vehiculo) {
-            return vehiculo.estado !== "fuera_de_servicio";
-        });
+        // Se muestran todos los vehículos, incluidos los suspendidos/fuera de servicio,
+        // ya que este resumen debe reflejar el combustible asignado a todo el parque vehicular.
+        const vehiculosOrdenados = [...vehiculos].sort((a, b) => a.id - b.id);
 
-        vehiculosPermitidos.sort((a, b) => a.id - b.id);
-
-        vehiculosPermitidos.forEach(function (vehiculo) {
+        vehiculosOrdenados.forEach(function (vehiculo) {
             const option = document.createElement("option");
 
             option.value = vehiculo.id;
@@ -94,6 +92,8 @@ async function cargarVehiculos() {
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
+    } finally {
+        if (btnCrear) btnCrear.disabled = false;
     }
 }
 
@@ -115,18 +115,18 @@ function mostrarDetalleVehiculo() {
     detalleVehiculo.innerHTML = `
         <h2>Datos del vehículo</h2>
 
-        <table border="1">
+        <table class="data-table">
             <tr>
                 <th>Placa</th>
-                <td>${vehiculo.placa || "Sin dato"}</td>
+                <td>${escaparHTML(vehiculo.placa || "Sin dato")}</td>
             </tr>
             <tr>
                 <th>Marca</th>
-                <td>${vehiculo.marca || "Sin dato"}</td>
+                <td>${escaparHTML(vehiculo.marca || "Sin dato")}</td>
             </tr>
             <tr>
                 <th>Tipo</th>
-                <td>${vehiculo.tipo || "Sin dato"}</td>
+                <td>${escaparHTML(vehiculo.tipo || "Sin dato")}</td>
             </tr>
             <tr>
                 <th>Año modelo del vehículo</th>
@@ -134,11 +134,11 @@ function mostrarDetalleVehiculo() {
             </tr>
             <tr>
                 <th>Número de serie</th>
-                <td>${vehiculo.num_serie || "Sin dato"}</td>
+                <td>${escaparHTML(vehiculo.num_serie || "Sin dato")}</td>
             </tr>
             <tr>
                 <th>Tarjeta de gasolina</th>
-                <td>${vehiculo.num_tarjeta_gasolina || "Sin dato"}</td>
+                <td>${escaparHTML(vehiculo.num_tarjeta_gasolina || "Sin dato")}</td>
             </tr>
             <tr>
                 <th>Kilometraje acumulado</th>
@@ -165,7 +165,6 @@ async function consultarPresupuesto() {
         const presupuesto = await apiFetch(`/vehiculos/${vehiculoId}/presupuesto-gasolina?anio=${anio}`);
 
         mostrarPresupuesto(presupuesto);
-        mostrarMensaje(error.message, "");
 
     } catch (error) {
         resumenPresupuesto.innerHTML = `
@@ -187,17 +186,17 @@ async function crearPresupuesto(event) {
     const mesFin = Number(selectMesFin.value);
 
     if (!vehiculoId) {
-        mostrarMensaje(error.message, "Slecciona un Vehículo");
+        mostrarMensaje("Selecciona un vehículo", "error");
         return;
     }
 
     if (!montoAutorizadoTotal || montoAutorizadoTotal <= 0) {
-        mostrarMensaje(error.message, "El monto autorizado total debe ser mayor a cero");
+        mostrarMensaje("El monto autorizado total debe ser mayor a cero", "error");
         return;
     }
 
     if (!mesInicio || !mesFin) {
-        mostrarMensaje(error.message, "Selecciona el mes de inicio y el mes de fin");
+        mostrarMensaje("Selecciona el mes de inicio y el mes de fin", "error");
         return;
     }
 
@@ -213,23 +212,22 @@ async function crearPresupuesto(event) {
         mes_fin: mesFin
     };
 
+    const btnCrear = formPresupuesto.querySelector("input[type=submit], button[type=submit]");
+    if (btnCrear) btnCrear.disabled = true;
+
     try {
         const presupuesto = await apiFetch(`/vehiculos/${vehiculoId}/presupuesto-gasolina`, {
             method: "POST",
             body: JSON.stringify(datosPresupuesto)
         });
 
-        mostrarMensaje("Presupuesto creado correctamente.");
-        mostrarPresupuesto(presupuesto);
-
-        formPresupuesto.reset();
-
-        calculoPresupuesto.innerHTML = `
-            <p>Captura monto y rango de meses para calcular el monto mensual.</p>
-        `;
+        recargarConMensaje("Registro completado: presupuesto creado correctamente.");
+        return;
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
+    } finally {
+        if (btnCrear) btnCrear.disabled = false;
     }
 }
 
@@ -237,10 +235,15 @@ function mostrarPresupuesto(presupuesto) {
     const mesInicio = obtenerNombreMes(presupuesto.mes_inicio);
     const mesFin = obtenerNombreMes(presupuesto.mes_fin);
 
+    const vehiculoSeleccionado = vehiculosGuardados.find(function (item) {
+        return item.id === Number(selectVehiculo.value);
+    });
+
     resumenPresupuesto.innerHTML = `
         <h2>Resumen del presupuesto</h2>
 
         <p><strong>ID presupuesto:</strong> ${presupuesto.presupuesto_id || presupuesto.id || "Sin dato"}</p>
+        <p><strong>Tarjeta de gasolina:</strong> ${escaparHTML(vehiculoSeleccionado?.num_tarjeta_gasolina || "Sin dato")}</p>
         <p><strong>Año presupuestal:</strong> ${presupuesto.anio}</p>
         <p><strong>Periodo:</strong> ${mesInicio} a ${mesFin}</p>
         <p><strong>Monto autorizado total:</strong> ${formatoMoneda(presupuesto.monto_autorizado_total)}</p>
@@ -323,10 +326,3 @@ function formatearEstado(estado) {
     return estados[estado] || estado;
 }
 
-function mostrarMensaje(texto) {
-    mostrarMensaje(error.message, texto);
-
-    setTimeout(function () {
-        mostrarMensaje(error.message, " ");
-    }, 2500);
-}

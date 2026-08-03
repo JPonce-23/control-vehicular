@@ -1,4 +1,5 @@
 from docxtpl import DocxTemplate
+from docx import Document
 from datetime import datetime
 import os
 
@@ -126,6 +127,56 @@ def generar_checks_inventario(inventario):
     return checks
 
 
+
+def _generar_resguardo_basico(ruta_archivo, contexto, condiciones, inventario):
+    """Genera un documento funcional cuando no existe la plantilla institucional."""
+    documento = Document()
+    documento.add_heading("Resguardo de vehículo oficial", level=1)
+
+    tabla = documento.add_table(rows=0, cols=2)
+    tabla.style = "Table Grid"
+    campos = [
+        ("Fecha de salida", contexto.get("fecha_inicio")),
+        ("Fecha estimada de regreso", contexto.get("fecha_fin")),
+        ("Persona autorizada", contexto.get("nombre_persona")),
+        ("Cargo", contexto.get("cargo")),
+        ("Área", contexto.get("area_adscripcion")),
+        ("Vehículo", f"{contexto.get('marca', '')} {contexto.get('tipo', '')}".strip()),
+        ("Modelo", contexto.get("modelo")),
+        ("Placa", contexto.get("placa")),
+        ("Número de serie", contexto.get("num_serie")),
+        ("Número económico", contexto.get("num_economico")),
+        ("Tarjeta de gasolina", contexto.get("num_tarjeta_gasolina")),
+        ("Finalidad", contexto.get("finalidad_uso")),
+        ("Kilometraje de salida", contexto.get("km_odometro_salida")),
+        ("Nivel de gasolina", contexto.get("nivel_gasolina")),
+        ("Nivel de llantas", contexto.get("estado_llantas")),
+    ]
+    for etiqueta, dato in campos:
+        celdas = tabla.add_row().cells
+        celdas[0].text = str(etiqueta)
+        celdas[1].text = str(dato or "")
+
+    if condiciones:
+        documento.add_heading("Condiciones", level=2)
+        for revision, item in condiciones:
+            documento.add_paragraph(
+                f"{item.nombre}: {revision.estado}"
+                + (f" — {revision.observaciones}" if revision.observaciones else "")
+            )
+
+    if inventario:
+        documento.add_heading("Inventario", level=2)
+        for revision, item in inventario:
+            documento.add_paragraph(
+                f"{item.nombre}: {revision.estado}"
+                + (f" — {revision.observaciones}" if revision.observaciones else "")
+            )
+
+    documento.add_paragraph("Nombre y firma de quien recibe: ______________________________")
+    documento.add_paragraph("Nombre y firma de quien entrega: _____________________________")
+    documento.save(ruta_archivo)
+
 def generar_resguardo_word(salida, vehiculo, persona, condiciones=None, inventario=None):
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -136,8 +187,6 @@ def generar_resguardo_word(salida, vehiculo, persona, condiciones=None, inventar
 
     nombre_archivo = f"resguardo_salida_{salida.id}.docx"
     ruta_archivo = os.path.join(carpeta_resguardos, nombre_archivo)
-
-    documento = DocxTemplate(ruta_template)
 
     nombre_persona = (
         f"{valor(persona.nombre, '')} "
@@ -163,22 +212,22 @@ def generar_resguardo_word(salida, vehiculo, persona, condiciones=None, inventar
         "num_serie": valor(vehiculo.num_serie),
         "num_poliza": valor(vehiculo.num_poliza),
         "placa": valor(vehiculo.placa),
-        "num_inventario": valor(vehiculo.num_inventario),
-        "num_economico": valor(vehiculo.num_economico),
+        "num_inventario": "",
+        "num_economico": "",
         "color": valor(vehiculo.color),
 
-        "tipo_movimiento": valor(salida.tipo_movimiento),
-        "forma_movimiento": valor(salida.forma_movimiento),
+        "tipo_movimiento": "",
+        "forma_movimiento": "PROVISIONAL",
         "fecha_inicio": formatear_fecha(salida.fecha_salida),
         "fecha_fin": formatear_fecha(salida.fecha_fin_provisional),
-        "finalidad_uso": valor(salida.finalidad_uso),
+        "finalidad_uso": "DE APOYO A LAS FUNCIONES SUSTANTIVAS",
 
-        "num_oficio": valor(salida.num_oficio),
+        "num_oficio": "Solicitud de la DGAOPR",
         "nombre_persona": nombre_persona,
-        "num_expediente": valor(salida.num_expediente),
+        "num_expediente": "JSG / DV",
         "num_licencia": valor(persona.num_licencia),
         "rfc": valor(persona.rfc),
-        "area_adscripcion": valor(salida.area_en_viaje),
+        "area_adscripcion": "Dirección General de Apoyo al Ordenamiento y la Propiedad Rural",
         "cargo": valor(persona.cargo),
         "vigencia_licencia": valor(persona.vigencia_licencia),
         "tipo_licencia": valor(persona.tipo_licencia),
@@ -204,7 +253,11 @@ def generar_resguardo_word(salida, vehiculo, persona, condiciones=None, inventar
     contexto.update(generar_checks_condiciones(condiciones or []))
     contexto.update(generar_checks_inventario(inventario or []))
 
-    documento.render(contexto)
-    documento.save(ruta_archivo)
+    if os.path.exists(ruta_template):
+        documento = DocxTemplate(ruta_template)
+        documento.render(contexto)
+        documento.save(ruta_archivo)
+    else:
+        _generar_resguardo_basico(ruta_archivo, contexto, condiciones or [], inventario or [])
 
-    return nombre_archivo, ruta_archivo
+    return nombre_archivo, os.path.abspath(ruta_archivo)

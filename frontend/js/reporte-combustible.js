@@ -49,12 +49,12 @@ async function consultarReporteCompleto() {
     const anio = inputAnio.value;
 
     if (!vehiculoId) {
-        mostrarMensaje(error.message, "Selecciona un Vehículo");
+        mostrarMensaje("Selecciona un Vehículo", "error");
         return;
     }
 
     if (!anio) {
-        mostrarMensaje(error.message, "Ingresa el año");
+        mostrarMensaje("Ingresa el año", "error");
         return;
     }
 
@@ -72,8 +72,6 @@ async function consultarReporteCompleto() {
         dibujarGraficaCircular(resumen.presupuesto);
         dibujarGraficaBarras(reporte.reporte || []);
 
-        mostrarMensaje(error.message, " ");
-
     } catch (error) {
         mostrarMensaje(error.message, "error");
     }
@@ -88,10 +86,10 @@ function mostrarResumen(data) {
         <h2>Resumen del vehículo</h2>
 
         <h3>Datos del vehículo</h3>
-        <p><strong>Placa:</strong> ${vehiculo.placa || "Sin dato"}</p>
-        <p><strong>Vehículo:</strong> ${vehiculo.marca || ""} ${vehiculo.tipo || ""}</p>
-        <p><strong>Número de serie:</strong> ${vehiculo.num_serie || "Sin dato"}</p>
-        <p><strong>Tarjeta de gasolina:</strong> ${vehiculo.num_tarjeta_gasolina || "Sin dato"}</p>
+        <p><strong>Placa:</strong> ${escaparHTML(vehiculo.placa || "Sin dato")}</p>
+        <p><strong>Vehículo:</strong> ${escaparHTML(vehiculo.marca || "")} ${escaparHTML(vehiculo.tipo || "")}</p>
+        <p><strong>Número de serie:</strong> ${escaparHTML(vehiculo.num_serie || "Sin dato")}</p>
+        <p><strong>Tarjeta de gasolina:</strong> ${escaparHTML(vehiculo.num_tarjeta_gasolina || "Sin dato")}</p>
         <p><strong>Kilometraje acumulado:</strong> ${formatoNumero(vehiculo.km_acumulado)} km</p>
 
         <h3>Presupuesto</h3>
@@ -105,7 +103,7 @@ function mostrarResumen(data) {
         <h3>Último gasto</h3>
         <p><strong>Fecha:</strong> ${ultimoGasto?.fecha_gasto || "Sin registro"}</p>
         <p><strong>Monto:</strong> ${formatoMoneda(ultimoGasto?.monto || 0)}</p>
-        <p><strong>Nivel tanque:</strong> ${ultimoGasto?.nivel_tanque || "Sin dato"}</p>
+        <p><strong>Nivel tanque:</strong> ${escaparHTML(ultimoGasto?.nivel_tanque || "Sin dato")}</p>
         <p><strong>Odómetro:</strong> ${ultimoGasto?.km_odometro || "Sin dato"}</p>
     `;
 }
@@ -126,7 +124,7 @@ function mostrarTablaReporteMensual(reporte) {
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
-            <td>${item.mes}</td>
+            <td>${escaparHTML(item.mes)}</td>
             <td>${formatoMoneda(item.monto_autorizado_mes)}</td>
             <td>${formatoMoneda(item.gasto_mes)}</td>
             <td>${formatoMoneda(item.monto_restante_mes)}</td>
@@ -158,9 +156,9 @@ function mostrarTablaGastos(gastos) {
             <td>${gasto.salida_id}</td>
             <td>${formatearFecha(gasto.fecha_gasto)}</td>
             <td>${formatoMoneda(gasto.monto)}</td>
-            <td>${gasto.nivel_tanque || "Sin dato"}</td>
+            <td>${escaparHTML(gasto.nivel_tanque || "Sin dato")}</td>
             <td>${gasto.km_odometro || "Sin dato"}</td>
-            <td>${gasto.nota || ""}</td>
+            <td>${escaparHTML(gasto.nota || "")}</td>
         `;
 
         tablaGastos.appendChild(fila);
@@ -184,13 +182,13 @@ function mostrarTablaViajes(viajes) {
 
         fila.innerHTML = `
             <td>${viaje.salida_id}</td>
-            <td>${viaje.persona || "Sin dato"}</td>
+            <td>${escaparHTML(viaje.persona || "Sin dato")}</td>
             <td>${formatearFecha(viaje.fecha_salida)}</td>
             <td>${formatearFecha(viaje.fecha_regreso)}</td>
             <td>${formatoNumero(viaje.km_salida)}</td>
             <td>${viaje.km_regreso !== null ? formatoNumero(viaje.km_regreso) : "Sin regreso"}</td>
             <td>${viaje.kilometros_recorridos !== null ? formatoNumero(viaje.kilometros_recorridos) : "Sin dato"}</td>
-            <td>${viaje.finalidad_uso || ""}</td>
+            <td>${escaparHTML(viaje.finalidad_uso || "")}</td>
         `;
 
         tablaViajes.appendChild(fila);

@@ -25,8 +25,8 @@ async function cambiarPassword(event) {
         return;
     }
 
-    if (nuevaPassword.length < 8) {
-        mostrarMensaje("La nueva contraseña debe tener al menos 8 caracteres.", "error");
+    if (nuevaPassword.length < 10) {
+        mostrarMensaje("La nueva contraseña debe tener al menos 10 caracteres.", "error");
         return;
     }
 

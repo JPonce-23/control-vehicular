@@ -27,7 +27,6 @@ btnLimpiar.addEventListener("click", function () {
     `;
 
     tablaAuditoria.innerHTML = "";
-    mostrarMensaje(error.message, "");
 });
 
 async function cargarVehiculos() {
@@ -102,8 +101,8 @@ function mostrarResumen(registros) {
 
     resumenAuditoria.innerHTML = `
         <h2>Resumen</h2>
-        <p><strong>Vehículo:</strong> ${primerRegistro.vehiculo || "Sin dato"}</p>
-        <p><strong>Placa:</strong> ${primerRegistro.placa || "Sin dato"}</p>
+        <p><strong>Vehículo:</strong> ${escaparHTML(primerRegistro.vehiculo || "Sin dato")}</p>
+        <p><strong>Placa:</strong> ${escaparHTML(primerRegistro.placa || "Sin dato")}</p>
         <p><strong>Total de movimientos encontrados:</strong> ${registros.length}</p>
     `;
 }
@@ -124,15 +123,15 @@ function mostrarTablaAuditoria(registros) {
         const fila = document.createElement("tr");
 
         fila.innerHTML = `
-            <td>${registro.vehiculo || "Sin dato"}</td>
-            <td>${registro.placa || "Sin dato"}</td>
-            <td>${registro.persona || "Sin persona"}</td>
+            <td>${escaparHTML(registro.vehiculo || "Sin dato")}</td>
+            <td>${escaparHTML(registro.placa || "Sin dato")}</td>
+            <td>${escaparHTML(registro.persona || "Sin persona")}</td>
             <td>${formatearFechaHora(registro.fecha_salida)}</td>
             <td>${registro.fecha_regreso ? formatearFechaHora(registro.fecha_regreso) : "Sin regreso"}</td>
-            <td>${formatearAccion(registro.accion)}</td>
-            <td>${registro.descripcion || "Sin descripción"}</td>
+            <td>${escaparHTML(formatearAccion(registro.accion))}</td>
+            <td>${escaparHTML(registro.descripcion || "Sin descripción")}</td>
             <td>${formatearFechaHora(registro.fecha_movimiento)}</td>
-            <td>${registro.usuario || "Usuario no encontrado"}</td>
+            <td>${escaparHTML(registro.usuario || "Usuario no encontrado")}</td>
         `;
 
         tablaAuditoria.appendChild(fila);
@@ -151,13 +150,5 @@ function formatearAccion(accion) {
 }
 
 function formatearFechaHora(fecha) {
-    if (!fecha) return "Sin fecha";
-
-    const textoFecha = String(fecha);
-
-    if (textoFecha.includes("T")) {
-        return textoFecha.replace("T", " ").substring(0, 16);
-    }
-
-    return textoFecha.substring(0, 16);
+    return formatearFechaSolo(fecha);
 }
