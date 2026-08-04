@@ -138,28 +138,44 @@ async function registrarSalida(event) {
 }
 
 function mostrarSaldoTarjetaVehiculo() {
-    if (!selectVehiculo || !saldoTarjetaVehiculo) return;
+    if (!selectVehiculo) return;
 
     const vehiculoId = Number(selectVehiculo.value);
 
+    
     if (!vehiculoId) {
-        saldoTarjetaVehiculo.hidden = true;
-        saldoTarjetaVehiculo.textContent = "";
+        if (saldoTarjetaVehiculo) {
+            saldoTarjetaVehiculo.hidden = true;
+            saldoTarjetaVehiculo.textContent = "";
+        }
+        if (inputKmSalida) inputKmSalida.value = "";
         return;
     }
 
+    
     const vehiculo = vehiculosCargados.find(function (item) {
         return item.id === vehiculoId;
     });
 
     if (!vehiculo) {
-        saldoTarjetaVehiculo.hidden = true;
-        saldoTarjetaVehiculo.textContent = "";
+        if (saldoTarjetaVehiculo) {
+            saldoTarjetaVehiculo.hidden = true;
+            saldoTarjetaVehiculo.textContent = "";
+        }
+        if (inputKmSalida) inputKmSalida.value = "";
         return;
     }
 
-    saldoTarjetaVehiculo.hidden = false;
-    saldoTarjetaVehiculo.textContent = `Saldo actual de tarjeta: ${formatearDinero(vehiculo.saldo_tarjeta_gasolina)}`;
+    
+    if (saldoTarjetaVehiculo) {
+        saldoTarjetaVehiculo.hidden = false;
+        saldoTarjetaVehiculo.textContent = `Saldo actual de tarjeta: ${formatearDinero(vehiculo.saldo_tarjeta_gasolina)}`;
+    }
+
+    
+    if (inputKmSalida) {
+        inputKmSalida.value = vehiculo.km_acumulado ?? vehiculo.kilometraje_actual ?? 0;
+    }
 }
 
 function formatearDinero(valor) {
