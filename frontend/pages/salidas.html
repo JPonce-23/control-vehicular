@@ -56,6 +56,7 @@
                     </select> 
                 </div>
 
+                <!--
                 <div class="form-group">
                     <label for="num_oficio">Numero de oficio:</label> 
                     <input type="text" name="num_oficio" id="num_oficio">
@@ -78,7 +79,7 @@
                         <option value="asignacion">Asignación</option>
                         <option value="devolucion">Devolución</option>
                     </select>
-                </div>
+                </div> -->
 
                 <!-- Todos los resguardos son provisionales; se fija el valor de forma fija. -->
                 <input type="hidden" name="forma_movimiento" id="forma_movimiento" value="provisional">
@@ -95,15 +96,15 @@
 
 
                 <div class="form-group">
-                    <label for="fecha_regreso_estimada">Fecha estimada de regreso:</label>
+                    <label for="fecha_regreso_estimada">Fecha de regreso:</label>
                     <input type="date" id="fecha_regreso_estimada" name="fecha_regreso_estimada">
                 </div>
 
-
+                <!-- 
                 <div class="form-group">
                     <label for="finalidad_uso">*Finalidad de uso:</label> 
                     <input type="text" name="finalidad_uso" id="finalidad_uso" required> 
-                </div>
+                </div> -->
 
                 <div class="form-group">
                     <label for="km_odometro_salida">*Kilometraje de salida:</label> 
@@ -148,6 +149,19 @@
 
         </form>
     </section>
+
+
+
+    <div id="panelConfirmacion" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+        <div style="background: white; padding: 25px; border-radius: 8px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+            <h3 style="margin-top: 0;">¡Salida registrada con éxito!</h3>
+            <p>Elige una opción</p>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                <button id="btnGenerarResguardo" class="btn btn-primary" type="button">Generar Resguardo</button>
+                <button id="btnVolverListado" class="btn btn-secondary" type="button">Volver al menú</button>
+            </div>
+        </div>
+    </div>
 
     <p id="mensaje" class="message"></p>
 

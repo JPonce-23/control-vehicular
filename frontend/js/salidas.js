@@ -2,10 +2,15 @@ const salidaForm = document.getElementById("salidaForm");
 const selectVehiculo = document.getElementById("vehiculo_id");
 const selectPersona = document.getElementById("persona_id");
 const mensaje = document.getElementById("mensaje");
+
+// Campos que pueden estar comentados u opcionales en el HTML:
+const inputNumOficio = document.getElementById("num_oficio");
+const inputNumExpediente = document.getElementById("num_expediente");
 const inputArea = document.getElementById("area_en_viaje");
 const selectTipoMovimiento = document.getElementById("tipo_movimiento");
 const selectFormaMovimiento = document.getElementById("forma_movimiento");
 const inputFechaSalida = document.getElementById("fecha_salida");
+const inputFechaFinProvisional = document.getElementById("fecha_fin_provisional");
 const inputFinalidad = document.getElementById("finalidad_uso");
 const inputKmSalida = document.getElementById("km_odometro_salida");
 const selectNivelGasolina = document.getElementById("nivel_gasolina_salida");
@@ -21,7 +26,7 @@ const saldoTarjetaVehiculo = document.getElementById("saldoTarjetaVehiculo");
 const panelConfirmacion = document.getElementById("panelConfirmacion");
 const btnGenerarResguardo = document.getElementById("btnGenerarResguardo");
 const btnVolverListado = document.getElementById("btnVolverListado");
-const seccionFormulario = salidaForm.closest("section.card");
+const seccionFormulario = salidaForm ? salidaForm.closest("section.card") : null;
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -29,16 +34,25 @@ document.addEventListener("DOMContentLoaded", function () {
     cargarPersonas();
 });
 
-salidaForm.addEventListener("submit", registrarSalida);
-selectVehiculo.addEventListener("change", mostrarSaldoTarjetaVehiculo);
+if (salidaForm) {
+    salidaForm.addEventListener("submit", registrarSalida);
+}
 
-btnGenerarResguardo.addEventListener("click", function () {
-    window.location.href = "generacion-resguardo.html";
-});
+if (selectVehiculo) {
+    selectVehiculo.addEventListener("change", mostrarSaldoTarjetaVehiculo);
+}
 
-btnVolverListado.addEventListener("click", function () {
-    window.location.href = "../dashboard.html";
-});
+if (btnGenerarResguardo) {
+    btnGenerarResguardo.addEventListener("click", function () {
+        window.location.href = "generacion-resguardo.html";
+    });
+}
+
+if (btnVolverListado) {
+    btnVolverListado.addEventListener("click", function () {
+        window.location.href = "../dashboard.html";
+    });
+}
 
 async function cargarVehiculos() {
     try {
@@ -50,7 +64,7 @@ async function cargarVehiculos() {
             const option = document.createElement("option");
             option.value = vehiculo.id;
             option.textContent = `${vehiculo.placa} - ${vehiculo.marca} ${vehiculo.tipo}`;
-            selectVehiculo.appendChild(option);
+            if (selectVehiculo) selectVehiculo.appendChild(option);
         });
 
     } catch (error) {
@@ -67,7 +81,7 @@ async function cargarPersonas() {
             const option = document.createElement("option");
             option.value = persona.id;
             option.textContent = `${persona.nombre} ${persona.apellido_paterno} - Licencia ${persona.num_licencia}`;
-            selectPersona.appendChild(option);
+            if (selectPersona) selectPersona.appendChild(option);
         });
 
     } catch (error) {
@@ -79,26 +93,26 @@ async function registrarSalida(event) {
     event.preventDefault();
 
     const datosSalida = {
-        vehiculo_id: Number(selectVehiculo.value),
-        persona_id: Number(selectPersona.value),
-        fecha_salida: inputFechaSalida.value || null,
-        num_oficio: inputNumOficio.value || null,
-        num_expediente: inputNumExpediente.value || null,
-        area_en_viaje: inputArea.value.trim() || null,
-        tipo_movimiento: selectTipoMovimiento.value,
-        forma_movimiento: selectFormaMovimiento.value,
-        fecha_fin_provisional: null,
-        fecha_regreso_estimada: inputFechaRegresoEstimada.value || null,
-        monto_agregado_tarjeta: Number(inputMontoAgregadoTarjeta.value || 0),
-        finalidad_uso: inputFinalidad.value,
-        km_odometro_salida: Number(inputKmSalida.value),
-        nivel_gasolina_salida: selectNivelGasolina.value,
-        estado_llantas_salida: selectEstadoLlantas.value,
-        observaciones: inputObservaciones.value || null,
-        observaciones_croquis: inputObservacionesCroquis.value || null
+        vehiculo_id: selectVehiculo ? Number(selectVehiculo.value) : null,
+        persona_id: selectPersona ? Number(selectPersona.value) : null,
+        fecha_salida: inputFechaSalida ? (inputFechaSalida.value || null) : null,
+        num_oficio: inputNumOficio ? (inputNumOficio.value || null) : null,
+        num_expediente: inputNumExpediente ? (inputNumExpediente.value || null) : null,
+        area_en_viaje: inputArea ? (inputArea.value.trim() || null) : null,
+        tipo_movimiento: selectTipoMovimiento ? selectTipoMovimiento.value : "asignacion",
+        forma_movimiento: selectFormaMovimiento ? selectFormaMovimiento.value : "provisional",
+        fecha_fin_provisional: inputFechaFinProvisional ? (inputFechaFinProvisional.value || null) : null,
+        fecha_regreso_estimada: inputFechaRegresoEstimada ? (inputFechaRegresoEstimada.value || null) : null,
+        monto_agregado_tarjeta: inputMontoAgregadoTarjeta ? Number(inputMontoAgregadoTarjeta.value || 0) : 0,
+        finalidad_uso: inputFinalidad ? inputFinalidad.value : "Operativo",
+        km_odometro_salida: inputKmSalida ? Number(inputKmSalida.value) : 0,
+        nivel_gasolina_salida: selectNivelGasolina ? selectNivelGasolina.value : "vacio",
+        estado_llantas_salida: selectEstadoLlantas ? selectEstadoLlantas.value : "cuarto",
+        observaciones: inputObservaciones ? (inputObservaciones.value || null) : null,
+        observaciones_croquis: inputObservacionesCroquis ? (inputObservacionesCroquis.value || null) : null
     };
 
-    const btnRegistrar = salidaForm.querySelector("input[type=submit]");
+    const btnRegistrar = salidaForm ? salidaForm.querySelector("input[type=submit]") : null;
     if (btnRegistrar) btnRegistrar.disabled = true;
 
     try {
@@ -108,7 +122,14 @@ async function registrarSalida(event) {
         });
 
         localStorage.setItem("salida_id_actual", salida.id);
-        recargarConMensaje("Registro completado: salida registrada correctamente.");
+
+        // En lugar de recargar la página, mostramos el modal emergente
+        if (panelConfirmacion) {
+            panelConfirmacion.style.display = "flex";
+        } else {
+            // Respaldamos en caso de que no encuentre el modal
+            window.location.href = "../dashboard.html";
+        }
 
     } catch (error) {
         mostrarMensaje(error.message, "error");
@@ -117,6 +138,8 @@ async function registrarSalida(event) {
 }
 
 function mostrarSaldoTarjetaVehiculo() {
+    if (!selectVehiculo || !saldoTarjetaVehiculo) return;
+
     const vehiculoId = Number(selectVehiculo.value);
 
     if (!vehiculoId) {

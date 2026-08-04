@@ -111,10 +111,26 @@ def generar_checks_condiciones(condiciones):
 
 
 def generar_checks_inventario(inventario):
-    checks = {}
+    checks = { "llave_tapon_gas": "N/A"}
+
+    alias_word = {
+        "tapon_gasolina": "tapon_gas",
+        "aire_acondicionado": "aire_acond",
+        "radio_am_fm": "radio_amfm",
+        "juego_herramientas": "jgo_herramientas",
+        "bayoneta_aceite": "bayoneta",
+        "cinturon_seguridad": "cinturon_seg",
+        "juego_placas": "jgo_placas",
+        "espejo_lateral_izquierdo": "espejo_lat_izq",
+        "espejo_lateral_derecho": "espejo_lat_der",
+        "revista_vehicular": "revista_vehi"
+    }
 
     for revision, item in inventario:
-        clave = normalizar_clave(item.nombre)
+        clave_bd = normalizar_clave(item.nombre)
+        # Si la clave tiene un alias para Word, usamos el alias; de lo contrario usamos la clave normal
+        clave = alias_word.get(clave_bd, clave_bd)
+        
         estado = str(revision.estado).lower().strip()
 
         if estado == "correcto":

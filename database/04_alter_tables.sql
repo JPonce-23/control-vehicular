@@ -120,3 +120,10 @@ SET capturado_por = s.capturado_por
 FROM salida s
 WHERE g.salida_id = s.id
   AND g.capturado_por IS NULL;
+
+
+-- 1. Quitar la restricción de valor único para num_motor
+ALTER TABLE vehiculo DROP CONSTRAINT IF EXISTS vehiculo_num_motor_key;
+
+-- 2. Cambiar km_acumulado de DECIMAL a INTEGER (Entero)
+ALTER TABLE vehiculo ALTER COLUMN km_acumulado TYPE INTEGER USING km_acumulado::INTEGER;

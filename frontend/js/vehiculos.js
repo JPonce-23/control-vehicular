@@ -67,7 +67,7 @@ async function cargarVehiculos() {
                 <td>${vehiculo.modelo_anio || ""}</td>
                 <td>${escaparHTML(vehiculo.num_serie || "")}</td>
                 <td>${vehiculo.color || ""}</td>
-                <td>${formatoNumero(vehiculo.km_acumulado)}</td>
+                <td>${Math.round(vehiculo.km_acumulado || 0)} Km</td>
                 <td>${escaparHTML(formatearEstado(vehiculo.estado))}</td>
                 <td>${escaparHTML(vehiculo.num_tarjeta_gasolina || "")}</td>
                 <td>${formatearDinero(vehiculo.saldo_tarjeta_gasolina)}</td>
