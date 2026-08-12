@@ -6,7 +6,9 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.persona_model import PersonaAutorizada
 from app.schemas.persona_schema import PersonaCreate, PersonaEstadoUpdate, PersonaResponse, PersonaUpdate
-from app.services.auth_service import requerir_rol
+from app.services.auth_service import requerir_rol, obtener_usuario_actual
+from app.models.salida_model import Salida 
+from app.models.regreso_model import Regreso
 
 router = APIRouter(prefix="/personas", tags=["Personas autorizadas"])
 
@@ -42,12 +44,72 @@ def _validar_unicos(db: Session, datos: dict, persona_id: int | None = None) -> 
             raise HTTPException(status_code=409, detail=mensaje)
 
 
-@router.get("/", response_model=list[PersonaResponse])
+@router.get("/")
 def listar_personas(
     db: Session = Depends(get_db),
-    usuario_actual=Depends(requerir_rol(["administrador", "capturista"])),
+    usuario_actual=Depends(obtener_usuario_actual),
 ):
-    return db.query(PersonaAutorizada).order_by(PersonaAutorizada.id).all()
+    personas = db.query(PersonaAutorizada).all()
+    
+    ids_en_viaje = {
+        persona_id
+        for (persona_id,) in (
+            db.query(Salida.persona_id)
+            .outerjoin(Regreso, Salida.id == Regreso.salida_id)
+            .filter(Salida.estado == "activa", Regreso.id == None)
+            .distinct()
+            .all()
+        )
+    }
+    
+    resultado = []
+    for persona in personas:
+        data = PersonaResponse.model_validate(persona) .model_dump()
+        data["en_viaje"] = persona.id in ids_en_viaje
+        resultado.append(data)
+    
+    return resultado
+
+
+
+@router.get("/disponibles-para-salida")
+def obtener_personas_disponibles_para_salida(
+    db: Session = Depends(get_db),
+    usuario_actual=Depends(requerir_rol(["administrador", "capturista"]))
+):
+    personas = (
+        db.query(PersonaAutorizada)
+        .filter(PersonaAutorizada.estado == "activo")
+        .all()
+    )
+
+    personas_disponibles = []
+
+    for persona in personas:
+
+        viaje_en_curso = (
+            db.query(Salida)
+            .outerjoin(
+                Regreso,
+                Salida.id == Regreso.salida_id
+            )
+            .filter(
+                Salida.persona_id == persona.id,
+                Salida.estado == "activa",
+                Regreso.id == None
+            )
+            .first()
+        )
+
+        if viaje_en_curso is not None:
+            continue
+
+        personas_disponibles.append(persona)
+
+    return personas_disponibles
+
+
+
 
 
 @router.post("/", response_model=PersonaResponse, status_code=201)

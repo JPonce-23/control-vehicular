@@ -5,7 +5,7 @@ from app.database import get_db
 from typing import Optional
 from sqlalchemy import or_, func
 from app.models.salida_model import Salida
-from app.schemas.salida_schema import SalidaResponse, SalidaCreate, SalidaUpdate, SalidaCorreccionAdministrativa, CondicionUpdateRequest, InventarioUpdateRequest
+from app.schemas.salida_schema import SalidaResponse, SalidaCreate, SalidaUpdate, SalidaCorreccionAdministrativa, SalidaCancelacion, CondicionUpdateRequest, InventarioUpdateRequest
 from app.models.vehiculo_model import Vehiculo
 from app.models.historial_salida_model import HistorialSalida
 from app.models.persona_model import PersonaAutorizada
@@ -182,6 +182,15 @@ def crear_salida(
             status_code=400,
             detail="La persona autorizada no está activa"
         )
+        
+    persona_en_viaje = (db.query(Salida).join(Regreso, Salida.id == Regreso.salida_id, isouter=True)
+        .filter(Salida.persona_id == persona.id, Salida.estado == "activa", Regreso.id == None).first())
+    
+    if persona_en_viaje is not None:
+        raise HTTPException(
+            status_code=400,
+            detail="La persona seleccionada tiene un viaje en curso"
+        )
 
     if persona.vigencia_licencia is not None and persona.vigencia_licencia < date.today():
         raise HTTPException(
@@ -245,10 +254,50 @@ def listar_salidas_activas(
     salidas = db.query(Salida).outerjoin(
         Regreso, Salida.id == Regreso.salida_id
     ).filter(
+        Salida.estado == "activa",
         Regreso.id == None
     ).all()
 
     return salidas
+
+@router.get("/activas-para-cancelacion")
+def listar_salidas_activas_para_cancelacion(
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador"]))
+):
+    resultados = (
+        db.query(Salida, Vehiculo, PersonaAutorizada)
+        .join(Vehiculo, Salida.vehiculo_id == Vehiculo.id)
+        .join(PersonaAutorizada, Salida.persona_id == PersonaAutorizada.id)
+        .outerjoin(Regreso, Salida.id == Regreso.salida_id)
+        .filter(
+            Salida.estado == "activa",
+            Regreso.id == None
+        )
+        .order_by(Salida.fecha_salida.desc())
+        .all()
+    )
+    
+    respuesta = []
+    for salida, vehiculo, persona in resultados:
+        nombre_persona = " ".join(
+            parte for parte in [
+                persona.nombre,
+                persona.apellido_paterno,
+                persona.apellido_materno
+            ] if parte
+        )
+        
+        respuesta.append({
+            "salida_id": salida.id,
+            "vehiculo_id": vehiculo.id,
+            "placa": vehiculo.placa,
+            "vehiculo": f"{vehiculo.marca} {vehiculo.tipo}",
+            "persona": nombre_persona,
+            "fecha_salida": salida.fecha_salida,
+        })
+        
+    return respuesta
 
 
 
@@ -420,6 +469,64 @@ def corregir_salida_administrativa(
         "motivo": datos.motivo
     }
     
+    
+@router.patch("/{salida_id}/cancelacion")
+def cancelar_salida(
+    salida_id: int,
+    datos: SalidaCancelacion,
+    db: Session = Depends(get_db),
+    usuario_actual = Depends(requerir_rol(["administrador"]))
+):
+    salida = db.query(Salida).filter(Salida.id == salida_id).first()
+    
+    if salida is None:
+        raise HTTPException(status_code=404, detail="Salida no encontrada")
+    
+    if salida.estado == "cancelada":
+        raise HTTPException(status_code=400, detail="La salida ya se encuentra cancelada")
+    
+    regreso = db.query(Regreso).filter(Regreso.salida_id == salida_id).first()
+    
+    if regreso is not None:
+        raise HTTPException(status_code=400, detail="No se puede cancelar una salida que ya tiene regreso registrado")
+    
+    salida.estado = "cancelada"
+    
+    vehiculo = db.query(Vehiculo).filter(Vehiculo.id == salida.vehiculo_id).first()
+    
+    if vehiculo is not None and vehiculo.estado == "en_uso":
+        otra_salida_activa = (
+        db.query(Salida)
+        .filter(
+                Salida.vehiculo_id == vehiculo.id, 
+                Salida.estado == "activa", 
+                Salida.id != salida.id
+            )
+            .outerjoin(Regreso, Salida.id == Regreso.salida_id)
+            .filter(Regreso.id == None)
+            .first()
+        )
+        
+        if otra_salida_activa is None:
+            vehiculo.estado = "disponible"
+            
+    historial = HistorialSalida(
+        salida_id=salida.id,
+        usuario_id=usuario_actual.id,
+        accion="cancelacion_salida",
+        descripcion=f"Se canceló la salida: {datos.motivo}",
+        fecha=datetime.now()
+    )
+    
+    db.add(historial)
+    db.commit()
+    
+    return {
+        "mensaje": "Salida cancelada correctamente",
+        "salida_id": salida.id,
+        "motivo": datos.motivo
+    }
+
     
     
 @router.get("/{salida_id}/resguardo-preview")

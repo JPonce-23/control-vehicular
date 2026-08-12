@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancelación de Salida</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="app-page" data-roles="administrador">
+
+<header class="app-header">
+    <div>
+        <h1>Control vehicular</h1>
+        <p>Procuraduría Agraria</p>
+    </div>
+
+    <button class="btn btn-secondary" type="button" onclick="window.location.href='../dashboard.html'">
+        Volver al menú
+    </button>
+</header>
+
+<main class="app-main">
+
+    <section class="page-title">
+        <h2>Cancelación de salida</h2>
+        <p>Cancela una salida activa</p>
+    </section>
+
+
+    <section class="card">
+        <h2>Salida a cancelar</h2>
+
+        <div class="form-group">
+            <label for="salida_id">*Selecciona una salida activa:</label><br>
+            <select id="salida_id" required>
+                <option value="">Busca una salida</option>
+            </select>
+        </div>
+    </section>
+
+
+    <section class="card" id="resumenSalida" style="display: none;">
+        <h2>Resumen de salida</h2>
+        <p id="resumenTexto"></p>
+    </section>
+
+    <br>
+
+    <section class="card" id="seccionFormulario" style="display: none;">
+        <h3 class="form-section-title">Motivo de cancelación</h3>
+
+        <form class="form-correccion" id="formCancelacion" autocomplete="off">
+
+            <div class="form-group form-group-full">
+                <label for="motivo">*Motivo de cancelación:</label>
+                <textarea id="motivo" required></textarea>
+            </div>
+
+            <div class="form-actions">
+                <input class="btn btn-primary" type="submit" value="Cancelar salida">
+            </div>
+
+        </form>
+    </section>
+
+
+    <p id="mensaje" class="message"></p>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/auth-guard.js"></script>
+    <script src="../js/cancelacion-salida.js"></script>
+
+
+
+</main>
+</body>
+</html>

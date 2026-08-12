@@ -45,7 +45,7 @@ async function cargarPersonas() {
         if (personas.length === 0) {
             tablaPersonas.innerHTML = `
                 <tr>
-                    <td colspan="9">No hay personas registradas.</td>
+                    <td colspan="10">No hay personas registradas.</td>
                 </tr>
             `;
             return;
@@ -64,6 +64,7 @@ async function cargarPersonas() {
                 <td>${escaparHTML(persona.tipo_licencia || "")}</td>
                 <td>${escaparHTML(persona.vigencia_licencia || "")}</td>
                 <td>${escaparHTML(formatearEstado(persona.estado))}</td>
+                <td>${persona.en_viaje ? "En viaje" : "-"}</td>
                 <td>
                     <button type="button" onclick="editarPersona(${persona.id})">
                         Editar

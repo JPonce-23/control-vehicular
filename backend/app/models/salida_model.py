@@ -27,3 +27,4 @@ class Salida(Base):
     observaciones_croquis = Column(Text, nullable=True)
     monto_agregado_tarjeta = Column(Numeric(12, 2), nullable=False, default=0)
     saldo_tarjeta_salida = Column(Numeric(12, 2), nullable=False, default=0)
+    estado = Column(String, nullable=False, default="activa", server_default="'activa'")

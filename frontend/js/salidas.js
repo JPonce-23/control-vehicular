@@ -74,14 +74,19 @@ async function cargarVehiculos() {
 
 async function cargarPersonas() {
     try {
-        const personas = await apiFetch("/personas/");
-        const activas = personas.filter(persona => persona.estado === "activo");
+        const personas = await apiFetch("/personas/disponibles-para-salida");
 
-        activas.forEach(persona => {
+        if(!selectPersona) return;
+
+        selectPersona.innerHTML = `
+            <option value="">Selecciona una persona</option>
+        `;
+
+        personas.forEach(persona => {
             const option = document.createElement("option");
             option.value = persona.id;
-            option.textContent = `${persona.nombre} ${persona.apellido_paterno} - Licencia ${persona.num_licencia}`;
-            if (selectPersona) selectPersona.appendChild(option);
+            option.textContent = `${persona.nombre} ${persona.apellido_paterno} - Licencia ${persona.num_licencia || "Sin licencia"}`;
+            selectPersona.appendChild(option);
         });
 
     } catch (error) {

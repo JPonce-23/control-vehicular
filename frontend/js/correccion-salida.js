@@ -24,6 +24,8 @@ const inputPersonaBusqueda = document.getElementById("persona_busqueda");
 const btnBuscarCoincidencias = document.getElementById("btnBuscarCoincidencias");
 const selectSalida = document.getElementById("salida_id");
 
+const inputSaldoTarjetaRegreso = document.getElementById("saldo_tarjeta_regreso");
+
 const mensaje = document.getElementById("mensaje");
 
 let salidaActual = null;
@@ -97,6 +99,8 @@ function llenarFormulario(salida, regreso) {
     selectEstadoLlantasSalida.value = salida.estado_llantas_salida || "";
     selectEstadoLlantasRegreso.value = regreso.estado_llantas_regreso || "";
 
+    inputSaldoTarjetaRegreso.value = regreso.saldo_tarjeta_regreso ?? "";
+
     selectEstadoVehiculoRegreso.value = regreso.estado_vehiculo_regreso || "";
     selectFinalidadDevolucion.value = regreso.finalidad_devolucion || "";
 
@@ -128,6 +132,7 @@ async function guardarCorreccion(event) {
         nivel_gasolina_regreso: selectNivelGasolinaRegreso.value,
         estado_llantas_salida: selectEstadoLlantasSalida.value,
         estado_llantas_regreso: selectEstadoLlantasRegreso.value,
+        saldo_tarjeta_regreso: inputSaldoTarjetaRegreso.value === "" ? null: Number(inputSaldoTarjetaRegreso.value),
         estado_vehiculo_regreso: selectEstadoVehiculoRegreso.value,
         finalidad_uso: inputFinalidadUso.value.trim(),
         finalidad_devolucion: selectFinalidadDevolucion.value,

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from datetime import datetime, date
 from decimal import Decimal
 from typing import Optional
@@ -101,3 +101,16 @@ class InventarioUpdateItem(BaseModel):
 
 class InventarioUpdateRequest(BaseModel):
     inventario: list[InventarioUpdateItem]
+    
+    
+class SalidaCancelacion(BaseModel):
+    motivo: str
+    
+    @field_validator("motivo")
+    @classmethod
+    def motivo_no_vacio(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("Es necesario agregar un motivo de la cancelación")
+        return v.strip()
+    
+    

@@ -101,9 +101,11 @@ function mostrarResumen(registros) {
 
     resumenAuditoria.innerHTML = `
         <h2>Resumen</h2>
-        <p><strong>Vehículo:</strong> ${escaparHTML(primerRegistro.vehiculo || "Sin dato")}</p>
-        <p><strong>Placa:</strong> ${escaparHTML(primerRegistro.placa || "Sin dato")}</p>
-        <p><strong>Total de movimientos encontrados:</strong> ${registros.length}</p>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; gap: 8px, 32px;">
+            <p><strong>Vehículo:</strong> ${escaparHTML(primerRegistro.vehiculo || "Sin dato")}</p>
+            <p><strong>Placa:</strong> ${escaparHTML(primerRegistro.placa || "Sin dato")}</p>
+            <p><strong>Total de movimientos encontrados:</strong> ${registros.length}</p>
+        </div>
     `;
 }
 
@@ -143,7 +145,8 @@ function formatearAccion(accion) {
         registro_salida: "Registro de salida",
         registro_regreso: "Registro de regreso",
         modificacion: "Modificación / Corrección",
-        generacion_resguardo: "Generación de resguardo"
+        generacion_resguardo: "Generación de resguardo",
+        cancelacion_salida: "Salida cancelada"
     };
 
     return acciones[accion] || accion;
