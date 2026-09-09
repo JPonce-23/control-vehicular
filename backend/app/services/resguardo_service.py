@@ -250,9 +250,9 @@ def generar_resguardo_word(salida, vehiculo, persona, condiciones=None, inventar
 
         "estado_llantas": valor(salida.estado_llantas_salida),
         "nivel_gasolina": valor(salida.nivel_gasolina_salida),
-        "km_odometro_salida": valor(salida.km_odometro_salida),
+        "km_odometro_salida": str(int(salida.km_odometro_salida)) if salida.km_odometro_salida is not None else "",
 
-        "num_tarjeta_gasolina": valor(vehiculo.num_tarjeta_gasolina, ""),
+        "num_tarjeta_gasolina": valor(vehiculo.num_tarjeta_gasolina, "").replace (" ", ""),
 
         "gasolina_0": check(normalizar_gasolina(salida.nivel_gasolina_salida), "0"),
         "gasolina_14": check(normalizar_gasolina(salida.nivel_gasolina_salida), "1/4"),
